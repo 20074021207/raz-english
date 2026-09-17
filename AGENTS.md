@@ -47,6 +47,14 @@
 │   ├── database_schema.md         # 数据库与核心数据结构设计
 │   ├── realtime_conversation_arch.md # 实时对话引擎架构 (Rust/JSI + GLM-4-Voice + FSM)
 │   └── methodology_6month.md      # 6 个月行为重塑方法论
+├── h5/                            # H5 版「朱迪单词」🐰（四年级适配，零依赖纯静态）
+│   ├── index.html                 # 入口（脚本按序加载，双击即可运行）
+│   ├── css/style.css              # 儿童友好移动端设计系统
+│   ├── js/                        # core/audio/data/sentences/state/ui/screens/lesson/boss/app
+│   ├── data/raz-data.js           # 构建产物：AA–L 共 5,615 词内嵌词库（含词性）
+│   ├── build-data.mjs             # 词库压缩 + 儿童释义清洗 + 词性提取脚本
+│   ├── test/e2e.mjs               # Playwright 无头冒烟测试
+│   └── README.md                  # 运行说明与设计文档对齐表
 ├── schema/
 │   └── init.sql                   # MySQL 核心四域初始化脚本
 ├── scripts/
@@ -68,6 +76,7 @@
 - `docs/database_schema.md`: 定义 MySQL + Graph DB 混合存储策略、RAZ 级别跃迁状态追踪、遥测数据 30 天滚动归档标准。
 - `schema/init.sql`: 包含六个核心域（能力评估、AOT队列、RAZ晋级引擎、TTS资产去重缓存、交互遥测、实时对话引擎）的具体 DDL 定义。
 - `scripts/download-raz.mjs`: 零依赖 Node.js 脚本，从 GitHub 批量拉取 RAZ JSON 并生成 manifest。
+- `h5/`: H5 版「朱迪单词」（吉祥物为疯狂动物城的朱迪兔），面向四年级小学生的零依赖纯静态学习游戏。复用 RAZ 词库（AA–L 内嵌）、Boss 战参数（15 题/120s/85%/48h 冷却）、SM-2 间隔重复与有道发音 API；含定级测试、四题型课程引擎、错题重排队、每日目标、徽章系统；进度存 localStorage。
 - `task_plan.md`: 无交互环境下的强迫执行边界与状态检查单。
 - `progress.md`: 记载当前项目的执行生命周期，充当系统的外部工作记忆。
 - `AGENTS.md`: 定义全局系统边界与代码规范基石。
