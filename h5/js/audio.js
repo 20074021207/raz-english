@@ -38,8 +38,15 @@
   // 当前在播的音频，供打断时统一停掉，杜绝叠音
   let currentAudio = null;
 
+  // 原生桥停止指令（iOS App 内打断一切原生朗读）
+  function stopNative() {
+    const bridge = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeTTS;
+    if (bridge) { try { bridge.postMessage({ stop: true }); } catch (e) { /* ignore */ } }
+  }
+
   function stopCurrent() {
     if (currentAudio) { try { currentAudio.pause(); } catch (e) { /* ignore */ } currentAudio = null; }
+    stopNative();
     try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
   }
 
@@ -58,6 +65,26 @@
     // 末级防挂起兜底：原生侧另有完成备份回调（更快），此处仅防"回调链路全断"，
     // 估时按慢速朗读上限收紧，保证兜底触发时距上一句结束 ≈ 1-2 秒
     setTimeout(fin, 1300 + text.length * 145);
+    return true;
+  }
+
+  /**
+   * 整组朗读（iOS App 主通道）：一次消息把"单词+例句×3"全部交给原生层，
+   * AVSpeech 队列原生排播、句间原生 1 秒停顿——彻底消除逐句往返的节奏损耗。
+   * 原生按句回传 __nativeTtsItem(id, idx)（高亮/门控进度），整组完成回调 __nativeTtsDone(id)。
+   */
+  function nativeSpeakSequence(texts, onItem, done) {
+    const bridge = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeTTS;
+    if (!bridge) return false;
+    const id = ++nativeSeq;
+    let called = false;
+    const fin = () => { if (!called) { called = true; done(); } };
+    NG.audio.__nativeTtsDone = (cbId) => { if (cbId === id) fin(); };
+    NG.audio.__nativeTtsItem = (cbId, idx) => { if (cbId === id && onItem) onItem(idx); };
+    bridge.postMessage({ id, texts });
+    // 防挂起兜底：慢速朗读 + 原生 1s 句间隔 + 4s 余量（原生侧另有备份回调，正常到不了这里）
+    const total = texts.reduce((a, t) => a + 900 + t.length * 160, 0) + (texts.length - 1) * 1000 + 4000;
+    setTimeout(fin, total);
     return true;
   }
 
@@ -241,13 +268,17 @@
 
     /**
      * 顺序朗读（学习卡：单词 → 例句1 → 例句2 → 例句3）。
-     * 第 0 项（单词）走有道，其余走句子多级回退通道。
+     * iOS App：整组一次交给原生层排播（句间原生 1 秒，无逐句往返损耗）；
+     * 浏览器：逐句链，句子走多级回退通道。
      * onItem(i) 在每条开始时回调；onDone() 在全部完成后回调（被取消不回调）。
      */
     speakSequence(texts, onItem, onDone) {
       unlock();
       stopCurrent();
       const id = ++seqId;
+      if (nativeSpeakSequence(texts,
+        (idx) => { if (id === seqId && onItem) onItem(idx); },
+        () => { if (id === seqId && onDone) onDone(); })) return;
       let i = 0;
       const step = () => {
         if (id !== seqId) return;             // 已被后续朗读取代
@@ -256,7 +287,7 @@
         const play = idx === 0 ? playOne : speakSentence;
         play(texts[i++], () => {
           if (id !== seqId) return;
-          setTimeout(step, 1000);             // 句间停顿 1 秒（用户指定）
+          setTimeout(step, 1000);             // 句间停顿 1 秒
         });
         if (onItem) onItem(idx);
       };

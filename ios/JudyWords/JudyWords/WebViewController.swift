@@ -5,8 +5,12 @@ import AVFoundation
 class WebViewController: UIViewController, WKScriptMessageHandler, AVSpeechSynthesizerDelegate, WKNavigationDelegate {
     private var webView: WKWebView!
     private let synthesizer = AVSpeechSynthesizer()
-    /// 当前等待完成回调的原生朗读 id（JS 严格串行，同一时间只有一个）
+    /// 当前等待完成回调的朗读 id（JS 严格串行，同一时间只有一组）
     private var pendingTTSId: Int?
+    /// 当前组内的所有 utterance（用于 didStart 定位进度下标）
+    private var seqUtterances: [AVSpeechUtterance] = []
+    /// 已排入队列的定时器（新请求/停止时统一取消）
+    private var timers: [DispatchWorkItem] = []
 
     override func loadView() {
         let cfg = WKWebViewConfiguration()
@@ -27,49 +31,118 @@ class WebViewController: UIViewController, WKScriptMessageHandler, AVSpeechSynth
     }
 
     // MARK: - JS → 原生 TTS 桥
+    // 消息格式：
+    //   { id, texts: [..] }   整组朗读（AVSpeech 队列原生排播，句间 1 秒）
+    //   { id, text }          单条朗读
+    //   { stop: true }        停止一切朗读
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard message.name == "nativeTTS",
-              let body = message.body as? [String: Any],
-              let id = body["id"] as? Int,
-              let text = body["text"] as? String else { return }
-        speakNative(id: id, text: text)
+        guard message.name == "nativeTTS", let body = message.body as? [String: Any] else { return }
+        if (body["stop"] as? Bool) == true {
+            NSLog("[TTS] stop requested")
+            cancelTimers()
+            pendingTTSId = nil
+            synthesizer.stopSpeaking(at: .immediate)
+            return
+        }
+        guard let id = body["id"] as? Int else { return }
+        if let texts = body["texts"] as? [String], !texts.isEmpty {
+            speakSequenceNative(id: id, texts: texts)
+        } else if let text = body["text"] as? String {
+            speakNative(id: id, text: text)
+        }
     }
 
-    private func speakNative(id: Int, text: String) {
-        NSLog("[TTS] speak #%d: %@", id, text)
-        synthesizer.stopSpeaking(at: .immediate)
-        // 关键修复：WKWebView 播放 <audio>（有道单词发音）会接管音频会话，
-        // 导致之后的 AVSpeechSynthesizer 静音。每次朗读前必须重新接管会话。
+    // MARK: 朗读核心
+    private func assertAudioSession() {
+        // WKWebView 播放 <audio>（有道单词发音）会接管音频会话导致原生合成静音，
+        // 因此每次朗读前重新接管。
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
         try? AVAudioSession.sharedInstance().setActive(true, options: [])
+    }
+
+    private func makeUtterance(_ text: String) -> AVSpeechUtterance {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.rate = 0.45                      // 放慢，适合儿童跟读
+        utterance.rate = 0.45                       // 放慢，适合儿童跟读
+        return utterance
+    }
+
+    /// 单条朗读
+    private func speakNative(id: Int, text: String) {
+        NSLog("[TTS] speak #%d: %@", id, text)
+        cancelTimers()
+        synthesizer.stopSpeaking(at: .immediate)
+        assertAudioSession()
+        let utterance = makeUtterance(text)
         utterance.postUtteranceDelay = 0.05
+        seqUtterances = [utterance]
         pendingTTSId = id
-        // 给音频会话切换留一点时间，避免首字被吞
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) { [weak self] in
+        enqueue(utterance, id: id, index: 0, delay: 0.06, isLast: true)
+        // 完成备份回调：部分 iOS 版本 didFinish 不可靠，超时按估算补发推进信号
+        armBackup(id: id, estimate: 1.0 + Double(text.count) * 0.13)
+    }
+
+    /// 整组朗读（学习卡：单词 → 例句×3）。AVSpeech 队列依次朗读，postUtteranceDelay 提供原生 1 秒句间停顿。
+    private func speakSequenceNative(id: Int, texts: [String]) {
+        NSLog("[TTS] sequence #%d: %d items", id, texts.count)
+        cancelTimers()
+        synthesizer.stopSpeaking(at: .immediate)
+        assertAudioSession()
+        pendingTTSId = id
+        var delay = 0.06
+        for (i, text) in texts.enumerated() {
+            let utterance = makeUtterance(text)
+            utterance.postUtteranceDelay = (i == texts.count - 1) ? 0.05 : 1.0   // 原生 1 秒句间停顿
+            seqUtterances.append(utterance)
+            enqueue(utterance, id: id, index: i, delay: delay, isLast: i == texts.count - 1)
+            delay += 0.06   // 入队间隔（朗读顺序由合成器队列保证）
+        }
+        // 完成备份：估算 0.8s + 慢速朗读（~6 字符/秒）+ 句间停顿 + 3s 余量
+        let chars = texts.reduce(0) { $0 + $1.count }
+        armBackup(id: id, estimate: 0.8 + Double(chars) * 0.17 + Double(texts.count - 1) * 1.0 + 3.0)
+    }
+
+    private func enqueue(_ utterance: AVSpeechUtterance, id: Int, index: Int, delay: TimeInterval, isLast: Bool) {
+        let work = DispatchWorkItem { [weak self] in
             guard let self = self, self.pendingTTSId == id else { return }
             self.synthesizer.speak(utterance)
-            NSLog("[TTS] started #%d", id)
+            self.webView?.evaluateJavaScript("NG.audio.__nativeTtsItem(\(id),\(index))", completionHandler: nil)
+            NSLog("[TTS] started #%d item%d", id, index)
         }
-        // 完成备份回调：部分 iOS 版本 didFinish 不可靠（不触发时 JS 会干等防挂起超时）。
-        // 按慢速朗读估算时长，超时仍未收到完成事件则补发推进信号（幂等：didFinish 先到则此处的 pending 已清空）。
-        let estimate = 1.0 + Double(text.count) * 0.13
-        DispatchQueue.main.asyncAfter(deadline: .now() + estimate) { [weak self] in
+        timers.append(work)
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
+    }
+
+    private func armBackup(id: Int, estimate: TimeInterval) {
+        let work = DispatchWorkItem { [weak self] in
             guard let self = self, self.pendingTTSId == id else { return }
             NSLog("[TTS] backup-fire #%d (didFinish missed)", id)
             self.notifyDone()
         }
+        timers.append(work)
+        DispatchQueue.main.asyncAfter(deadline: .now() + estimate, execute: work)
+    }
+
+    private func cancelTimers() {
+        timers.forEach { $0.cancel() }
+        timers.removeAll()
+        seqUtterances.removeAll()
+    }
+
+    // MARK: - 合成器回调
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
+        // 句子开始朗读 → 回传进度（学习卡高亮/门控解锁用）；尽力而为，失败不影响节奏
+        if let idx = seqUtterances.firstIndex(where: { $0 === utterance }) {
+            webView?.evaluateJavaScript("NG.audio.__nativeTtsItem(\(pendingTTSId ?? -1),\(idx))", completionHandler: nil)
+        }
     }
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        NSLog("[TTS] didFinish (pending=%@)", pendingTTSId.map(String.init) ?? "nil")
-        notifyDone()
-    }
-
-    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
-        NSLog("[TTS] didCancel (pending=%@)", pendingTTSId.map(String.init) ?? "nil")
+        // 只在整组最后一条完成时通知 JS（组内单句完成由 didStart 顺序隐式表达）
+        if let last = seqUtterances.last, utterance === last {
+            NSLog("[TTS] sequence didFinish")
+            notifyDone()
+        }
     }
 
     private func notifyDone() {

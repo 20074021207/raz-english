@@ -206,7 +206,6 @@
         if (i + 1 < sess.learn.length) this.renderLearn(root, i + 1);
         else this.renderExercise(root);
       });
-      root.querySelector('#ls-exit').addEventListener('click', () => this.confirmExit(root));
     },
 
     /* ---------------- 阶段二：练习 ---------------- */
@@ -279,7 +278,6 @@
         if (q.type === 'listen' || q.type === 'en2cn') setTimeout(() => NG.audio.speak(q.word), 300);
       }
 
-      root.querySelector('#q-exit').addEventListener('click', () => this.confirmExit(root));
     },
 
     confirmExit(root) {
