@@ -55,8 +55,9 @@
     const fin = () => { if (!called) { called = true; done(); } };
     NG.audio.__nativeTtsDone = (cbId) => { if (cbId === id) fin(); };
     bridge.postMessage({ id, text });
-    // 原生正常必回调；超长防挂起兜底
-    setTimeout(fin, 3000 + text.length * 300);
+    // 末级防挂起兜底：原生侧另有完成备份回调（更快），此处仅防"回调链路全断"，
+    // 估时按慢速朗读上限收紧，保证兜底触发时距上一句结束 ≈ 1-2 秒
+    setTimeout(fin, 1300 + text.length * 145);
     return true;
   }
 
@@ -255,7 +256,7 @@
         const play = idx === 0 ? playOne : speakSentence;
         play(texts[i++], () => {
           if (id !== seqId) return;
-          setTimeout(step, 800);              // 句间停顿（儿童跟读需要换气时间）
+          setTimeout(step, 1000);             // 句间停顿 1 秒（用户指定）
         });
         if (onItem) onItem(idx);
       };

@@ -53,6 +53,14 @@ class WebViewController: UIViewController, WKScriptMessageHandler, AVSpeechSynth
             self.synthesizer.speak(utterance)
             NSLog("[TTS] started #%d", id)
         }
+        // 完成备份回调：部分 iOS 版本 didFinish 不可靠（不触发时 JS 会干等防挂起超时）。
+        // 按慢速朗读估算时长，超时仍未收到完成事件则补发推进信号（幂等：didFinish 先到则此处的 pending 已清空）。
+        let estimate = 1.0 + Double(text.count) * 0.13
+        DispatchQueue.main.asyncAfter(deadline: .now() + estimate) { [weak self] in
+            guard let self = self, self.pendingTTSId == id else { return }
+            NSLog("[TTS] backup-fire #%d (didFinish missed)", id)
+            self.notifyDone()
+        }
     }
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
