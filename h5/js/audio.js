@@ -54,16 +54,18 @@
    * WKWebView 不支持网页 speechSynthesis，App 壳通过 AVSpeechSynthesizer 提供本地合成。
    * JS 侧 postMessage({id, text})，原生读完回调 NG.audio.__nativeTtsDone(id)。 */
   let nativeSeq = 0;
+  // 当前等待回调的原生朗读（唯一），id 不匹配的迟到回调一律忽略
+  let nativeCb = null;
+
   function nativeSpeak(text, done) {
     const bridge = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeTTS;
     if (!bridge) return false;
     const id = ++nativeSeq;
     let called = false;
-    const fin = () => { if (!called) { called = true; done(); } };
-    NG.audio.__nativeTtsDone = (cbId) => { if (cbId === id) fin(); };
+    const fin = () => { if (!called) { called = true; nativeCb = null; done(); } };
+    nativeCb = { id, onDone: fin, onItem: null, lastIdx: -1 };
     bridge.postMessage({ id, text });
-    // 末级防挂起兜底：原生侧另有完成备份回调（更快），此处仅防"回调链路全断"，
-    // 估时按慢速朗读上限收紧，保证兜底触发时距上一句结束 ≈ 1-2 秒
+    // 末级防挂起兜底：原生侧另有完成备份回调（更快），此处仅防"回调链路全断"
     setTimeout(fin, 1300 + text.length * 145);
     return true;
   }
@@ -71,16 +73,15 @@
   /**
    * 整组朗读（iOS App 主通道）：一次消息把"单词+例句×3"全部交给原生层，
    * AVSpeech 队列原生排播、句间原生 1 秒停顿——彻底消除逐句往返的节奏损耗。
-   * 原生按句回传 __nativeTtsItem(id, idx)（高亮/门控进度），整组完成回调 __nativeTtsDone(id)。
+   * 进度由原生 didStart 逐句回传（真正开口才推进高亮）。
    */
   function nativeSpeakSequence(texts, onItem, done) {
     const bridge = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeTTS;
     if (!bridge) return false;
     const id = ++nativeSeq;
     let called = false;
-    const fin = () => { if (!called) { called = true; done(); } };
-    NG.audio.__nativeTtsDone = (cbId) => { if (cbId === id) fin(); };
-    NG.audio.__nativeTtsItem = (cbId, idx) => { if (cbId === id && onItem) onItem(idx); };
+    const fin = () => { if (!called) { called = true; nativeCb = null; done(); } };
+    nativeCb = { id, onDone: fin, onItem, lastIdx: -1 };
     bridge.postMessage({ id, texts });
     // 防挂起兜底：慢速朗读 + 原生 1s 句间隔 + 4s 余量（原生侧另有备份回调，正常到不了这里）
     const total = texts.reduce((a, t) => a + 900 + t.length * 160, 0) + (texts.length - 1) * 1000 + 4000;
@@ -257,6 +258,22 @@
   let seqId = 0;
 
   NG.audio = {
+    /** 原生朗读完成回调（Swift evaluateJavaScript 入口）；id 不匹配的迟到回调忽略 */
+    __nativeTtsDone(id) {
+      if (nativeCb && nativeCb.id === id) {
+        const cb = nativeCb;
+        nativeCb = null;
+        if (cb.onDone) cb.onDone();
+      }
+    },
+    /** 原生逐句进度回调；单调守卫：进度只前进不回退（乱序/重复一律忽略） */
+    __nativeTtsItem(id, idx) {
+      if (!nativeCb || nativeCb.id !== id || !nativeCb.onItem) return;
+      if (idx <= nativeCb.lastIdx) return;
+      nativeCb.lastIdx = idx;
+      nativeCb.onItem(idx);
+    },
+
     /** 单词/短文本：有道发音（失败自动回退本地语音） */
     speak(word) {
       if (!word) return;

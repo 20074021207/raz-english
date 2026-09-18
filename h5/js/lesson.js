@@ -206,6 +206,7 @@
         if (i + 1 < sess.learn.length) this.renderLearn(root, i + 1);
         else this.renderExercise(root);
       });
+      root.querySelector('#ls-exit').addEventListener('click', () => this.confirmExit(root));
     },
 
     /* ---------------- 阶段二：练习 ---------------- */
@@ -270,6 +271,8 @@
         setTimeout(() => this.renderQuestion(root), ok ? 620 : 1150);
       };
 
+      root.querySelector('#q-exit').addEventListener('click', () => this.confirmExit(root));
+
       if (q.type === 'spell') {
         NG.questions.bindSpell(root, q, (ok) => done(ok, null), { tools: true });
         setTimeout(() => NG.audio.speak(q.word), 300);
@@ -281,6 +284,8 @@
     },
 
     confirmExit(root) {
+      if (document.querySelector('.modal-mask')) return;   // 防重入：多路径冗余触发只弹一次
+      try { NG.audio.cancelSequence(); } catch (e) { /* 打断失败不阻塞弹窗 */ }
       NG.ui.modal('要离开这一课吗？', '已经学会的进度都会保存，放心离开！', [
         { label: '继续学习', cls: 'success' },
         { label: '离开', cls: 'ghost', onClick: () => NG.app.go('home') },

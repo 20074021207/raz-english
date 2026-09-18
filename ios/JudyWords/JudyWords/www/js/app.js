@@ -15,15 +15,20 @@
     },
   };
 
-  // 全局委托：学习/练习退出按钮（一次注册，不依赖单屏绑定时机）
-  document.addEventListener('click', (e) => {
-    if (e.target.closest('#ls-exit, #q-exit')) {
-      NG.sfx.tap();
-      NG.audio.cancelSequence();                 // 即时停止朗读，立刻给出反馈
+  // 全局委托：学习/练习退出按钮（一次注册，不依赖单屏绑定时机）。
+  // 多层冗余：直接绑定（lesson.js）→ click 委托 → touchend 委托；
+  // confirmExit 内部有防重入；任何异常兜底直接回首页，绝不让 ❌ 无响应。
+  const exitHandler = (e) => {
+    if (!e.target.closest || !e.target.closest('#ls-exit, #q-exit')) return;
+    try { NG.sfx.tap(); } catch (err) { /* ignore */ }
+    try {
       NG.screens.lesson.confirmExit(document.getElementById('screen-root'));
-      return;
+    } catch (err) {
+      NG.app.go('home');
     }
-  });
+  };
+  document.addEventListener('click', exitHandler);
+  document.addEventListener('touchend', exitHandler, { passive: true });
 
   // 全局 data-nav 委托导航
   document.addEventListener('click', (e) => {
