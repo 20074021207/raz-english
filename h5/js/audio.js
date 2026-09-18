@@ -216,7 +216,7 @@
         const play = idx === 0 ? playOne : speakSentence;
         play(texts[i++], () => {
           if (id !== seqId) return;
-          setTimeout(step, 320);              // 句间停顿
+          setTimeout(step, 800);              // 句间停顿（儿童跟读需要换气时间）
         });
         if (onItem) onItem(idx);
       };
