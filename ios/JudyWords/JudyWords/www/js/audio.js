@@ -105,35 +105,53 @@
    *   3) 仍失败 → playOne 内部落到 pureLocal 的 900ms 节奏地板。
    */
   function speakSentence(text, done) {
-    // "本地可用" = 浏览器 speechSynthesis 或 原生 TTS 桥（iOS WKWebView 前者不存在）
-    const hasLocal = !!(window.speechSynthesis && window.SpeechSynthesisUtterance)
-      || !!(window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeTTS);
-    if (!hasLocal) return playOne(text, done);
-
-    let owner = 'local';                 // 当前有权推进的通道
-    let sentinel = null;
-    const finish = () => {
-      if (!owner) return;
-      owner = null;
-      if (sentinel) clearTimeout(sentinel);
-      done();
-    };
-    // 起播哨兵：本地迟迟不开口 → 停掉本地队列，交给有道
-    sentinel = setTimeout(() => {
-      if (owner !== 'local') return;
-      owner = 'youdao';
-      try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
-      playOne(text, finish);
-    }, 1600);
-    // 本地通道的完成回调必须校验所有权：哨兵已降级后，迟到的本地事件不得抢推进权
-    pureLocal(text, () => { if (owner === 'local') finish(); }, () => {
-      if (owner === 'local' && sentinel) { clearTimeout(sentinel); sentinel = null; }
-    }, () => {
-      if (owner !== 'local') return;     // 已由哨兵降级，忽略迟到的静默错误
-      owner = 'youdao';
-      if (sentinel) clearTimeout(sentinel);
-      playOne(text, finish);
-    });
+    // iOS App：原生 TTS 是唯一主通道（无哨兵竞态、不依赖网络）
+    if (nativeSpeak(text, done)) return;
+    // 浏览器环境：本地 speechSynthesis 优先
+    if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
+      let finished = false;
+      let u = null;
+      let watchdog = null;
+      const arm = (ms) => {
+        if (watchdog) clearTimeout(watchdog);
+        watchdog = setTimeout(() => { if (!finished) bail(); }, ms);
+      };
+      const fin = () => {
+        if (finished) return;
+        finished = true;
+        if (watchdog) clearTimeout(watchdog);
+        if (u) { u.onend = null; u.onerror = null; u.onstart = null; }
+        done();
+      };
+      // 本地始终没开口：停掉队列 → 有道兜底
+      const bail = () => {
+        if (finished) return;
+        try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+        playOne(text, fin);
+      };
+      try {
+        window.speechSynthesis.cancel();
+        u = new SpeechSynthesisUtterance(text);
+        u.lang = 'en-US';
+        u.rate = 0.82;                     // 放慢，适合儿童跟读
+        const v = window.speechSynthesis.getVoices().find((x) => /^en(-|_)/i.test(x.lang));
+        if (v) u.voice = v;
+        u.onstart = () => {
+          if (finished) return;
+          // 已真实开口：onend 为主推进源；超长看门狗仅防"永不回调"的环境
+          arm(1500 + text.length * 250 + 9000);
+        };
+        u.onend = fin;
+        u.onerror = () => { arm(0); bail(); };
+        // 反挂起兜底：即使从未有任何回调也保证序列继续（极慢起播场景放宽到 6s）
+        arm(6000);
+        window.speechSynthesis.speak(u);
+      } catch (e) {
+        bail();
+      }
+    } else {
+      playOne(text, done);
+    }
   }
 
   /**

@@ -32,20 +32,37 @@ class WebViewController: UIViewController, WKScriptMessageHandler, AVSpeechSynth
               let body = message.body as? [String: Any],
               let id = body["id"] as? Int,
               let text = body["text"] as? String else { return }
-        synthesizer.stopSpeaking(at: .immediate)   // 打断上一段（迟到的 didCancel 不会误触发新回调）
+        speakNative(id: id, text: text)
+    }
+
+    private func speakNative(id: Int, text: String) {
+        NSLog("[TTS] speak #%d: %@", id, text)
+        synthesizer.stopSpeaking(at: .immediate)
+        // 关键修复：WKWebView 播放 <audio>（有道单词发音）会接管音频会话，
+        // 导致之后的 AVSpeechSynthesizer 静音。每次朗读前必须重新接管会话。
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+        try? AVAudioSession.sharedInstance().setActive(true, options: [])
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = 0.45                      // 放慢，适合儿童跟读
         utterance.postUtteranceDelay = 0.05
         pendingTTSId = id
-        synthesizer.speak(utterance)
+        // 给音频会话切换留一点时间，避免首字被吞
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) { [weak self] in
+            guard let self = self, self.pendingTTSId == id else { return }
+            self.synthesizer.speak(utterance)
+            NSLog("[TTS] started #%d", id)
+        }
     }
 
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        NSLog("[TTS] didFinish (pending=%@)", pendingTTSId.map(String.init) ?? "nil")
         notifyDone()
     }
 
-    // 被新朗读打断时的 didCancel 不回调（pendingTTSId 已被新 id 覆盖）
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        NSLog("[TTS] didCancel (pending=%@)", pendingTTSId.map(String.init) ?? "nil")
+    }
 
     private func notifyDone() {
         guard let id = pendingTTSId else { return }

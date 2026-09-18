@@ -165,3 +165,17 @@ index.html 即可运行，无需构建链路。
 - 复用 profile **9 月 20 日到期**，到期后需重新签名安装（或登录 Xcode 账号长期签名）。
 
 **使用说明**: 日常更新 H5 后执行 `ios/JudyWords/sync-www.sh` → xcodebuild → ios-deploy 三步重装。
+
+## [2026-09-18] 修复 iOS App 例句静音：音频会话重接管
+
+**根因**: WKWebView 播放 <audio>（有道单词发音）会接管 AVAudioSession，
+之后 AVSpeechSynthesizer 全部静音——表现为"单词有声、例句无声"。
+另有 JS 哨兵（1.6s）对原生通道误判降级，造成句子被 stopSpeaking 截断重播。
+
+**修复**:
+- 原生侧：每次 speakNative 前重新 setCategory(.playback) + setActive(true)，
+  0.06s 延迟起播避免会话切换吞首字；补 didCancel/started NSLog 便于诊断。
+- JS 侧：App 内（有原生桥）例句唯一走原生通道，删除哨兵竞态路径；
+  浏览器环境保持本地→有道回退链不变。
+- 桩桥验证：单词有道失败自动回退原生、3 例句原生串行、门控解锁正常；
+  E2E 全过零错误；重装真机 100%。
