@@ -104,3 +104,20 @@ node test/e2e.mjs     # 无头浏览器走完整链路：定级→课程→Boss�
   实际定级区间 AA–H（超过 H 的孩子锚定到 H）。
 - 进度存于 `localStorage`（key `razkid_v1`），清除浏览器数据会丢失进度；
   设置里提供重置与重新定级入口。
+
+## iOS App 打包（ios/JudyWords）
+
+原生 WKWebView 壳（UIKit + 手写 pbxproj），H5 全资源离线打包进 App：
+
+```bash
+./ios/JudyWords/sync-www.sh     # 1. 同步 h5/ → 壳资源
+xcodebuild -project ios/JudyWords/JudyWords.xcodeproj -target JudyWords \
+  -configuration Release -sdk iphoneos SYMROOT=$PWD/ios/JudyWords/build build
+ios-deploy --bundle ios/JudyWords/build/Release-iphoneos/JudyWords.app --no-wifi -n
+```
+
+- 例句朗读：WKWebView 无 speechSynthesis，App 内自动走原生
+  AVSpeechSynthesizer 桥（audio.js 的 nativeTTS 通道，离线可用）
+- 部署目标 iOS 12.0（兼容 iPhone 6S / iOS 13.x）
+- 免费签名 7 天有效：到期后重跑上述命令重装；首次启动需在
+  设置→通用→描述文件与设备管理 中信任开发者

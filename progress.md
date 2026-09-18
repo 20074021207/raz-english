@@ -145,3 +145,23 @@ index.html 即可运行，无需构建链路。
 - pureLocal 抽取为可复用末级通道（onend 主推进 + 无声地板 + 防挂起看门狗）。
 - index.html 全部脚本/样式加 ?v=20260918b 版本参数，击穿 webview 缓存。
 - 双环境探针（有头真实语音/无头无声）各 2 轮 + E2E 19 项断言全过，零 console 错误。
+
+## [2026-09-18] 打包 iOS App 并安装到 iPhone 6S
+
+**环境**: Xcode 14.2 / Swift 5.7.2 / ios-deploy；iPhone 6S 实际系统 **iOS 13.6.1**（N71AP）。
+
+**执行记录**:
+- 新建 `ios/JudyWords/` 原生壳工程（手写 pbxproj，单 target）：UIKit + WKWebView
+  加载打包进 Bundle 的 www/（H5 全资源离线运行）；
+- **原生 TTS 桥**：WKWebView 不支持网页 speechSynthesis，壳内以 AVSpeechSynthesizer
+  （en-US，rate 0.45）注入 nativeTTS message handler；audio.js 优先走原生桥
+  （离线可用），浏览器环境不受影响；hasLocal 判定纳入原生桥；
+  AVAudioSession 设 .playback 保证静音键下可跟读；
+- 签名：钥匙串证书（605097807@qq.com）与既有 profile（com.wordtu.magic，团队
+  BLQ46T76EM）SHA-1 指纹一致，自动签名按 bundle id 复用该 profile，无需账户会话；
+- 两轮排障：① 0xe800007e 设备系统过低 → 部署目标 14.0 降至 12.0（实测设备 13.6.1）；
+  ② 首启需在 设置→通用→描述文件与设备管理 信任开发者；
+- 安装 100% 成功；app 592KB 全离线；进度存 WKWebView localStorage。
+- 复用 profile **9 月 20 日到期**，到期后需重新签名安装（或登录 Xcode 账号长期签名）。
+
+**使用说明**: 日常更新 H5 后执行 `ios/JudyWords/sync-www.sh` → xcodebuild → ios-deploy 三步重装。
