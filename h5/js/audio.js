@@ -34,43 +34,110 @@
   document.addEventListener('touchstart', unlock, { once: true, passive: true });
   document.addEventListener('click', unlock, { once: true });
 
-  function sysSpeak(word, done) {
+  // 当前在播的音频，供打断时统一停掉，杜绝叠音
+  let currentAudio = null;
+
+  function stopCurrent() {
+    if (currentAudio) { try { currentAudio.pause(); } catch (e) { /* ignore */ } currentAudio = null; }
+    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+  }
+
+  /**
+   * 本地语音合成朗读（句子主通道）：
+   * 有道 dictvoice 对整句合成经常返回 500（"returned null audio"，单词则稳定可靠），
+   * 因此句子一律走本地 speechSynthesis——零网络依赖、真机均有英文语音。
+   * onend 为主推进源；估时看门狗兜底；无声环境不瞬间放行，保持序列节奏。
+   */
+  function speakLocal(text, done) {
     try {
       if (!window.speechSynthesis) { if (done) done(); return; }
       window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(word);
+      const u = new SpeechSynthesisUtterance(text);
       u.lang = 'en-US';
-      u.rate = 0.82;
+      u.rate = 0.82;                     // 放慢，适合儿童跟读
       const v = window.speechSynthesis.getVoices().find((x) => /^en(-|_)/i.test(x.lang));
       if (v) u.voice = v;
-      if (done) { u.onend = done; u.onerror = done; }
+      let called = false;
+      let spoke = false;
+      const fin2 = () => { if (!called) { called = true; if (done) done(); } };
+      u.onstart = () => { spoke = true; };
+      u.onend = fin2;
+      // 从未开口就报错（无声环境/无语音包）：不瞬间放行
+      u.onerror = () => { spoke ? fin2() : setTimeout(fin2, 900); };
+      // 兜底：部分环境不回调 onend。估时从宽（慢速朗读 ~11 字符/秒，留 2 倍余量）
+      setTimeout(fin2, 1500 + text.length * 180);
       window.speechSynthesis.speak(u);
-      // 部分环境不回调 onend：按语速兜底
-      if (done) setTimeout(done, 900 + word.length * 120);
     } catch (e) { if (done) done(); }
   }
 
-  /** 播放一条文本（有道 mp3 → 失败回退系统 TTS；watchdog 保证必然回调） */
+  /**
+   * 单词通道：有道 dictvoice（音质好、单词合成稳定）。
+   * 推进只认 Audio 的 ended 事件；看门狗按播放状态动态布防：
+   * 起播前 7s（网络卡死），起播后=真实时长+4s；瞬时错误静默重试一次。
+   */
   function playOne(text, done) {
     let finished = false;
+    let fellBack = false;
+    let started = false;
+    let retried = false;
     let a = null;
+    let watchdog = null;
+    const url = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=1`;
+
+    const disarm = () => { if (watchdog) { clearTimeout(watchdog); watchdog = null; } };
+    const arm = (ms, onFire) => {
+      disarm();
+      watchdog = setTimeout(() => { if (!finished) onFire(); }, ms);
+    };
     const fin = () => {
       if (finished) return;
       finished = true;
-      clearTimeout(watchdog);
-      if (a) { a.onended = null; a.onerror = null; }
+      disarm();
+      if (a) { a.onended = null; a.onerror = null; a.onplaying = null; a.ontimeupdate = null; }
+      if (currentAudio === a) currentAudio = null;
       done();
     };
-    // 总看门狗：正常朗读 900ms+130ms/字符，再加 2.5s 网络余量
-    const watchdog = setTimeout(fin, 900 + text.length * 130 + 2500);
-    try {
-      a = new Audio(`https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=1`);
+    const markStarted = () => {
+      if (started || finished || fellBack) return;
+      started = true;
+      // 已真实出声：按元数据时长兜底（未知则按估），结束后未触发 ended 才会走到
+      const dur = isFinite(a.duration) && a.duration > 0
+        ? a.duration * 1000
+        : 1200 + text.length * 170;
+      arm(dur + 4000, bailToSys);
+    };
+    // 兜底：停掉没播完的音频 → 系统语音接管（或已回退过则直接放行）
+    const bailToSys = () => {
+      if (finished) return;
+      if (fellBack) { fin(); return; }
+      // 从未出声的瞬时错误（网络抖动）：先静默重试一次
+      if (!started && !retried) {
+        retried = true;
+        disarm();
+        if (a) { a.onended = null; a.onerror = null; a.onplaying = null; a.ontimeupdate = null; try { a.pause(); } catch (e) { /* ignore */ } }
+        setTimeout(() => { if (!finished) start(); }, 200);
+        return;
+      }
+      fellBack = true;
+      try { if (a) { a.pause(); } } catch (e) { /* ignore */ }
+      speakLocal(text, fin);
+    };
+    const start = () => {
+      // 起播前兜底：7 秒仍没出声视为网络失败
+      arm(7000, bailToSys);
+      a = new Audio(url);
+      currentAudio = a;
+      a.onplaying = markStarted;
+      a.ontimeupdate = () => { if (a.currentTime > 0.1) markStarted(); };  // 个别环境不触发 playing
       a.onended = fin;
-      a.onerror = () => sysSpeak(text, fin);
+      a.onerror = bailToSys;
       const p = a.play();
-      if (p && p.catch) p.catch(() => sysSpeak(text, fin));
+      if (p && p.catch) p.catch(bailToSys);
+    };
+    try {
+      start();
     } catch (e) {
-      sysSpeak(text, fin);
+      bailToSys();
     }
   }
 
@@ -78,35 +145,44 @@
   let seqId = 0;
 
   NG.audio = {
+    /** 单词/短文本：有道发音（失败自动回退本地语音） */
     speak(word) {
       if (!word) return;
       unlock();
-      seqId++; // 单句朗读终止进行中的序列
+      seqId++;              // 终止进行中的序列
+      stopCurrent();        // 停掉在播音频，杜绝叠音
       playOne(word, () => {});
     },
 
     /**
-     * 顺序朗读一串文本（如：单词 → 例句1 → 例句2 → 例句3）
-     * onItem(i) 在每条开始时回调；onDone() 在全部完成或被取消后回调（被取消不回调）
+     * 顺序朗读（学习卡：单词 → 例句1 → 例句2 → 例句3）。
+     * 第 0 项（单词）走有道，其余（句子）走本地语音——有道整句合成不稳定。
+     * onItem(i) 在每条开始时回调；onDone() 在全部完成后回调（被取消不回调）。
      */
     speakSequence(texts, onItem, onDone) {
       unlock();
+      stopCurrent();
       const id = ++seqId;
       let i = 0;
       const step = () => {
         if (id !== seqId) return;             // 已被后续朗读取代
         if (i >= texts.length) { if (onDone) onDone(); return; }
         const idx = i;
-        playOne(texts[i++], () => {
+        const play = idx === 0 ? playOne : speakLocal;
+        play(texts[i++], () => {
           if (id !== seqId) return;
-          setTimeout(step, 280);              // 句间停顿
+          setTimeout(step, 320);              // 句间停顿
         });
         if (onItem) onItem(idx);
       };
       step();
     },
 
-    cancelSequence() { seqId++; },
+    /** 打断序列/单句：停止在播音频与本地语音队列 */
+    cancelSequence() {
+      seqId++;
+      stopCurrent();
+    },
   };
 
   /* ---------------- 合成音效（WebAudio，零素材） ---------------- */

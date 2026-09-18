@@ -181,8 +181,9 @@
 
       const texts = [word, ...sents.map((s) => s.en)];
       // 单词看门狗：网络卡死也保证按钮可点；总看门狗兜底清高亮
+      // （按新音频引擎最坏耗时估算：起播兜底 8.5s + 慢速估读 + 句间停顿，正常路径由 onDone 驱动）
       setTimeout(unlockBtn, 900 + word.length * 130 + 2500);
-      setTimeout(finishAll, texts.reduce((a, t) => a + 900 + t.length * 130 + 280, 0) + 5000);
+      setTimeout(finishAll, texts.reduce((a, t) => a + 8500 + t.length * 180 + 280, 0) + 6000);
 
       NG.audio.speakSequence(texts, (idx) => {
         if (stamp !== this.gateStamp) return;
