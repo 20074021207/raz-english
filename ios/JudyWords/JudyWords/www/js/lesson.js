@@ -146,10 +146,6 @@
                 </div>`).join('')}
             </div>
           </div>
-          <div class="mascot-row">
-            <div class="m-face">🐰</div>
-            <div class="bubble">先听朱迪读一遍，跟着大声读；点例句可以单独听哦！</div>
-          </div>
           <button class="btn success mt-12" id="ls-next" disabled>🎧 朱迪正在朗读…</button>
         </div>`;
 

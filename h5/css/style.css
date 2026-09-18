@@ -975,3 +975,174 @@ body {
   line-height: 1.7;
 }
 .empty-tip .e { font-size: 40px; display: block; margin-bottom: 6px; }
+
+/* ============================================================
+   小屏紧凑模式（iPhone 6S/7/8 375×667 等 ≤720px 高度设备）
+   目标：主要界面一屏放下，无需滚动
+   ============================================================ */
+@media (max-height: 720px) {
+  .screen { padding: 10px 14px calc(12px + env(safe-area-inset-bottom)); }
+
+  /* 顶栏 */
+  .topbar { margin-bottom: 10px; }
+  .fox-avatar, .mascot-avatar { width: 44px; height: 44px; font-size: 25px; }
+  .topbar-greet .hi { font-size: 15px; }
+  .topbar-greet .sub { font-size: 11px; }
+  .chip { padding: 4px 9px; font-size: 12px; }
+  .icon-btn { width: 38px; height: 38px; font-size: 18px; }
+
+  /* 首页英雄卡 */
+  .hero-card { padding: 14px 16px; border-radius: 20px; }
+  .hero-level { font-size: 24px; }
+  .hero-level small { font-size: 12px; }
+  .hero-mascot { font-size: 36px; }
+  .hero-sub { font-size: 12px; margin-bottom: 9px; }
+  .bar { height: 11px; }
+  .bar-label { font-size: 11px; margin-top: 4px; }
+  .hero-card .btn { padding: 12px 18px; font-size: 15.5px; margin-top: 10px; }
+  .card { padding: 13px 15px; border-radius: 18px; }
+
+  /* 每日目标 */
+  .goal-card { gap: 12px; margin-top: 10px; }
+  .goal-ring { width: 60px; height: 60px; }
+  .goal-ring .pct { width: 47px; height: 47px; }
+  .goal-ring .pct b { font-size: 13px; }
+  .goal-item { font-size: 12.5px; padding: 2px 0; }
+
+  /* Boss 卡 */
+  .boss-card { margin-top: 10px; padding: 13px 14px; border-radius: 20px; gap: 10px; }
+  .boss-emoji { width: 62px; height: 62px; font-size: 38px; border-radius: 16px; }
+  .boss-info .bt { font-size: 15.5px; }
+  .boss-info .bd { font-size: 11.5px; }
+  .boss-go { padding: 10px 14px; font-size: 13.5px; }
+
+  /* 宫格与地图 */
+  .grid-2 { gap: 10px; margin-top: 10px; }
+  .tile-card { padding: 10px; }
+  .tile-card .ico { font-size: 27px; margin-bottom: 3px; }
+  .tile-card .t { font-size: 13.5px; }
+  .tile-card .d { font-size: 11px; }
+  .trail-card { margin-top: 10px; }
+  .trail-title { font-size: 12.5px; margin-bottom: 9px; }
+  .trail .node { width: 30px; height: 30px; font-size: 10.5px; }
+  .trail .link { width: 9px; }
+  .muted.center.mt-12 { margin-top: 8px; font-size: 11.5px; }
+
+  /* 学习卡 */
+  .learn-dots { margin: 2px 0 0; }
+  .learn-dots .dot { width: 7px; height: 7px; }
+  .flashcard { padding: 16px 16px 14px; margin: 8px 0 0; border-radius: 22px; }
+  .flashcard .word { font-size: 34px; }
+  .flashcard .phone { font-size: 13px; margin-top: 3px; }
+  .flashcard .trans { font-size: 15.5px; margin-top: 9px; padding: 7px 11px; border-radius: 11px; }
+  .speak-btn { width: 42px; height: 42px; font-size: 18px; margin-top: 9px; }
+  .sent-list { margin-top: 10px; gap: 6px; }
+  .sent-row { padding: 6px 9px; border-radius: 10px; }
+  .sent-ico { font-size: 13px; }
+  .sent-text { font-size: 13.5px; line-height: 1.45; }
+  .sent-zh { font-size: 11.5px; }
+  .btn { padding: 12px 18px; font-size: 15.5px; border-radius: 15px; }
+  .btn.mt-12 { margin-top: 10px; }
+
+  /* 练习题 */
+  .qtype-badge { margin-bottom: 8px; font-size: 11px; padding: 4px 10px; }
+  .q-prompt { font-size: 13.5px; margin-bottom: 9px; }
+  .q-word-big { font-size: 32px; margin: 2px 0 0; }
+  .q-phone { font-size: 13px; margin-bottom: 7px; }
+  .q-trans-target { font-size: 19px; margin: 5px 0 3px; }
+  .opts { gap: 8px; margin-top: 6px; }
+  .opt { padding: 11px 13px; font-size: 14.5px; border-radius: 14px; }
+  .opt.word-opt { font-size: 17.5px; }
+  .speak-btn.big { width: 84px; height: 84px; font-size: 37px; border-radius: 26px; }
+  .listen-zone { gap: 4px; margin: 6px 0 2px; }
+  .cloze-sentence { font-size: 16.5px; margin: 7px 0 2px; }
+  .cloze-hint { font-size: 12px; margin: 3px 0 5px; }
+  .slots { gap: 5px; min-height: 46px; margin: 7px 0; }
+  .slot { width: 36px; height: 43px; font-size: 18px; border-radius: 10px; }
+  .tiles { gap: 6px; margin: 5px 0 2px; }
+  .tile { width: 40px; height: 44px; font-size: 18px; border-radius: 10px; }
+  .listen-reveal { font-size: 13.5px; margin-top: 7px; }
+  .listen-reveal b { font-size: 16.5px; }
+
+  /* 结算与结果页 */
+  .result-hero { padding: 8px 0 2px; }
+  .result-hero .big-emoji { font-size: 56px; }
+  .result-hero h2 { font-size: 21px; }
+  .result-hero .sub { font-size: 13px; }
+  .star-row .st { font-size: 30px; }
+  .star-row { margin: 8px 0; }
+  .stat-row { padding: 7px 2px; font-size: 13px; }
+  .stat-row .v { font-size: 14.5px; }
+  .stat-rows { margin: 6px 0 10px; }
+
+  /* 定级测试 */
+  .placement-head .pf { font-size: 44px; }
+  .placement-head h2 { font-size: 18px; }
+  .placement-head p { font-size: 12px; }
+  .placement-meta { margin: 7px 0; }
+
+  /* Boss 战 */
+  .boss-face { font-size: 46px; margin: 0; }
+  .boss-vs { font-size: 11.5px; }
+  .boss-timer { font-size: 19px; min-width: 58px; }
+  .hud { gap: 9px; }
+  .hud .count { font-size: 12px; }
+
+  /* 词库/徽章 */
+  .navbar .title { font-size: 16.5px; }
+  .badge-cell { padding: 10px 6px; border-radius: 14px; }
+  .badge-cell .bi { font-size: 29px; }
+  .word-row { padding: 9px 12px; }
+
+  /* 吉祥物行（保留的场景压缩） */
+  .mascot-row { margin: 4px 0; gap: 8px; }
+  .mascot-row .m-face { font-size: 34px; }
+  .bubble { padding: 7px 11px; font-size: 12.5px; }
+}
+
+/* 小屏第二梯队压缩：首页收尾行隐藏 + 间距再收紧 */
+@media (max-height: 720px) {
+  .muted.center.mt-12 { display: none; }              /* 页脚等级行：与顶栏信息重复 */
+  .mt-24 { margin-top: 12px !important; }
+  .mt-16 { margin-top: 9px !important; }
+  .mt-12 { margin-top: 8px !important; }
+  .mt-8 { margin-top: 5px !important; }
+  .topbar { margin-bottom: 8px; }
+  .hero-card { padding: 12px 14px; }
+  .hero-card .btn { margin-top: 8px; padding: 11px 16px; font-size: 15px; }
+  .hero-sub { margin-bottom: 6px; }
+  .card { padding: 11px 13px; }
+  .goal-card { gap: 10px; margin-top: 8px; }
+  .goal-ring { width: 54px; height: 54px; }
+  .goal-ring .pct { width: 42px; height: 42px; }
+  .goal-ring .pct b { font-size: 12px; }
+  .goal-item { font-size: 11.5px; }
+  .boss-card { margin-top: 8px; padding: 11px 12px; }
+  .grid-2 { margin-top: 8px; gap: 8px; }
+  .tile-card { padding: 8px 6px; }
+  .tile-card .ico { font-size: 24px; }
+  .trail-card { margin-top: 8px; }
+  .trail-title { margin-bottom: 7px; }
+  .trail .node { width: 27px; height: 27px; font-size: 9.5px; }
+  .trail .link { width: 8px; }
+  .star-row { margin: 6px 0; gap: 6px; }
+  .star-row .st { font-size: 27px; }
+  .stat-row { padding: 6px 2px; font-size: 12.5px; }
+  .stat-row .v { font-size: 14px; }
+  .verdict-emoji { font-size: 62px; }
+  .mascot-row { margin: 2px 0; }
+  .btn.mt-8 { margin-top: 5px !important; }
+}
+
+/* 小屏第三梯队：首页最终微调 */
+@media (max-height: 720px) {
+  .screen { padding-top: 8px; }
+  .hero-card { padding: 10px 13px; }
+  .hero-level { font-size: 22px; }
+  .hero-mascot { font-size: 32px; }
+  .boss-card { padding: 9px 11px; }
+  .card { padding: 9px 12px; }
+  .trail-title { margin-bottom: 5px; }
+  .tile-card { padding: 7px 5px; }
+  .tile-card .ico { font-size: 22px; }
+}
