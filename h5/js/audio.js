@@ -1,9 +1,10 @@
 /**
- * audio.js — 发音（有道 TTS 主通道 + Web Speech API 兜底）与合成音效
+ * audio.js — 发音引擎（有道 TTS 主通道 + Web Speech 兜底）与合成音效
  *
- * 发音 URL 与 app/src/services/pronunciation.ts 同源：
- *   https://dict.youdao.com/dictvoice?audio={word}&type=1（美音）
- * 离线/失败时回退 speechSynthesis，保证任何环境都有声音。
+ * 通道设计（实测结论：有道 dictvoice 单词合成稳定，整句合成经常返回 500）：
+ * - 单词：有道 mp3（ended 事件为主推进源；动态看门狗；瞬时错误静默重试一次）
+ * - 句子：本地 speechSynthesis（起播哨兵 1.6s，没真正开口降级有道）→ 有道 → 节奏地板
+ * - 任何一级失败都明确降级，绝不静默跳句、绝不与在播音频叠音
  */
 (function () {
   let unlocked = false;
@@ -43,14 +44,13 @@
   }
 
   /**
-   * 本地语音合成朗读（句子主通道）：
-   * 有道 dictvoice 对整句合成经常返回 500（"returned null audio"，单词则稳定可靠），
-   * 因此句子一律走本地 speechSynthesis——零网络依赖、真机均有英文语音。
-   * onend 为主推进源；估时看门狗兜底；无声环境不瞬间放行，保持序列节奏。
+   * 纯本地语音合成（最后一级通道，也可作主通道）。
+   * onend 为主推进源；无声报错默认走 900ms 节奏地板（可用 onSilentError 覆盖为降级）；
+   * 超长防挂起看门狗仅当环境连 onend/onerror 都不触发时才生效。
    */
-  function speakLocal(text, done) {
+  function pureLocal(text, done, onSpoke, onSilentError) {
     try {
-      if (!window.speechSynthesis) { if (done) done(); return; }
+      if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { if (done) done(); return; }
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'en-US';
@@ -59,19 +59,64 @@
       if (v) u.voice = v;
       let called = false;
       let spoke = false;
-      const fin2 = () => { if (!called) { called = true; if (done) done(); } };
-      u.onstart = () => { spoke = true; };
+      let hangdog = null;
+      const fin2 = () => {
+        if (called) return;
+        called = true;
+        if (hangdog) clearTimeout(hangdog);
+        if (done) done();
+      };
+      u.onstart = () => { spoke = true; if (onSpoke) onSpoke(); };
       u.onend = fin2;
-      // 从未开口就报错（无声环境/无语音包）：不瞬间放行
-      u.onerror = () => { spoke ? fin2() : setTimeout(fin2, 900); };
-      // 兜底：部分环境不回调 onend。估时从宽（慢速朗读 ~11 字符/秒，留 2 倍余量）
-      setTimeout(fin2, 1500 + text.length * 180);
+      u.onerror = () => {
+        if (spoke) fin2();
+        else if (onSilentError) onSilentError();
+        else setTimeout(fin2, 900);      // 节奏地板：无声环境不瞬间放行
+      };
+      // 防挂起：真实慢速朗读 ~11 字符/秒，留 3 倍余量
+      hangdog = setTimeout(fin2, 3000 + text.length * 300);
       window.speechSynthesis.speak(u);
     } catch (e) { if (done) done(); }
   }
 
   /**
-   * 单词通道：有道 dictvoice（音质好、单词合成稳定）。
+   * 句子通道（多级回退）：
+   *   1) 本地合成，1.6s 起播哨兵——没真正开口（无声环境/被拦截）立即降级；
+   *   2) 有道 dictvoice（整句不稳定但值得一试，含重试与动态看门狗）；
+   *   3) 仍失败 → playOne 内部落到 pureLocal 的 900ms 节奏地板。
+   */
+  function speakSentence(text, done) {
+    const hasLocal = !!(window.speechSynthesis && window.SpeechSynthesisUtterance);
+    if (!hasLocal) return playOne(text, done);
+
+    let owner = 'local';                 // 当前有权推进的通道
+    let sentinel = null;
+    const finish = () => {
+      if (!owner) return;
+      owner = null;
+      if (sentinel) clearTimeout(sentinel);
+      done();
+    };
+    // 起播哨兵：本地迟迟不开口 → 停掉本地队列，交给有道
+    sentinel = setTimeout(() => {
+      if (owner !== 'local') return;
+      owner = 'youdao';
+      try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+      playOne(text, finish);
+    }, 1600);
+    // 本地通道的完成回调必须校验所有权：哨兵已降级后，迟到的本地事件不得抢推进权
+    pureLocal(text, () => { if (owner === 'local') finish(); }, () => {
+      if (owner === 'local' && sentinel) { clearTimeout(sentinel); sentinel = null; }
+    }, () => {
+      if (owner !== 'local') return;     // 已由哨兵降级，忽略迟到的静默错误
+      owner = 'youdao';
+      if (sentinel) clearTimeout(sentinel);
+      playOne(text, finish);
+    });
+  }
+
+  /**
+   * 单词通道：有道 dictvoice mp3。
    * 推进只认 Audio 的 ended 事件；看门狗按播放状态动态布防：
    * 起播前 7s（网络卡死），起播后=真实时长+4s；瞬时错误静默重试一次。
    */
@@ -106,7 +151,7 @@
         : 1200 + text.length * 170;
       arm(dur + 4000, bailToSys);
     };
-    // 兜底：停掉没播完的音频 → 系统语音接管（或已回退过则直接放行）
+    // 兜底：停掉没播完的音频 → 本地语音接管（或已回退过则直接放行）
     const bailToSys = () => {
       if (finished) return;
       if (fellBack) { fin(); return; }
@@ -120,7 +165,7 @@
       }
       fellBack = true;
       try { if (a) { a.pause(); } } catch (e) { /* ignore */ }
-      speakLocal(text, fin);
+      pureLocal(text, fin);
     };
     const start = () => {
       // 起播前兜底：7 秒仍没出声视为网络失败
@@ -156,7 +201,7 @@
 
     /**
      * 顺序朗读（学习卡：单词 → 例句1 → 例句2 → 例句3）。
-     * 第 0 项（单词）走有道，其余（句子）走本地语音——有道整句合成不稳定。
+     * 第 0 项（单词）走有道，其余走句子多级回退通道。
      * onItem(i) 在每条开始时回调；onDone() 在全部完成后回调（被取消不回调）。
      */
     speakSequence(texts, onItem, onDone) {
@@ -168,7 +213,7 @@
         if (id !== seqId) return;             // 已被后续朗读取代
         if (i >= texts.length) { if (onDone) onDone(); return; }
         const idx = i;
-        const play = idx === 0 ? playOne : speakLocal;
+        const play = idx === 0 ? playOne : speakSentence;
         play(texts[i++], () => {
           if (id !== seqId) return;
           setTimeout(step, 320);              // 句间停顿
