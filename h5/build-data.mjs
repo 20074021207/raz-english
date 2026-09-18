@@ -27,9 +27,8 @@ const LEVELS = ['AA', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'
  * - 丢弃含「人名」的片段（如 "n. (Fox)（英、美）福克斯（人名）"）
  */
 const POS_LEAD = String.raw`(?:n|v|vt|vi|adj|adv|prep|pron|conj|det|art|aux|num|abbr|interj|int)\.\s*`;
-const POS_LEAD_RE = new RegExp(`^${POS_LEAD}`, 'i');
+const POS_HEAD_RE = new RegExp(`^${POS_LEAD}`, 'i');   // 首词性标注：剥除与词性识别共用
 const POS_MID_RE = new RegExp(String.raw`\s(?:n|v|vt|vi|adj|adv|prep|pron|conj|det|art|aux|num|abbr|interj|int)\.`, 'i');
-const POS_HEAD_RE = new RegExp(`^${POS_LEAD}`, 'i');
 
 /** 提取首义项词性（供例句引擎消费）：n/v/vt/vi/adj/adv/num/...，无法识别返回 '' */
 function posOf(trans) {
@@ -45,7 +44,7 @@ function cleanTrans(trans) {
   const picked = [];
   for (let p of parts) {
     if (/人名/.test(p)) continue;
-    p = p.replace(POS_LEAD_RE, '');
+    p = p.replace(POS_HEAD_RE, '');
     p = p.replace(/\[.*?\]\s*/g, '');          // 学科标签 [脊椎]
     p = p.replace(/（[^）]*）/g, '').replace(/\([^)]*\)/g, ''); // 括注
     p = p.replace(/\s*[，,]\s*$/, '').trim();
@@ -59,23 +58,23 @@ function cleanTrans(trans) {
   return picked.join('；');
 }
 
-  const words = {};
-  let total = 0;
+const words = {};
+let total = 0;
 
-  for (const level of LEVELS) {
-    const raw = JSON.parse(readFileSync(join(SRC_DIR, `raz-${level}.json`), 'utf8'));
-    const seen = new Set();
-    const rows = [];
-    for (const w of raw) {
-      if (!w.name || seen.has(w.name)) continue;
-      seen.add(w.name);
-      rows.push([w.name, cleanTrans(w.trans), w.usphone || '', posOf(w.trans)]);
-    }
-    words[level] = rows;
-    total += rows.length;
-    const empty = rows.filter((r) => !r[1]).length;
-    console.log(`  ${level}: ${rows.length} 词${empty ? ` (释义缺失 ${empty})` : ''}`);
+for (const level of LEVELS) {
+  const raw = JSON.parse(readFileSync(join(SRC_DIR, `raz-${level}.json`), 'utf8'));
+  const seen = new Set();
+  const rows = [];
+  for (const w of raw) {
+    if (!w.name || seen.has(w.name)) continue;
+    seen.add(w.name);
+    rows.push([w.name, cleanTrans(w.trans), w.usphone || '', posOf(w.trans)]);
   }
+  words[level] = rows;
+  total += rows.length;
+  const empty = rows.filter((r) => !r[1]).length;
+  console.log(`  ${level}: ${rows.length} 词${empty ? ` (释义缺失 ${empty})` : ''}`);
+}
 
 mkdirSync(OUT_DIR, { recursive: true });
 const payload = `window.RAZ_DATA=${JSON.stringify({

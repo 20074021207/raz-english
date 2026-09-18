@@ -2,8 +2,9 @@
  * boss.js — 晋级 Boss 战（Diagnostic Sprint）
  *
  * 参数完全对齐 docs/course_generator_arch.md §1.3 与 app/src/app/raz-boss.tsx：
- *   15 题（70% 下一级新词 + 30% 本级巩固）· 全局 120 秒 · 正确率 ≥ 85% 晋级 ·
- *   未通过 48h 冷却 · sprint_score = 正确率 × (0.7 + 0.3 × 速度系数)
+ *   15 题（70% 下一级新词 + 30% 本级已学词巩固）· 全局 120 秒 · 正确率 ≥ 85% 晋级 ·
+ *   未通过 48h 冷却（中途刷新/退出按弃战同样计冷却）·
+ *   sprint_score = 正确率 × (0.7 + 0.3 × 速度系数)
  */
 (function () {
   const util = NG.util;
@@ -92,21 +93,20 @@
       const cur = S.s.level;
       const nNew = Math.ceil(C.BOSS_QUESTIONS * 0.7);
       const nOld = C.BOSS_QUESTIONS - nNew;
-      const used = new Set();
-      const words = [
-        ...D.sample(next, nNew, used),
-        ...D.sample(cur, nOld, used),
-      ];
-      const pool = util.shuffle(words);
+      const newWords = D.sample(next, nNew);
+      // 巩固题只考本级「学过」的词（以学习记录 st.l 为准，与 masteredInLevel 口径一致；
+      // 解锁战斗时本级必有 ≥30 个已掌握，正常足够；极端情况退回全级抽样）
+      const learned = Object.keys(S.s.words).filter((w) => S.s.words[w].l === cur);
+      const oldWords = learned.length >= nOld ? util.sample(learned, nOld) : D.sample(cur, nOld);
+      const pool = util.shuffle([...newWords, ...oldWords]);
       const spellable = (w) => /^[a-z]{3,8}$/.test(w);
 
       return pool.map((w, idx) => {
-        const info = D.lookup(w);
         const t = idx % 3;
-        let type = 'translation';
+        let type = 'en2cn';
         if (t === 1) type = 'listen';
         if (t === 2 && spellable(w)) type = 'spell';
-        return { word: w, lv: info.l, type };
+        return { word: w, lv: D.lookup(w).l, type };
       });
     },
 
@@ -119,6 +119,7 @@
       this.lastTickSec = C.BOSS_TIME_S;
       this.next = next;
       this.phase = 'battle';
+      S.startBossAttempt();   // 登记战斗：中途刷新/退出将在下次启动按弃战计冷却
 
       this.timer = setInterval(() => {
         this.timeLeft = Math.max(0, this.timeLeft - 0.1);
@@ -140,49 +141,15 @@
     },
 
     renderQuestion(root) {
+      if (this.phase !== 'battle') return;   // 计时器已结算（超时），忽略挂起的推进回调
       const q = this.queue[this.qi];
       if (!q) return this.finish(root);
       const info = D.lookup(q.word);
       const total = this.queue.length;
 
-      let body = '';
-      if (q.type === 'translation') {
-        const options = util.shuffle([info.t, ...D.distractorTrans(q.lv, q.word, 3)]);
-        q._options = options; q._answer = info.t;
-        body = `
-          <span class="qtype-badge">📖 词义选择</span>
-          <div class="q-word-big">${util.esc(q.word)}</div>
-          <div class="q-phone">/${util.esc(info.p)}/</div>
-          <div class="opts" id="opts">${options.map((o, i) => `<button class="opt" data-i="${i}">${util.esc(o)}</button>`).join('')}</div>`;
-      } else if (q.type === 'listen') {
-        const options = util.shuffle([q.word, ...D.distractorWords(q.lv, q.word, 3)]);
-        q._options = options; q._answer = q.word;
-        body = `
-          <span class="qtype-badge">🎧 听音辨词</span>
-          <div class="q-prompt">听一听，选出你听到的单词</div>
-          <div class="listen-zone"><button class="speak-btn big" id="q-replay">🔊</button></div>
-          <div class="opts" id="opts">${options.map((o, i) => `<button class="opt word-opt" data-i="${i}">${util.esc(o)}</button>`).join('')}</div>
-          <div class="listen-reveal" id="listen-reveal"></div>`;
-      } else {
-        const letters = q.word.split('');
-        const extra = Math.max(2, Math.floor(letters.length * 0.4));
-        const alpha = 'abcdefghijklmnopqrstuvwxyz';
-        const set = new Set(letters);
-        const pads = [];
-        while (pads.length < extra) {
-          const ch = alpha[Math.floor(Math.random() * 26)];
-          if (!set.has(ch)) { pads.push(ch); set.add(ch); }
-        }
-        q._tiles = util.shuffle([...letters, ...pads]);
-        q._picked = []; q._pickedIdx = [];
-        body = `
-          <span class="qtype-badge">🧩 碎片组装</span>
-          <div class="q-prompt">拼出这个单词！</div>
-          <div class="q-trans-target">${util.esc(info.t)}</div>
-          <div class="listen-zone"><button class="speak-btn" id="q-replay">🔊</button></div>
-          <div class="slots" id="slots">${letters.map(() => '<div class="slot"></div>').join('')}</div>
-          <div class="tiles" id="tiles">${q._tiles.map((ch, i) => `<button class="tile" data-i="${i}">${ch}</button>`).join('')}</div>`;
-      }
+      const body = q.type === 'spell'
+        ? NG.questions.spellBody(q, info, {})
+        : NG.questions.choiceBody(q, info, {});
 
       root.innerHTML = `
         <div class="screen dark">
@@ -210,61 +177,11 @@
       };
 
       if (q.type === 'spell') {
-        const slotsEl = root.querySelector('#slots');
-        const tilesEl = root.querySelector('#tiles');
-        let locked = false;
-        const sync = () => {
-          slotsEl.querySelectorAll('.slot').forEach((sl, i) => {
-            const ch = q._picked[i];
-            sl.textContent = ch || '';
-            sl.classList.toggle('filled', !!ch);
-          });
-          const used = new Set(q._pickedIdx);
-          tilesEl.querySelectorAll('.tile').forEach((t, i) => t.classList.toggle('used', used.has(i)));
-        };
-        tilesEl.addEventListener('click', (e) => {
-          const t = e.target.closest('.tile');
-          if (!t || locked || t.classList.contains('used')) return;
-          q._picked.push(q._tiles[+t.dataset.i]);
-          q._pickedIdx.push(+t.dataset.i);
-          NG.sfx.tap();
-          sync();
-          if (q._picked.length === q.word.length) {
-            locked = true;
-            const ok = q._picked.join('') === q.word;
-            if (!ok) slotsEl.querySelectorAll('.slot').forEach((sl, i) => {
-              sl.textContent = q.word[i];
-              sl.classList.add('reveal');
-            });
-            advance(ok);
-          }
-        });
-        root.querySelector('#q-replay').addEventListener('click', () => NG.audio.speak(q.word));
+        NG.questions.bindSpell(root, q, advance);
         setTimeout(() => NG.audio.speak(q.word), 300);
       } else {
-        let answered = false;
-        root.querySelector('#q-replay')?.addEventListener('click', () => NG.audio.speak(q.word));
+        NG.questions.bindChoice(root, q, info, advance);
         if (q.type === 'listen') setTimeout(() => NG.audio.speak(q.word), 300);
-        root.querySelectorAll('#opts .opt').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            if (answered) return;
-            answered = true;
-            const ok = q._options[+btn.dataset.i] === q._answer;
-            root.querySelectorAll('#opts .opt').forEach((b) => {
-              if (b.textContent.trim() === q._answer) b.classList.add('correct');
-              else if (b === btn && !ok) b.classList.add('wrong');
-              else b.classList.add('dim');
-              b.disabled = true;
-            });
-            if (ok) NG.audio.speak(q.word);
-            // 听音辨词：作答后显示单词 + 释义（音→义联结）
-            if (q.type === 'listen') {
-              const rev = root.querySelector('#listen-reveal');
-              if (rev) rev.innerHTML = `<b>${util.esc(q.word)}</b><span class="rev-phone">/${util.esc(info.p)}/</span><span class="rev-trans">${util.esc(info.t)}</span>`;
-            }
-            advance(ok);
-          });
-        });
       }
     },
 
@@ -272,6 +189,7 @@
       if (this.phase !== 'battle') return;
       this.phase = 'verdict';
       clearInterval(this.timer);
+      S.endBossAttempt();
 
       const total = this.queue.length;
       const accuracy = this.score / total;
@@ -303,7 +221,7 @@
             <div class="stat-row"><span class="k">正确率</span><span class="v ${passed ? 'em' : 'rd'}">${Math.round(accuracy * 100)}%（${this.score}/${total}）</span></div>
             <div class="stat-row"><span class="k">用时</span><span class="v">${Math.round(elapsed)} 秒</span></div>
             <div class="stat-row"><span class="k">Sprint Score</span><span class="v">${sprintScore}</span></div>
-            <div class="stat-row"><span class="k">级别</span><span class="v">${passed ? `${S.s.level === next ? next : next} 级已解锁 🎉` : '保持当前级别'}</span></div>
+            <div class="stat-row"><span class="k">级别</span><span class="v">${passed ? `${next} 级已解锁 🎉` : '保持当前级别'}</span></div>
           </div>
           <button class="btn ${passed ? 'success' : 'warn'} mt-16" data-nav="home">🗺️ 返回冒险地图</button>
           ${passed ? '' : '<button class="btn ghost mt-8" data-nav="lesson">▶ 去复习薄弱词</button>'}

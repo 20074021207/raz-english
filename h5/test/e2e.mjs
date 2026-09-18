@@ -1,12 +1,22 @@
 /**
  * E2E 冒烟测试：定级 → 学习课 → Boss 战 → 各屏幕
- * 运行: node test/e2e.mjs （需 http://127.0.0.1:8931 服务与系统 Chrome）
+ * 运行: node test/e2e.mjs
+ * 前置: npm i -D playwright（仓库任意层级），浏览器可用系统 Chrome（channel: 'chrome'）
+ *       或执行 npx playwright install chromium 后自动回退
  */
-import { chromium } from '/Users/cpp/.npm/_npx/e41f203b7505f1fb/node_modules/playwright/index.mjs';
+import { fileURLToPath } from 'node:url';
 import { mkdirSync } from 'node:fs';
 
-const BASE = 'http://127.0.0.1:8931';
-const SHOTS = new URL('./shots/', import.meta.url).pathname;
+let chromium;
+try {
+  ({ chromium } = await import('playwright'));
+} catch {
+  console.error('未找到 playwright，请先安装：npm i -D playwright');
+  process.exit(1);
+}
+
+const BASE = process.env.E2E_BASE || 'http://127.0.0.1:8931';
+const SHOTS = fileURLToPath(new URL('./shots/', import.meta.url));
 mkdirSync(SHOTS, { recursive: true });
 
 const errors = [];
@@ -16,7 +26,8 @@ const ok = (name, pass, extra = '') => {
   if (!pass) process.exitCode = 1;
 };
 
-const browser = await chromium.launch({ channel: 'chrome', headless: true });
+const browser = await chromium.launch({ channel: 'chrome', headless: true })
+  .catch(() => chromium.launch({ headless: true }));   // 无系统 Chrome 时回退内置 chromium
 const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
 page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 page.on('console', (m) => { if (m.type() === 'error') errors.push('console: ' + m.text()); });
@@ -82,9 +93,10 @@ try {
 
   /* ---------- 2. 学习课：学习卡（例句 + 朗读门控）+ 练习 ---------- */
   await page.click('[data-nav="lesson"]');
-  await sleep(500);
+  await page.waitForSelector('.sent-row', { timeout: 3000 });
   const learnCount = await page.evaluate(() => NG.screens.lesson.session.learn.length);
-  // 首张学习卡：3 条双语例句 + 目标词高亮 + "下一个"按钮初始禁用（朗读门控）
+  // 首张学习卡：3 条双语例句 + 目标词高亮 + 朗读门控挂钩
+  // （门控为两段式：单词读完即解锁按钮，因此不在此断言 disabled，避免与时序竞态）
   const sentRows = await page.locator('.sent-row').count();
   const cardOk = await page.evaluate(() => {
     const texts = [...document.querySelectorAll('.sent-text')];
@@ -92,9 +104,9 @@ try {
     return texts.length === 3 && zhs.length === 3 &&
       texts.every((r) => r.querySelector('.hl')) &&
       zhs.every((r) => r.textContent.trim().length >= 3) &&
-      document.getElementById('ls-next').disabled === true;
+      typeof NG.screens.lesson._releaseGate === 'function';
   });
-  ok('学习卡：3 条双语例句 + 朗读门控（按钮禁用）', sentRows === 3 && cardOk, `${sentRows} 条`);
+  ok('学习卡：3 条双语例句 + 朗读门控挂钩', sentRows === 3 && cardOk, `${sentRows} 条`);
   await shot('10-learn-card-sentences');
 
   for (let i = 0; i < 40 && (await isVis('#ls-next')); i++) {

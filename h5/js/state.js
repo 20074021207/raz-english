@@ -22,6 +22,7 @@
     daily: { day: null, newWords: 0, reviews: 0, rewarded: false },
     words: {},                 // word -> { l, m, nc, ne, next, last }
     bossCooldownUntil: 0,
+    bossAttemptAt: 0,          // 进行中的 Boss 战开始时间（防刷新逃逸，见 load()）
     badges: {},                // id -> timestamp
     totals: { lessons: 0, bossWins: 0, answers: 0, correct: 0 },
     settings: { sound: true },
@@ -40,6 +41,13 @@
     const today = NG.util.todayStr();
     if (s.daily.day !== today) {
       s.daily = { day: today, newWords: 0, reviews: 0, rewarded: false };
+    }
+    // 上场 Boss 战未收场（中途刷新/关闭页面）→ 按弃战处理，补记冷却，
+    // 防止"打不过就刷新"绕过 48 小时重试规则
+    if (s.bossAttemptAt) {
+      s.bossCooldownUntil = Math.max(s.bossCooldownUntil, s.bossAttemptAt + NG.CONFIG.BOSS_COOLDOWN_H * 3600000);
+      s.bossAttemptAt = 0;
+      save();
     }
     return s;
   }
@@ -114,7 +122,6 @@
     },
 
     foxLevel() { return Math.floor(s.xp / 200) + 1; },
-    foxXpPct() { return (s.xp % 200) / 2; },
 
     bossRemaining() {
       return Math.max(0, NG.CONFIG.BOSS_TARGET_WORDS - NG.state.masteredInLevel(s.level));
@@ -197,6 +204,17 @@
     },
 
     /* ---------------- Boss 战 ---------------- */
+    /** 战斗开始登记：正常收场由 endBossAttempt 清除，中途逃逸则由 load() 补记冷却 */
+    startBossAttempt() {
+      s.bossAttemptAt = Date.now();
+      save();
+    },
+
+    endBossAttempt() {
+      s.bossAttemptAt = 0;
+      save();
+    },
+
     startBossCooldown() {
       s.bossCooldownUntil = Date.now() + NG.CONFIG.BOSS_COOLDOWN_H * 3600000;
       save();

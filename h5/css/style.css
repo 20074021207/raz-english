@@ -229,7 +229,6 @@ body {
   overflow: hidden;
   position: relative;
 }
-.bar.on-light { background: #e6eef3; }
 .bar .fill {
   height: 100%;
   border-radius: 999px;
@@ -304,18 +303,6 @@ body {
 .tile-card .ico { font-size: 34px; display: block; margin-bottom: 6px; }
 .tile-card .t { font-size: 15px; font-weight: 800; color: var(--ink); }
 .tile-card .d { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.tile-card .badge {
-  position: absolute;
-  top: -6px; right: -4px;
-  background: var(--rose);
-  color: #fff;
-  min-width: 22px; height: 22px;
-  border-radius: 999px;
-  font-size: 12px; font-weight: 800;
-  display: flex; align-items: center; justify-content: center;
-  border: 2px solid #fff;
-  padding: 0 5px;
-}
 
 /* ---------- Boss 卡 ---------- */
 .boss-card {
@@ -840,7 +827,7 @@ body {
   background: #fff;
   box-shadow: var(--shadow);
   padding: 11px 14px;
-  font-size: 14px;
+  font-size: 16px;  /* ≥16px，避免 iOS 聚焦时自动放大 */
   font-family: inherit;
   outline: none;
   -webkit-user-select: text;
@@ -973,8 +960,6 @@ body {
 }
 
 /* ---------- 小工具 ---------- */
-.row { display: flex; align-items: center; gap: 10px; }
-.grow { flex: 1; }
 .mt-8 { margin-top: 8px; }
 .mt-12 { margin-top: 12px; }
 .mt-16 { margin-top: 16px; }
@@ -990,6 +975,3 @@ body {
   line-height: 1.7;
 }
 .empty-tip .e { font-size: 40px; display: block; margin-bottom: 6px; }
-
-/* 关卡间过渡的呼吸提示 */
-.breath { animation: bob 3s ease-in-out infinite; }

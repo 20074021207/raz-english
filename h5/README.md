@@ -29,11 +29,12 @@ h5/
 │   ├── sentences.js    # 词性感知例句引擎（每词 3 条确定性例句，DJB2 轮换）
 │   ├── state.js        # 掌握度阶梯 / SRS / 每日目标 / 打卡 / 徽章 / Boss 门槛
 │   ├── ui.js           # 共享组件 + Confetti/Toast 特效
+│   ├── questions.js    # 共享出题组件（题干渲染 + 作答交互，课程/Boss 复用）
 │   ├── screens.js      # 首页 / 定级测试 / 词库 / 徽章墙
 │   ├── lesson.js       # 课程引擎（学习卡+例句 → 5 题型练习 → 错题重排队 → 结算）
 │   ├── boss.js         # 晋级 Boss 战（Diagnostic Sprint）
 │   └── app.js          # 极简路由 + 启动
-├── data/raz-data.js    # 构建产物：AA–L 共 5,615 词（内嵌，163KB）
+├── data/raz-data.js    # 构建产物：AA–L 共 5,615 词（内嵌，约 274KB）
 ├── build-data.mjs      # 词库压缩构建脚本（node build-data.mjs）
 └── test/e2e.mjs        # Playwright 冒烟测试（需系统 Chrome）
 ```
@@ -42,7 +43,7 @@ h5/
 
 | 机制 | 来源 | H5 实现 |
 |---|---|---|
-| Boss 战参数 | `docs/course_generator_arch.md` §1.3 | 15 题 / 120 秒 / ≥85% 晋级 / 48h 冷却，70% 下一级 + 30% 本级，sprint_score 同 `raz-boss.tsx` |
+| Boss 战参数 | `docs/course_generator_arch.md` §1.3 | 15 题 / 120 秒 / ≥85% 晋级 / 48h 冷却（中途刷新按弃战同样计冷却），70% 下一级新词 + 30% 本级已学词，sprint_score 同 `raz-boss.tsx` |
 | 定级测试 | 同上 §5 | 自适应探针（起点 D，每轮 5 词，最多 3 轮 ≤15 题） |
 | 间隔重复 | `app/src/services/spaced-repetition.ts` | 掌握度 0-5，间隔 10min/1/3/7/14/30 天，快答 +2 慢对 +0 答错 -1 |
 | 错题生命周期 | 同上 §4 Dumb Player | 答错以新题型压回队尾，清空队列才结算 |
@@ -77,25 +78,29 @@ node build-data.mjs   # 从 ../assets/dicts/raz/ 重新生成 data/raz-data.js
 
 例句的四个消费场景：
 
-1. **学习卡**：目标词高亮 + 中文翻译；「单词 → 例句 1→2→3」**顺序自动朗读**，
-   全部读完后【记住了，下一个】才解锁（speakSequence 事件链 + 总看门狗兜底，
-   网络卡死也能解锁；手动点读视为完成直接解锁）；
+1. **学习卡**：目标词高亮 + 中文翻译；「单词 → 例句 1→2→3」顺序自动朗读，
+   **单词读完即解锁**【记住了，下一个】，例句继续流式读完强化语境
+   （speakSequence 事件链 + 双看门狗兜底，网络卡死也能解锁；
+   手动点读视为完成直接解锁）；
 2. **例句填空（cloze）题型**：句中挖空选词，答对后自动朗读完整句子；
 3. **听音辨词**：作答后显示单词 + 音标 + 中文含义（音→义联结）；
-4. 错题重排队时优先换 cloze 巩固情境。
+4. 错题重排队时自动更换题型（排除刚失败的题型）重新作答。
 
 拼写题字母与槽位均为小写，与词库形态一致。
 
 ## 测试
 
 ```bash
-# 需先启动静态服务（任意端口，改脚本里的 BASE）
+# 1) 安装测试依赖（仓库任意层级）：npm i -D playwright
+#    有系统 Chrome 可直接跑；否则先 npx playwright install chromium
+# 2) 启动静态服务（任意端口，可用 E2E_BASE 覆盖）
 python3 -m http.server 8931 &
-node test/e2e.mjs     # 无头 Chrome 走完整链路：定级→课程→Boss→冷却→复习
+node test/e2e.mjs     # 无头浏览器走完整链路：定级→课程→Boss→冷却→复习
 ```
 
 ## 已知边界
 
-- 词库覆盖 AA–L 13 级（5,615 词）。定级结果高于 L 时锚定到 L（四年级学生远达不到）。
+- 词库覆盖 AA–L 13 级（5,615 词）。定级自适应探针从 D 级出发、最多 3 轮，
+  实际定级区间 AA–H（超过 H 的孩子锚定到 H）。
 - 进度存于 `localStorage`（key `razkid_v1`），清除浏览器数据会丢失进度；
   设置里提供重置与重新定级入口。

@@ -112,7 +112,7 @@
         </div>`;
     },
 
-    /* ---------------- 阶段一：学习卡（顺序朗读门控） ---------------- */
+    /* ---------------- 阶段一：学习卡（朗读门控：单词读完解锁，例句续播） ---------------- */
     renderLearn(root, i) {
       const sess = this.session;
       const word = sess.learn[i];
@@ -148,44 +148,56 @@
           </div>
           <div class="mascot-row">
             <div class="m-face">🐰</div>
-            <div class="bubble">先听朱迪读一遍，再跟着大声读吧！</div>
+            <div class="bubble">先听朱迪读一遍，跟着大声读；点例句可以单独听哦！</div>
           </div>
           <button class="btn success mt-12" id="ls-next" disabled>🎧 朱迪正在朗读…</button>
         </div>`;
 
-      // ── 朗读门控：单词 → 例句1 → 2 → 3 顺序朗读完毕，才解锁"下一个" ──
+      // ── 朗读门控（两段式）：单词读完即解锁「下一个」（学习主目标达成），
+      //    例句继续自动朗读强化语境；点例句/喇叭可打断并单独听（跳过门控） ──
       this.gateStamp = (this.gateStamp || 0) + 1;
       const stamp = this.gateStamp;
       const btn = root.querySelector('#ls-next');
       const rows = [...root.querySelectorAll('.sent-row')];
       const wordEl = root.querySelector('#ls-word');
-      let released = false;
-      const release = () => {
-        if (released || stamp !== this.gateStamp) return;
-        released = true;
-        rows.forEach((r) => r.classList.remove('speaking'));
-        if (wordEl) wordEl.classList.remove('speaking');
+      let btnUnlocked = false;
+      let playedAll = false;
+      const unlockBtn = () => {
+        if (btnUnlocked || stamp !== this.gateStamp) return;
+        btnUnlocked = true;
         btn.disabled = false;
         btn.textContent = nextLabel;
       };
-      this._releaseGate = release;   // 供 E2E 与看门狗使用
+      const clearHighlights = () => {
+        rows.forEach((r) => r.classList.remove('speaking'));
+        if (wordEl) wordEl.classList.remove('speaking');
+      };
+      const finishAll = () => {
+        if (playedAll || stamp !== this.gateStamp) return;
+        playedAll = true;
+        clearHighlights();
+      };
+      this._releaseGate = () => { unlockBtn(); finishAll(); };   // 供 E2E 使用
 
       const texts = [word, ...sents.map((s) => s.en)];
-      // 总看门狗：即使网络卡死也保证按钮最终可点
-      setTimeout(release, texts.reduce((a, t) => a + 900 + t.length * 130 + 280, 0) + 5000);
+      // 单词看门狗：网络卡死也保证按钮可点；总看门狗兜底清高亮
+      setTimeout(unlockBtn, 900 + word.length * 130 + 2500);
+      setTimeout(finishAll, texts.reduce((a, t) => a + 900 + t.length * 130 + 280, 0) + 5000);
 
       NG.audio.speakSequence(texts, (idx) => {
         if (stamp !== this.gateStamp) return;
         rows.forEach((r) => r.classList.remove('speaking'));
         if (wordEl) wordEl.classList.toggle('speaking', idx === 0);
         if (idx > 0 && rows[idx - 1]) rows[idx - 1].classList.add('speaking');
-      }, release);
+        if (idx === 1) unlockBtn();          // 例句 1 开始 = 单词已读完
+      }, finishAll);
 
       // 手动点击 → 打断序列并直接解锁（孩子主动点读视为完成）
       const manualUnlock = (speakText) => {
         NG.audio.cancelSequence();
         NG.audio.speak(speakText);
-        release();
+        unlockBtn();
+        clearHighlights();
       };
       root.querySelector('#ls-speak').addEventListener('click', () => manualUnlock(word));
       rows.forEach((row) => row.addEventListener('click', () => manualUnlock(sents[+row.dataset.s].en)));
@@ -219,74 +231,9 @@
       const info = D.lookup(q.word);
       const qStart = performance.now();
 
-      const optsHtml = (options, isWord) => options.map((o, i) =>
-        `<button class="opt ${isWord ? 'word-opt' : ''}" data-i="${i}">${util.esc(o)}</button>`).join('');
-
-      let body = '';
-      if (q.type === 'en2cn') {
-        const options = util.shuffle([info.t, ...D.distractorTrans(info.l, q.word, 3)]);
-        body = `
-          <span class="qtype-badge">📖 词义选择</span>
-          <div class="q-word-big speakable">${util.esc(q.word)}</div>
-          <div class="q-phone">/${util.esc(info.p)}/ · 点击单词听发音</div>
-          <div class="opts" id="opts">${optsHtml(options, false)}</div>`;
-        q._options = options; q._answer = info.t;
-      } else if (q.type === 'cn2en') {
-        const options = util.shuffle([q.word, ...D.distractorWords(info.l, q.word, 3)]);
-        body = `
-          <span class="qtype-badge">🔤 反向选择</span>
-          <div class="q-prompt">哪个单词是这个意思？</div>
-          <div class="q-trans-target">${util.esc(info.t)}</div>
-          <div class="opts" id="opts">${optsHtml(options, true)}</div>`;
-        q._options = options; q._answer = q.word;
-      } else if (q.type === 'listen') {
-        const options = util.shuffle([q.word, ...D.distractorWords(info.l, q.word, 3)]);
-        body = `
-          <span class="qtype-badge">🎧 听音辨词</span>
-          <div class="q-prompt">听一听，选出你听到的单词</div>
-          <div class="listen-zone">
-            <button class="speak-btn big" id="q-replay">🔊</button>
-          </div>
-          <div class="opts" id="opts">${optsHtml(options, true)}</div>
-          <div class="listen-reveal" id="listen-reveal"></div>`;
-        q._options = options; q._answer = q.word;
-      } else if (q.type === 'cloze') {
-        const options = util.shuffle([q.word, ...D.distractorWords(info.l, q.word, 3)]);
-        const blanked = util.esc(q.sentence.en).replace(
-          new RegExp(q.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'),
-          '<span class="blank" id="cloze-blank">&nbsp;____&nbsp;</span>'
-        );
-        body = `
-          <span class="qtype-badge">📝 例句填空</span>
-          <div class="q-prompt">选出填入空格的单词</div>
-          <div class="cloze-sentence">${blanked}</div>
-          <div class="cloze-hint">💡 ${util.esc(info.t)}</div>
-          <div class="opts" id="opts">${optsHtml(options, true)}</div>`;
-        q._options = options; q._answer = q.word;
-      } else { // spell
-        const letters = q.word.split('');
-        const extra = Math.max(2, Math.floor(letters.length * 0.4));
-        const alpha = 'abcdefghijklmnopqrstuvwxyz';
-        const set = new Set(letters);
-        const pads = [];
-        while (pads.length < extra) {
-          const ch = alpha[Math.floor(Math.random() * 26)];
-          if (!set.has(ch)) { pads.push(ch); set.add(ch); }
-        }
-        q._tiles = util.shuffle([...letters, ...pads]);
-        q._picked = [];
-        body = `
-          <span class="qtype-badge">🧩 碎片组装</span>
-          <div class="q-prompt">拼出这个单词！</div>
-          <div class="q-trans-target">${util.esc(info.t)}</div>
-          <div class="listen-zone"><button class="speak-btn" id="q-replay">🔊</button></div>
-          <div class="slots" id="slots">${letters.map(() => '<div class="slot"></div>').join('')}</div>
-          <div class="tiles" id="tiles">${q._tiles.map((ch, i) => `<button class="tile" data-i="${i}">${ch}</button>`).join('')}</div>
-          <div class="spell-tools">
-            <button class="btn ghost small" id="sp-undo">⌫ 撤销</button>
-            <button class="btn ghost small" id="sp-clear">清空</button>
-          </div>`;
-      }
+      const body = q.type === 'spell'
+        ? NG.questions.spellBody(q, info, { tools: true })
+        : NG.questions.choiceBody(q, info, { speakableWord: q.type === 'en2cn' });
 
       root.innerHTML = `
         <div class="screen">
@@ -328,95 +275,11 @@
       };
 
       if (q.type === 'spell') {
-        const slotsEl = root.querySelector('#slots');
-        const tilesEl = root.querySelector('#tiles');
-        let locked = false;
-        const sync = () => {
-          slotsEl.querySelectorAll('.slot').forEach((sl, i) => {
-            const ch = q._picked[i];
-            sl.textContent = ch || '';
-            sl.classList.toggle('filled', !!ch);
-          });
-        };
-        const syncUsed = () => {
-          const usedIdx = new Set(q._pickedIdx || []);
-          tilesEl.querySelectorAll('.tile').forEach((t, i) => t.classList.toggle('used', usedIdx.has(i)));
-        };
-        tilesEl.addEventListener('click', (e) => {
-          const t = e.target.closest('.tile');
-          if (!t || locked) return;
-          if (t.classList.contains('used')) return;
-          q._picked = q._picked || [];
-          q._pickedIdx = q._pickedIdx || [];
-          q._picked.push(q._tiles[+t.dataset.i]);
-          q._pickedIdx.push(+t.dataset.i);
-          NG.sfx.tap();
-          sync(); syncUsed();
-          if (q._picked.length === q.word.length) {
-            locked = true;
-            const ok = q._picked.join('') === q.word;
-            if (!ok) {
-              slotsEl.querySelectorAll('.slot').forEach((sl, i) => {
-                sl.textContent = q.word[i];
-                sl.classList.add('reveal');
-              });
-            }
-            done(ok, null);
-          }
-        });
-        root.querySelector('#sp-undo').addEventListener('click', () => {
-          if (locked) return;
-          q._picked.pop(); q._pickedIdx.pop();
-          NG.sfx.tap(); sync(); syncUsed();
-        });
-        root.querySelector('#sp-clear').addEventListener('click', () => {
-          if (locked) return;
-          q._picked = []; q._pickedIdx = [];
-          NG.sfx.tap(); sync(); syncUsed();
-        });
-        root.querySelector('#q-replay').addEventListener('click', () => NG.audio.speak(q.word));
+        NG.questions.bindSpell(root, q, (ok) => done(ok, null), { tools: true });
         setTimeout(() => NG.audio.speak(q.word), 300);
-        sync(); syncUsed();
       } else {
-        const optsEl = root.querySelector('#opts');
-        const clickable = q.type === 'en2cn' ? root.querySelector('.q-word-big') : null;
-        if (clickable) clickable.addEventListener('click', () => NG.audio.speak(q.word));
-        const replay = root.querySelector('#q-replay');
-        if (replay) replay.addEventListener('click', () => { NG.sfx.tap(); NG.audio.speak(q.word); });
-        if (q.type === 'listen') setTimeout(() => NG.audio.speak(q.word), 300);
-        if (q.type === 'en2cn') setTimeout(() => NG.audio.speak(q.word), 300);
-
-        let answered = false;
-        optsEl.querySelectorAll('.opt').forEach((btn) => {
-          btn.addEventListener('click', () => {
-            if (answered) return;
-            answered = true;
-            const chosen = q._options[+btn.dataset.i];
-            const ok = chosen === q._answer;
-            optsEl.querySelectorAll('.opt').forEach((b) => {
-              if (b.textContent.trim() === q._answer) b.classList.add('correct');
-              else if (b === btn && !ok) b.classList.add('wrong');
-              else b.classList.add('dim');
-              b.disabled = true;
-            });
-            // 例句填空：回填空格；答对后朗读完整句子强化情境记忆
-            if (q.type === 'cloze') {
-              const blank = root.querySelector('#cloze-blank');
-              if (blank) { blank.textContent = ok ? ` ${q.word} ` : ` ${q._answer} `; blank.classList.add(ok ? 'filled' : 'reveal'); }
-              if (ok) NG.audio.speak(q.sentence.en);
-            } else if (ok) {
-              NG.audio.speak(q.word);
-            }
-            // 听音辨词：作答后显示单词 + 释义（音→义联结）
-            if (q.type === 'listen') {
-              const rev = root.querySelector('#listen-reveal');
-              if (rev) {
-                rev.innerHTML = `<b>${util.esc(q.word)}</b><span class="rev-phone">/${util.esc(info.p)}/</span><span class="rev-trans">${util.esc(info.t)}</span>`;
-              }
-            }
-            done(ok, btn);
-          });
-        });
+        NG.questions.bindChoice(root, q, info, (ok, btn) => done(ok, btn), { speakableWord: q.type === 'en2cn' });
+        if (q.type === 'listen' || q.type === 'en2cn') setTimeout(() => NG.audio.speak(q.word), 300);
       }
 
       root.querySelector('#q-exit').addEventListener('click', () => this.confirmExit(root));

@@ -50,7 +50,7 @@
 ├── h5/                            # H5 版「朱迪单词」🐰（四年级适配，零依赖纯静态）
 │   ├── index.html                 # 入口（脚本按序加载，双击即可运行）
 │   ├── css/style.css              # 儿童友好移动端设计系统
-│   ├── js/                        # core/audio/data/sentences/state/ui/screens/lesson/boss/app
+│   ├── js/                        # core/audio/data/sentences/state/ui/questions/screens/lesson/boss/app
 │   ├── data/raz-data.js           # 构建产物：AA–L 共 5,615 词内嵌词库（含词性）
 │   ├── build-data.mjs             # 词库压缩 + 儿童释义清洗 + 词性提取脚本
 │   ├── test/e2e.mjs               # Playwright 无头冒烟测试

@@ -6,6 +6,7 @@
   const util = NG.util;
   const S = NG.state;
   const D = NG.data;
+  const C = NG.CONFIG;
   NG.screens = NG.screens || {};
 
   /* ================= 首页 ================= */
@@ -33,7 +34,7 @@
             <div class="boss-emoji">${bossEmoji}</div>
             <div class="boss-info">
               <div class="bt">Boss 战开战啦！</div>
-              <div class="bd">${s.level} → ${D.nextLevel(s.level)} 晋级挑战<br>15 题 · 120 秒 · 答对 13 题晋级</div>
+              <div class="bd">${s.level} → ${D.nextLevel(s.level)} 晋级挑战<br>${C.BOSS_QUESTIONS} 题 · ${C.BOSS_TIME_S} 秒 · 答对 ${Math.ceil(C.BOSS_QUESTIONS * C.BOSS_PASS_RATIO)} 题晋级</div>
             </div>
             <button class="boss-go" data-nav="boss">挑战</button>
           </div>`;
@@ -297,9 +298,9 @@
 
       const renderRows = () => {
         const kw = (root.querySelector('#wl-search').value || '').trim().toLowerCase();
-        const rows = D.allWords(this.curLevel)
-          .filter(([w, t]) => !kw || w.toLowerCase().includes(kw) || (t || '').includes(kw))
-          .slice(0, 120);
+        const matched = D.allWords(this.curLevel)
+          .filter(([w, t]) => !kw || w.toLowerCase().includes(kw) || (t || '').includes(kw));
+        const rows = matched.slice(0, 120);
         const el = root.querySelector('#wl-rows');
         if (!rows.length) {
           el.innerHTML = '<div class="empty-tip"><span class="e">🔍</span>没有找到匹配的单词</div>';
@@ -313,7 +314,8 @@
             <div class="m">${util.esc(t || '—')}</div>
             <div class="mk">${mark}</div>
           </div>`;
-        }).join('');
+        }).join('') +
+          (matched.length > 120 ? '<div class="muted center mt-8">仅显示前 120 个，试试输入更多字母缩小范围</div>' : '');
         el.querySelectorAll('.word-row').forEach((r) =>
           r.addEventListener('click', () => NG.audio.speak(r.dataset.w)));
       };
