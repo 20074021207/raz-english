@@ -136,8 +136,8 @@
           const blank = root.querySelector('#cloze-blank');
           if (blank) { blank.textContent = ok ? ` ${q.word} ` : ` ${q._answer} `; blank.classList.add(ok ? 'filled' : 'reveal'); }
           if (ok) NG.audio.speak(q.sentence.en);
-        } else if (ok) {
-          NG.audio.speak(q.word);
+        } else {
+          NG.audio.speak(q.word);   // 无论对错都朗读单词强化记忆
         }
         // 听音辨词：作答后显示单词 + 释义（音→义联结）
         if (q.type === 'listen') {

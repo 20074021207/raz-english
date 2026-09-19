@@ -1146,3 +1146,7 @@ body {
   .tile-card { padding: 7px 5px; }
   .tile-card .ico { font-size: 22px; }
 }
+
+/* 重新定级入口 */
+.re-place-row { margin-top: 12px; display: flex; justify-content: center; }
+.re-place-row .btn.small { padding: 9px 16px; font-size: 13.5px; border-radius: 12px; }

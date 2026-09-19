@@ -181,7 +181,8 @@
         setTimeout(() => NG.audio.speak(q.word), 300);
       } else {
         NG.questions.bindChoice(root, q, info, advance);
-        if (q.type === 'listen') setTimeout(() => NG.audio.speak(q.word), 300);
+        // Boss 战：所有选择题型出题即读单词
+        if (q.type !== 'cloze') setTimeout(() => NG.audio.speak(q.word), 300);
       }
     },
 

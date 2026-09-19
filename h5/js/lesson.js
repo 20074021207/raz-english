@@ -278,7 +278,8 @@
         setTimeout(() => NG.audio.speak(q.word), 300);
       } else {
         NG.questions.bindChoice(root, q, info, (ok, btn) => done(ok, btn), { speakableWord: q.type === 'en2cn' });
-        if (q.type === 'listen' || q.type === 'en2cn') setTimeout(() => NG.audio.speak(q.word), 300);
+        // 单词测验：所有题型出题即朗读单词（cloze 除外——目标词即答案，不能泄露）
+        if (q.type !== 'cloze') setTimeout(() => NG.audio.speak(q.word), 300);
       }
 
     },
