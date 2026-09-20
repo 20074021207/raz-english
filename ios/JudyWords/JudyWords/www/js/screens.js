@@ -157,10 +157,26 @@
     probeIdx: 0,
 
     render(root) {
-      this.usedWords = new Set();
-      this.history = [];
-      this.probeIdx = NG.CONFIG.PLACEMENT_START_IDX;
-      this.startProbe(root);
+      // 先出引导页：点「开始测验」即产生用户手势，解锁首题的自动朗读（浏览器自动播放策略）
+      root.innerHTML = `
+        <div class="screen" style="justify-content:center">
+          <div class="placement-head">
+            <div class="pf">${NG.ui.judy()}</div>
+            <h2>魔法定级测验</h2>
+            <p>别紧张，这不是考试！<br>朱迪只是想找到最适合你的冒险起点 ✨</p>
+          </div>
+          <div class="mascot-row" style="justify-content:center">
+            <div class="bubble" style="max-width:none">🎧 记得打开声音哦，朱迪会把单词读给你听！</div>
+          </div>
+          <button class="btn success mt-24" id="pf-start">🎧 开始测验</button>
+        </div>`;
+      root.querySelector('#pf-start').addEventListener('click', () => {
+        NG.sfx.tap();
+        this.usedWords = new Set();
+        this.history = [];
+        this.probeIdx = NG.CONFIG.PLACEMENT_START_IDX;
+        this.startProbe(root);
+      });
     },
 
     startProbe(root) {
@@ -201,7 +217,7 @@
           <div class="qzone">
             <span class="qtype-badge">这个单词是什么意思？</span>
             <div class="q-word-big">${NG.questions.labelHtml(q.word)}</div>
-            <div class="q-phone">/${util.esc(D.lookup(q.word).p)}/</div>
+            <div class="q-phone">/${util.esc(D.lookup(q.word).p)}/ · 点击单词听发音</div>
             <div class="opts" id="opts">
               ${options.map((o, i) => `<button class="opt" data-i="${i}">${util.esc(o)}</button>`).join('')}
             </div>
@@ -212,6 +228,9 @@
           </div>
         </div>`;
 
+      // 出题即朗读单词；点击大词可重听（与音节切换并存）
+      setTimeout(() => NG.audio.speak(q.word), 300);
+      root.querySelector('.q-word-big').addEventListener('click', () => NG.audio.speak(q.word));
       // 定级题干单词同样支持 音节拼读 / 原形 点击切换
       NG.questions.bindSyllableToggle(root.querySelector('.q-word-big'), q.word, NG.syllables && NG.syllables.get(q.word));
 

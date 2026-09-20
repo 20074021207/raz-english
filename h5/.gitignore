@@ -1,3 +1,5 @@
 test/shots/
 node_modules/
 .DS_Store
+
+.vercel
