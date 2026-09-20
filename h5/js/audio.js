@@ -37,6 +37,10 @@
 
   // 当前在播的音频，供打断时统一停掉，杜绝叠音
   let currentAudio = null;
+  // 顺序朗读令牌：新的朗读/序列会使旧序列失效。旧序列的异步续程（降级回退、静默重试、
+  // 看门狗）触发时若令牌已过期，只做清理绝不再开新音频——否则被打断的旧例句会经由
+  // 回退通道重新出声，与新单词的朗读叠音
+  let seqId = 0;
 
   // 原生桥停止指令（iOS App 内打断一切原生朗读）
   function stopNative() {
@@ -138,6 +142,7 @@
     if (nativeSpeak(text, done)) return;
     // 浏览器环境：本地 speechSynthesis 优先
     if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
+      const mySeq = seqId;
       let finished = false;
       let u = null;
       let watchdog = null;
@@ -153,8 +158,10 @@
         done();
       };
       // 本地始终没开口：停掉队列 → 有道兜底
+      // （被打断后异步触发的 interrupted 错误令牌已过期：只收尾，不再降级开新音频）
       const bail = () => {
         if (finished) return;
+        if (mySeq !== seqId) { fin(); return; }
         try { window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
         playOne(text, fin);
       };
@@ -189,6 +196,7 @@
    * 起播前 7s（网络卡死），起播后=真实时长+4s；瞬时错误静默重试一次。
    */
   function playOne(text, done) {
+    const mySeq = seqId;
     let finished = false;
     let fellBack = false;
     let started = false;
@@ -222,13 +230,18 @@
     // 兜底：停掉没播完的音频 → 本地语音接管（或已回退过则直接放行）
     const bailToSys = () => {
       if (finished) return;
+      if (mySeq !== seqId) { fin(); return; }   // 已被新朗读取代：不再重试/降级
       if (fellBack) { fin(); return; }
       // 从未出声的瞬时错误（网络抖动）：先静默重试一次
       if (!started && !retried) {
         retried = true;
         disarm();
         if (a) { a.onended = null; a.onerror = null; a.onplaying = null; a.ontimeupdate = null; try { a.pause(); } catch (e) { /* ignore */ } }
-        setTimeout(() => { if (!finished) start(); }, 200);
+        setTimeout(() => {
+          if (finished) return;
+          if (mySeq !== seqId) { fin(); return; }
+          start();
+        }, 200);
         return;
       }
       fellBack = true;
@@ -253,9 +266,6 @@
       bailToSys();
     }
   }
-
-  // 顺序朗读令牌：新的朗读/序列会使旧序列失效
-  let seqId = 0;
 
   NG.audio = {
     /** 原生朗读完成回调（Swift evaluateJavaScript 入口）；id 不匹配的迟到回调忽略 */
