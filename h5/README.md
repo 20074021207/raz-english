@@ -35,7 +35,8 @@ h5/
 │   ├── lesson.js       # 课程引擎（学习卡+例句 → 5 题型练习 → 错题重排队 → 结算）
 │   ├── boss.js         # 晋级 Boss 战（Diagnostic Sprint）
 │   └── app.js          # 极简路由 + 启动
-├── data/raz-data.js    # 构建产物：AA–L 共 5,615 词（内嵌，约 274KB）
+├── data/raz-data.js    # 构建产物：AA–Z2 全 29 级共 12,526 词（内嵌，约 677KB）
+├── data/sentences-corpus.js # 离线精语料：5,781 词 17,304 句（构建期生成）
 ├── build-data.mjs      # 词库压缩构建脚本（node build-data.mjs）
 └── test/e2e.mjs        # Playwright 冒烟测试（需系统 Chrome）
 ```
@@ -124,8 +125,8 @@ node test/e2e.mjs     # 无头浏览器走完整链路：定级→课程→Boss�
 
 ## 已知边界
 
-- 词库覆盖 AA–L 13 级（5,615 词）。定级自适应探针从 D 级出发、最多 3 轮，
-  实际定级区间 AA–H（超过 H 的孩子锚定到 H）。
+- 词库覆盖 RAZ 全 29 级（AA–Z2，12,526 行 / 5,837 唯一词）。定级自适应探针从 D 级
+  出发、最多 3 轮，初始定级区间 AA–H；更高级别通过 Boss 战逐级晋升可达。
 - 进度存于 `localStorage`（key `razkid_v1`），清除浏览器数据会丢失进度；
   设置里提供重置与重新定级入口。
 
