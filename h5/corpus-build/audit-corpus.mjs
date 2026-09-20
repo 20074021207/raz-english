@@ -80,9 +80,9 @@ let totalSents = 0, droppedSents = 0;
 
 for (const [word, sents] of Object.entries(merged)) {
   const target = new Set(forms(word.toLowerCase()));
-  // 多词短语：组成单词也豁免（Great Britain → great/britain）
-  if (word.includes(' ')) for (const p of word.toLowerCase().split(/\s+/)) for (const f of forms(p)) target.add(f);
-  const isPhrase = word.includes(' ') || word.includes("'");
+  // 多词/连字符短语：组成单词也豁免（Great Britain → great/britain；ping-pong → ping/pong）
+  if (word.includes(' ') || word.includes('-')) for (const p of word.toLowerCase().split(/[\s-]+/)) for (const f of forms(p)) target.add(f);
+  const isPhrase = word.includes(' ') || word.includes('-');
   const phraseRe = new RegExp(word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '\\s+'), 'i');
   const valid = [];
   for (const [en, zh] of sents) {
