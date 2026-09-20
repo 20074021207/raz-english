@@ -5,6 +5,37 @@
   const util = NG.util;
 
   NG.ui = {
+    /** 朱迪吉祥物（兔子警官 SVG，统一替换各处 🐰 emoji） */
+    judy(cls) {
+      return `<svg class="judy ${cls || ''}" viewBox="0 0 120 132" xmlns="http://www.w3.org/2000/svg" aria-label="朱迪">
+        <g transform="rotate(-9 40 34)">
+          <ellipse cx="40" cy="30" rx="12.5" ry="30" fill="#96a3b6"/>
+          <ellipse cx="40" cy="34" rx="6.8" ry="20.5" fill="#f5b6c6"/>
+        </g>
+        <g transform="rotate(9 80 34)">
+          <ellipse cx="80" cy="30" rx="12.5" ry="30" fill="#96a3b6"/>
+          <ellipse cx="80" cy="34" rx="6.8" ry="20.5" fill="#f5b6c6"/>
+        </g>
+        <ellipse cx="60" cy="88" rx="35" ry="32" fill="#a9b6c9"/>
+        <path d="M30 62 Q60 32 90 62 L90 67 Q60 55 30 67 Z" fill="#31519e"/>
+        <rect x="27" y="64" width="66" height="9" rx="4.5" fill="#274383"/>
+        <ellipse cx="60" cy="75" rx="24" ry="4.5" fill="#1d3263"/>
+        <circle cx="60" cy="61" r="4.6" fill="#f5c542"/>
+        <circle cx="60" cy="61" r="1.8" fill="#fff" opacity=".85"/>
+        <ellipse cx="45" cy="86" rx="9.5" ry="11.5" fill="#432c78"/>
+        <circle cx="48.5" cy="81.5" r="3.6" fill="#fff"/>
+        <circle cx="42" cy="90.5" r="1.7" fill="#fff" opacity=".85"/>
+        <ellipse cx="75" cy="86" rx="9.5" ry="11.5" fill="#432c78"/>
+        <circle cx="78.5" cy="81.5" r="3.6" fill="#fff"/>
+        <circle cx="72" cy="90.5" r="1.7" fill="#fff" opacity=".85"/>
+        <ellipse cx="60" cy="105" rx="16.5" ry="11" fill="#eef2f7"/>
+        <ellipse cx="60" cy="100.5" rx="4.6" ry="3.4" fill="#e2809b"/>
+        <path d="M60 104 Q60 109 54.5 110 M60 104 Q60 109 65.5 110" stroke="#8a7a95" stroke-width="1.7" fill="none" stroke-linecap="round"/>
+        <ellipse cx="35" cy="101" rx="5.2" ry="3.2" fill="#f2a9b8" opacity=".5"/>
+        <ellipse cx="85" cy="101" rx="5.2" ry="3.2" fill="#f2a9b8" opacity=".5"/>
+      </svg>`;
+    },
+
     /** 背景云朵装饰 */
     clouds(root) {
       const el = document.createElement('div');

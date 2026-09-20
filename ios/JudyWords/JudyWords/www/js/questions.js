@@ -16,8 +16,36 @@
 
   const escRe = (w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+  // 英文单词按音节形态显示（bas·ket·ball）；引擎不可用/单音节时回退原形
+  const wordLabel = (w) => (NG.syllables && NG.syllables.get(w)) || w;
+
+  // 音节点的间隙用 span 收紧（.syl-dot），比纯文本排得紧
+  const sylHtml = (syl) => util.esc(syl).replace(/·/g, '<span class="syl-dot">·</span>');
+  // 显示用 HTML：有多音节划分返回带收紧点的音节形态，否则原形
+  const labelHtml = (w) => {
+    const s = NG.syllables && NG.syllables.get(w);
+    return s ? sylHtml(s) : util.esc(w);
+  };
+
+  /**
+   * 点击单词在 音节形态 / 原形 之间切换（bas·ket·ball ↔ basketball）
+   * @param {Element} el 展示音节的元素（切换其 innerHTML）
+   * @param {string} word 原形单词
+   * @param {string=} syl 音节形态（无则不绑定）
+   */
+  function bindSyllableToggle(el, word, syl) {
+    if (!el || !syl) return;
+    el.classList.add('syl-toggle');
+    if (!el.title) el.title = '点我切换音节拼读';
+    el.addEventListener('click', () => {
+      const plain = el.dataset.plain === '1';
+      el.dataset.plain = plain ? '' : '1';
+      el.innerHTML = plain ? sylHtml(syl) : util.esc(word);
+    });
+  }
+
   const optsHtml = (options, isWord) => options.map((o, i) =>
-    `<button class="opt ${isWord ? 'word-opt' : ''}" data-i="${i}">${util.esc(o)}</button>`).join('');
+    `<button class="opt ${isWord ? 'word-opt' : ''}" data-i="${i}">${isWord ? labelHtml(o) : util.esc(o)}</button>`).join('');
 
   /** 拼写干扰字母：数量 = max(2, 词长×0.4)，不与目标词已有字母重复 */
   function spellPads(word) {
@@ -44,7 +72,7 @@
       options = util.shuffle([info.t, ...D.distractorTrans(info.l, q.word, 3)]);
       body = `
         <span class="qtype-badge">📖 词义选择</span>
-        <div class="q-word-big${o.speakableWord ? ' speakable' : ''}">${util.esc(q.word)}</div>
+        <div class="q-word-big${o.speakableWord ? ' speakable' : ''}">${labelHtml(q.word)}</div>
         <div class="q-phone">/${util.esc(info.p)}/${o.speakableWord ? ' · 点击单词听发音' : ''}</div>
         <div class="opts" id="opts">${optsHtml(options, false)}</div>`;
     } else if (q.type === 'cn2en') {
@@ -116,6 +144,9 @@
       const w = root.querySelector('.q-word-big');
       if (w) w.addEventListener('click', () => NG.audio.speak(q.word));
     }
+    // 题干/揭示词的音节切换（点击 bas·ket·ball ↔ basketball）
+    const stemWord = root.querySelector('.q-word-big');
+    if (stemWord) bindSyllableToggle(stemWord, q.word, NG.syllables && NG.syllables.get(q.word));
     const replay = root.querySelector('#q-replay');
     if (replay) replay.addEventListener('click', () => { NG.sfx.tap(); NG.audio.speak(q.word); });
 
@@ -125,8 +156,9 @@
         if (answered) return;
         answered = true;
         const ok = q._options[+btn.dataset.i] === q._answer;
+        // 判分标记按 data-i 从题目数据比对（选项可能以音节形态显示，不能比对文本）
         root.querySelectorAll('#opts .opt').forEach((b) => {
-          if (b.textContent.trim() === q._answer) b.classList.add('correct');
+          if (q._options[+b.dataset.i] === q._answer) b.classList.add('correct');
           else if (b === btn && !ok) b.classList.add('wrong');
           else b.classList.add('dim');
           b.disabled = true;
@@ -142,7 +174,10 @@
         // 听音辨词：作答后显示单词 + 释义（音→义联结）
         if (q.type === 'listen') {
           const rev = root.querySelector('#listen-reveal');
-          if (rev) rev.innerHTML = `<b>${util.esc(q.word)}</b><span class="rev-phone">/${util.esc(info.p)}/</span><span class="rev-trans">${util.esc(info.t)}</span>`;
+          if (rev) {
+            rev.innerHTML = `<b>${labelHtml(q.word)}</b><span class="rev-phone">/${util.esc(info.p)}/</span><span class="rev-trans">${util.esc(info.t)}</span>`;
+            bindSyllableToggle(rev.querySelector('b'), q.word, NG.syllables && NG.syllables.get(q.word));
+          }
         }
         onAnswer(ok, btn);
       });
@@ -204,5 +239,6 @@
     sync();
   }
 
-  NG.questions = { spellPads, choiceBody, spellBody, bindChoice, bindSpell };
+  NG.questions = { spellPads, choiceBody, spellBody, bindChoice, bindSpell,
+    wordLabel, sylHtml, labelHtml, bindSyllableToggle };
 })();

@@ -193,34 +193,47 @@
 
   const cache = new Map();
 
+  /** 模板兜底：未覆盖词的确定性例句生成 */
+  function templateSentences(word) {
+    const info = NG.data.lookup(word);
+    const pos = info ? info.pos : '';
+    const cat = category(word, pos);
+
+    let templates = T[cat] || T.meta;
+    // 可数名词 an 冠词特判
+    if (cat === 'noun' && (/^[aeiou]/.test(word) || AN_EXTRA.has(word))) templates = T.nounAn;
+
+    // 中文首义（截到第一个分隔符/空格），谓语形剥"的/地"，数词剥"个"
+    let t = ((info && info.t) || word).split(/[；，,、\s]/)[0] || word;
+    if (cat === 'num') t = t.replace(/个$/, '');
+    const tp = t.replace(/(的|地)$/, '');
+
+    const start = djb2(word) % templates.length;
+    const picked = [];
+    for (let i = 0; i < 3; i++) {
+      const [enT, zhT] = templates[(start + i) % templates.length];
+      let en = enT.replaceAll('{w}', word);
+      if (en.startsWith(word) && /^[a-z]/.test(word)) en = cap(word) + en.slice(word.length);
+      const zh = zhT
+        .replaceAll('{T}', t)
+        .replaceAll('{TP}', tp)
+        .replaceAll('{W}', word);
+      picked.push({ en: polish(en), zh });
+    }
+    return picked;
+  }
+
   NG.sentences = {
-    /** 返回该词的 3 条双语例句 [{en, zh}]（确定性） */
+    /** 返回该词的 3 条双语例句 [{en, zh}]（确定性）
+     *  优先取离线精语料（data/sentences-corpus.js，AA–H 全覆盖），未覆盖词回退模板生成 */
     get(word) {
       if (cache.has(word)) return cache.get(word);
-      const info = NG.data.lookup(word);
-      const pos = info ? info.pos : '';
-      const cat = category(word, pos);
-
-      let templates = T[cat] || T.meta;
-      // 可数名词 an 冠词特判
-      if (cat === 'noun' && (/^[aeiou]/.test(word) || AN_EXTRA.has(word))) templates = T.nounAn;
-
-      // 中文首义（截到第一个分隔符/空格），谓语形剥"的/地"，数词剥"个"
-      let t = ((info && info.t) || word).split(/[；，,、\s]/)[0] || word;
-      if (cat === 'num') t = t.replace(/个$/, '');
-      const tp = t.replace(/(的|地)$/, '');
-
-      const start = djb2(word) % templates.length;
-      const picked = [];
-      for (let i = 0; i < 3; i++) {
-        const [enT, zhT] = templates[(start + i) % templates.length];
-        let en = enT.replaceAll('{w}', word);
-        if (en.startsWith(word) && /^[a-z]/.test(word)) en = cap(word) + en.slice(word.length);
-        const zh = zhT
-          .replaceAll('{T}', t)
-          .replaceAll('{TP}', tp)
-          .replaceAll('{W}', word);
-        picked.push({ en: polish(en), zh });
+      const corpus = window.RAZ_SENTENCES && window.RAZ_SENTENCES[word];
+      let picked;
+      if (corpus && corpus.length) {
+        picked = corpus.map(([en, zh]) => ({ en, zh }));
+      } else {
+        picked = templateSentences(word);
       }
       cache.set(word, picked);
       return picked;

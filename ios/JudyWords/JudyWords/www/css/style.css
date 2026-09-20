@@ -427,6 +427,16 @@ body {
   line-height: 1.2;
 }
 .flashcard .phone { font-size: 16px; color: var(--muted); margin-top: 6px; }
+/* 朱迪吉祥物 SVG 各处尺寸 */
+.judy { display: block; }
+.mascot-avatar .judy { width: 34px; height: 37px; }
+.hero-mascot .judy { width: 54px; height: 59px; }
+.pf .judy { width: 66px; height: 73px; margin: 0 auto; }
+.m-face .judy { width: 44px; height: 48px; }
+.star-row .st .judy { width: 34px; height: 37px; display: inline-block; vertical-align: middle; }
+/* 音节拼读形态（bas·ket·ball）：点击切回原形；音节点间距收紧 */
+.syl-toggle { cursor: pointer; }
+.syl-dot { margin: 0 -0.07em; }
 .flashcard .trans {
   font-size: 20px;
   font-weight: 700;

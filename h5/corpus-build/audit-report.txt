@@ -1,0 +1,20 @@
+[catcher] The catcher catches fast balls. → 墙外词:catches
+[child] What a happy child! → 墙外词:happy
+[chirp] Listen to that happy chirp! → 墙外词:happy
+[clap] All the children clap together. → 墙外词:children
+[clown] The clown makes every child laugh. → 墙外词:child
+[like] What does your cat like to eat? → 与 cat 重复
+[long] What a long line at the store! → 与 line 重复
+[milk] I drink milk with my lunch. → 与 drink 重复
+[moon] The moon is high in the night sky. → 与 Moon 重复
+[more] So much snow for our snowman! → 未含目标词
+[pointed] The cat has pointed ears. → 墙外词:ears
+[purr] Cats purr when they are happy. → 墙外词:happy
+[question] I ask a question in class. → 墙外词:class
+[radish] The rabbit eats a red radish. → 墙外词:rabbit
+[reporter] The reporter asks the farmer a question. → 墙外词:question
+[sand] We play in the sand at the beach. → 与 beach 重复
+[spots] How many spots does the ladybug have? → 与 ladybug 重复
+[walk] We walk to school together. → 与 together 重复
+[who] Who is at the door? → 与 door 重复
+[write] I write a letter to my grandmother. → 与 letter 重复

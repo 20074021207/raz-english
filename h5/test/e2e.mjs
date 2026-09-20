@@ -56,13 +56,17 @@ async function answerCurrent(scr) {
     }
     return true;
   }
-  // 选择题：DOM 直点与正确答案文本一致的选项（绕开 Playwright 动作性检查与重渲染的竞态）
-  return page.evaluate((ans) => {
-    const opts = [...document.querySelectorAll('#opts .opt')];
-    const hit = opts.find((o) => o.textContent.trim() === String(ans).trim());
+  // 选择题：按 data-i 从题目数据定位正确项再点击
+  // （选项可能以音节形态显示，不能比对 DOM 文本；绕开 Playwright 动作性检查与重渲染的竞态）
+  return page.evaluate(({ scr, ans }) => {
+    const S = NG.screens[scr];
+    const q = S.session ? S.session.queue[S.qi] : (S.queue && S.queue[S.qi]);
+    if (!q || !q._options) return false;
+    const idx = q._options.indexOf(ans);
+    const hit = idx >= 0 && document.querySelector(`#opts .opt[data-i="${idx}"]`);
     if (hit) { hit.click(); return true; }
     return false;
-  }, q.answer);
+  }, { scr, ans: q.answer });
 }
 
 async function isVis(sel) { try { return await page.locator(sel).first().isVisible({ timeout: 800 }); } catch { return false; } }

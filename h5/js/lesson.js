@@ -118,6 +118,7 @@
       const word = sess.learn[i];
       const info = D.lookup(word);
       const sents = NG.sentences.get(word);
+      const syl = NG.syllables && NG.syllables.get(word);
       S.learnNewWord(word);
       S.save();
 
@@ -131,7 +132,7 @@
           </div>
           <div class="learn-dots">${sess.learn.map((_, j) => `<span class="dot ${j <= i ? 'on' : ''}"></span>`).join('')}</div>
           <div class="flashcard">
-            <div class="word" id="ls-word">${util.esc(word)}</div>
+            <div class="word" id="ls-word">${syl ? NG.questions.sylHtml(syl) : util.esc(word)}</div>
             <div class="phone">/${util.esc(info.p)}/</div>
             <div class="trans">${util.esc(info.t)}</div>
             <button class="speak-btn" id="ls-speak">🔊</button>
@@ -197,6 +198,8 @@
         clearHighlights();
       };
       root.querySelector('#ls-speak').addEventListener('click', () => manualUnlock(word));
+      // 点击单词切换 音节拼读 / 原形 显示（bas·ket·ball ↔ basketball）
+      NG.questions.bindSyllableToggle(wordEl, word, syl);
       rows.forEach((row) => row.addEventListener('click', () => manualUnlock(sents[+row.dataset.s].en)));
 
       root.querySelector('#ls-next').addEventListener('click', () => {

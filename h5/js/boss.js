@@ -77,7 +77,7 @@
             <div class="stat-row"><span class="k">🛡 失败保护</span><span class="v">${C.BOSS_COOLDOWN_H} 小时后可重试</span></div>
           </div>
           <div class="mascot-row mt-16" style="justify-content:center">
-            <div class="m-face">🐰</div>
+            <div class="m-face">${NG.ui.judy()}</div>
             <div class="bubble" style="background:rgba(255,255,255,0.92)">别怕！你已掌握 ${S.masteredInLevel(S.s.level)} 个单词，一定能赢！</div>
           </div>
           <button class="btn warn mt-16" id="boss-start">⚔️ 开始战斗</button>

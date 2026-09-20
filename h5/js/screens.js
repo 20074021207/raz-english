@@ -69,7 +69,7 @@
       root.innerHTML = `
         <div class="screen" id="home-screen">
           <div class="topbar">
-            <div class="mascot-avatar">🐰<span class="lv-badge">Lv.${S.foxLevel()}</span></div>
+            <div class="mascot-avatar">${NG.ui.judy()}<span class="lv-badge">Lv.${S.foxLevel()}</span></div>
             <div class="topbar-greet">
               <div class="hi">${util.greeting()}！</div>
               <div class="sub">${util.esc(s.level)} 关 · 已掌握 ${S.masteredTotal()} 词</div>
@@ -82,7 +82,7 @@
           <div class="hero-card">
             <div class="hero-level-row">
               <div class="hero-level">LEVEL ${util.esc(s.level)}<small>冒险中</small></div>
-              <div class="hero-mascot">🐰</div>
+              <div class="hero-mascot">${NG.ui.judy()}</div>
             </div>
             <div class="hero-sub">掌握 ${NG.CONFIG.BOSS_TARGET_WORDS} 个单词解锁 Boss 战</div>
             ${NG.ui.bar(mastered / NG.CONFIG.BOSS_TARGET_WORDS * 100)}
@@ -189,7 +189,7 @@
       root.innerHTML = `
         <div class="screen">
           <div class="placement-head">
-            <div class="pf">🐰</div>
+            <div class="pf">${NG.ui.judy()}</div>
             <h2>魔法定级测验</h2>
             <p>别紧张，这不是考试！<br>朱迪只是想找到最适合你的冒险起点 ✨</p>
           </div>
@@ -200,17 +200,20 @@
           </div>
           <div class="qzone">
             <span class="qtype-badge">这个单词是什么意思？</span>
-            <div class="q-word-big">${util.esc(q.word)}</div>
+            <div class="q-word-big">${NG.questions.labelHtml(q.word)}</div>
             <div class="q-phone">/${util.esc(D.lookup(q.word).p)}/</div>
             <div class="opts" id="opts">
               ${options.map((o, i) => `<button class="opt" data-i="${i}">${util.esc(o)}</button>`).join('')}
             </div>
           </div>
           <div class="mascot-row mt-12">
-            <div class="m-face">🐰</div>
+            <div class="m-face">${NG.ui.judy()}</div>
             <div class="bubble">认识它吗？猜一猜也没关系！</div>
           </div>
         </div>`;
+
+      // 定级题干单词同样支持 音节拼读 / 原形 点击切换
+      NG.questions.bindSyllableToggle(root.querySelector('.q-word-big'), q.word, NG.syllables && NG.syllables.get(q.word));
 
       let answered = false;
       root.querySelectorAll('.opt').forEach((btn) => {
@@ -263,9 +266,9 @@
             <h2>你的起点是 ${lv} 级！</h2>
             <div class="sub">朱迪为你选好了最合适的冒险地图</div>
           </div>
-          <div class="star-row"><span class="st lit">🐰</span></div>
+          <div class="star-row"><span class="st lit">${NG.ui.judy()}</span></div>
           <div class="mascot-row" style="justify-content:center">
-            <div class="m-face">🐰</div>
+            <div class="m-face">${NG.ui.judy()}</div>
             <div class="bubble">太好了！我们从 ${lv} 级出发，一起去打 Boss 吧！</div>
           </div>
           <button class="btn success mt-24" data-nav="lesson">▶ 开始第一课</button>
