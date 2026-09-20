@@ -21,14 +21,14 @@
       const next = D.nextLevel(s.level);
       const cooldown = S.bossCooldownLeft();
 
-      // 无下一级（L 级通关）
+      // 无下一级（Z2 级通关）
       if (!next) {
         root.innerHTML = `
           <div class="screen" style="justify-content:center">
             <div class="result-hero">
               <div class="big-emoji">👑</div>
-              <h2>你已征服 L 级！</h2>
-              <div class="sub">H5 版地图到此为止，继续复习保持实力吧！</div>
+              <h2>你已征服 ${S.s.level} 级！</h2>
+              <div class="sub">RAZ 全部 29 级通关，继续复习保持实力吧！</div>
             </div>
             <button class="btn success mt-16" data-nav="home">返回地图</button>
           </div>`;

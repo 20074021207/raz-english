@@ -1,0 +1,597 @@
+{
+  "bistro": [
+    ["We eat noodles at the little bistro.", "我们在小餐馆里吃面条。"],
+    ["Is the bistro open today?", "这家小餐馆今天开门吗？"],
+    ["What a nice bistro this is!", "这家小餐馆真漂亮呀！"]
+  ],
+  "bizarre": [
+    ["The bizarre fish has three eyes.", "那条怪鱼有三只眼睛。"],
+    ["Did you see that bizarre hat?", "你看见那顶怪怪的帽子了吗？"],
+    ["What a bizarre old house!", "好一座怪怪的老房子呀！"]
+  ],
+  "blackout": [
+    ["In the blackout, we could not see.", "停电的时候，我们什么都看不见。"],
+    ["What do you do in a blackout?", "停电了你会做什么？"],
+    ["Light a candle in a blackout, please.", "停电了就点根蜡烛吧。"]
+  ],
+  "blacksmith": [
+    ["The blacksmith makes things with fire.", "铁匠用火做东西。"],
+    ["Where does the blacksmith work?", "铁匠在哪里干活呀？"],
+    ["Look at the blacksmith by the big fire!", "快看大火旁边的那个铁匠！"]
+  ],
+  "blank": [
+    ["The new page is blank.", "新的一页还是空白的。"],
+    ["Why is your paper blank?", "你的纸怎么是空白的呀？"],
+    ["Do not give me a blank page!", "别给我一张白纸！"]
+  ],
+  "bleaching": [
+    ["Mother is bleaching the old sheets today.", "妈妈今天在漂洗旧床单。"],
+    ["Why is the old sign bleaching?", "那块旧牌子为什么会晒得褪色呢？"],
+    ["The bleaching sun made my bag white!", "太阳一晒，我的书包都发白啦！"]
+  ],
+  "blight": [
+    ["The blight made the leaves turn yellow.", "病害让叶子都变黄了。"],
+    ["Can the farmer stop the blight?", "农民伯伯能治住枯萎病吗？"],
+    ["Oh no, the blight is on our corn!", "哎呀，咱家的玉米染上病害了！"]
+  ],
+  "blithe": [
+    ["The blithe bird sings all day long.", "那只快活的小鸟整天唱个不停。"],
+    ["Why is the little bird so blithe?", "小鸟为什么这么无忧无虑呀？"],
+    ["What a blithe little goat!", "多么欢快的小山羊啊！"]
+  ],
+  "blithesome": [
+    ["My blithesome sister laughs a lot.", "我那快活的妹妹特别爱笑。"],
+    ["Are you blithesome today?", "你今天心情轻快吗？"],
+    ["Sing a blithesome song for us!", "给我们唱首欢快的歌吧！"]
+  ],
+  "blitzkrieg": [
+    ["The old book tells about the blitzkrieg.", "那本旧书里讲到了闪电战。"],
+    ["What is a blitzkrieg?", "什么是闪电战呀？"],
+    ["Ask your grandfather about the blitzkrieg.", "去问问爷爷闪电战的事吧。"]
+  ],
+  "blockade": [
+    ["In the old days, the city had a blockade.", "在很久以前，那座城市被封锁了。"],
+    ["Why was there a blockade?", "为什么会有封锁呀？"],
+    ["The blockade stopped all the boats!", "封锁把所有的船都拦住啦！"]
+  ],
+  "blog": [
+    ["My mother writes a blog about food.", "我妈妈写美食博客。"],
+    ["Did you read the blog about cats?", "你读过那篇讲小猫的博客吗？"],
+    ["Let's write a blog together!", "我们一起写博客吧！"]
+  ],
+  "blowgun": [
+    ["The kid in the story has a blowgun.", "故事里那个孩子有一支吹箭。"],
+    ["What is a blowgun made of?", "吹箭是用什么做的？"],
+    ["Put the blowgun down, please.", "请把吹箭放下来。"]
+  ],
+  "blowhole": [
+    ["Water jumps out of the whale's blowhole.", "水从鲸鱼的喷水孔里喷出来。"],
+    ["Where is the blowhole on a whale?", "鲸鱼的喷水孔长在哪里呀？"],
+    ["Look at the whale's big blowhole!", "快看鲸鱼大大的喷水孔！"]
+  ],
+  "boast": [
+    ["He likes to boast about his high jumps.", "他喜欢吹嘘自己跳得多高。"],
+    ["Why does he always boast?", "他怎么总是爱吹牛呀？"],
+    ["Do not boast about your new bike.", "别炫耀你的新自行车。"]
+  ],
+  "boastful": [
+    ["The boastful frog says he jumps the highest.", "爱吹牛的青蛙说自己跳得最高。"],
+    ["Is your big brother boastful?", "你哥哥爱自夸吗？"],
+    ["Do not be boastful, little one!", "小家伙，别自吹自擂啦！"]
+  ],
+  "bodice": [
+    ["The doll's dress has a red bodice.", "布娃娃裙子的上身是红色的。"],
+    ["Where is the bodice on this dress?", "这条裙子的上身在哪里呀？"],
+    ["Look at the white bodice on her dress!", "快看她裙子上白色的胸衣！"]
+  ],
+  "bohemian": [
+    ["She draws bohemian flowers on her card.", "她在卡片上画波西米亚风格的花朵。"],
+    ["What are bohemian clothes?", "什么是波西米亚风格的衣服呀？"],
+    ["Grandmother loves bohemian hats and bags!", "奶奶最喜欢波西米亚风的帽子和包包啦！"]
+  ],
+  "boiler": [
+    ["The boiler makes hot water for our bath.", "锅炉为我们烧洗澡的热水。"],
+    ["Where is the boiler in this building?", "这栋楼的锅炉在哪里呀？"],
+    ["The boiler stopped!", "锅炉停啦！"]
+  ],
+  "boisterous": [
+    ["The boisterous kids sing on the playground.", "吵吵闹闹的孩子们在操场上唱歌。"],
+    ["Why are the monkeys so boisterous?", "猴子们为什么这么闹腾呀？"],
+    ["What a boisterous classroom!", "这间教室可真热闹呀！"]
+  ],
+  "bolt": [
+    ["This bolt is for my bike.", "这颗螺栓是装我的自行车用的。"],
+    ["Where did the little bolt go?", "那颗小螺栓滚到哪里去了？"],
+    ["Put a bolt on the wagon wheel.", "给推车的轮子装上一颗螺栓。"]
+  ],
+  "bondage": [
+    ["In the old days, some people lived in bondage.", "在很久以前，有些人过着被奴役的生活。"],
+    ["What is bondage?", "什么是奴役呀？"],
+    ["No one should live in bondage today!", "今天谁都不应该被奴役！"]
+  ],
+  "bonfire": [
+    ["We sit near the big bonfire at night.", "晚上我们坐在大篝火旁边。"],
+    ["Who made this big bonfire?", "这堆篝火是谁生的呀？"],
+    ["Do not run near the bonfire!", "别在篝火旁边跑！"]
+  ],
+  "boom": [
+    ["Boom! The drum made a big noise.", "砰！大鼓敲出了好大的声音。"],
+    ["Did you hear the boom of the drum?", "你听到鼓的砰砰声了吗？"],
+    ["What a big boom that was!", "那一声轰隆可真响啊！"]
+  ],
+  "boomer": [
+    ["The old boomer jumps very far.", "老公袋鼠能跳得特别远。"],
+    ["Is the boomer the biggest one?", "袋鼠王是里面最大的那只吗？"],
+    ["Look at the boomer in the grass!", "快看草地上的那只大公袋鼠！"]
+  ],
+  "boomerang": [
+    ["The boomerang flies back to me.", "回旋镖飞回到我这里。"],
+    ["Can you make the boomerang come back?", "你能让回旋镖飞回来吗？"],
+    ["My boomerang goes up and comes down!", "我的回旋镖飞上天又落下来啦！"]
+  ],
+  "booty": [
+    ["They put the booty in a big box.", "他们把宝藏放进一个大箱子里。"],
+    ["Where is the booty from the story?", "故事里的宝藏在哪里呀？"],
+    ["We found the booty under the sand!", "我们在沙子底下找到宝藏啦！"]
+  ],
+  "borrower": [
+    ["A borrower takes things and gives them back.", "借东西的人用完要还回去。"],
+    ["Are you a borrower at the library?", "你是图书馆的借阅人吗？"],
+    ["Be a good borrower, please.", "请做个有借有还的好孩子。"]
+  ],
+  "bouncy": [
+    ["The bouncy ball goes over the fence.", "弹性球蹦过了栅栏。"],
+    ["Is your bed bouncy?", "你的床有弹性吗？"],
+    ["Bunnies are so bouncy!", "小兔子们可真会蹦呀！"]
+  ],
+  "boundary": [
+    ["This wall is the boundary of the school.", "这堵墙就是学校的边界。"],
+    ["Where is the boundary of the park?", "公园的边界在哪里呀？"],
+    ["Stop at the boundary of the field!", "到操场边界就要停下！"]
+  ],
+  "bounds": [
+    ["Your ball is out of bounds.", "你的球出界了。"],
+    ["Is this line the bounds of the game?", "这条线是比赛的界线吗？"],
+    ["Keep the ball inside the bounds, please.", "请把球留在界线里面。"]
+  ],
+  "bounty": [
+    ["The farmer has a bounty of corn for us.", "农夫伯伯给我们送来一大堆玉米。"],
+    ["Do I get a bounty for my help?", "我帮了忙能有奖赏吗？"],
+    ["Our apple tree has a big bounty!", "我们家的苹果树大丰收啦！"]
+  ],
+  "boxcar": [
+    ["The train has a long red boxcar.", "火车上挂着一节长长的红色货车车厢。"],
+    ["What is inside the old boxcar?", "旧车厢里面装的是什么呀？"],
+    ["Look at the boxcar on the long train!", "快看那列长火车上的货车车厢！"]
+  ],
+  "boycott": [
+    ["A boycott says no to bad things.", "抵制就是对不好的东西说不。"],
+    ["Why did they start the boycott?", "他们为什么要发起抵制呀？"],
+    ["The boycott worked!", "抵制起作用啦！"]
+  ],
+  "bracket": [
+    ["Our team is number one in the bracket.", "我们队在比赛对阵表里排第一。"],
+    ["Put the number in the bracket, please.", "请把数字写在括号里。"],
+    ["Where is my team on the bracket?", "我们队在比赛表上的哪个位置呀？"]
+  ],
+  "brainwash": [
+    ["Some games try to brainwash kids.", "有些游戏想给小孩子洗脑。"],
+    ["Can a movie brainwash a kid?", "电影会给小朋友洗脑吗？"],
+    ["Do not let bad words brainwash you!", "别让坏话把你洗脑啦！"]
+  ],
+  "brand": [
+    ["What brand of milk do you like?", "你喜欢哪个牌子的牛奶？"],
+    ["The farmer put his brand on the cow.", "农夫在牛身上打上了自家的烙印。"],
+    ["I love this brand of cookies!", "我超爱这个牌子的饼干！"]
+  ],
+  "brandish": [
+    ["The little monkey likes to brandish a big leaf.", "小猴子喜欢挥舞一片大叶子。"],
+    ["Why does he brandish his toy wand?", "他为什么挥着玩具魔棒呀？"],
+    ["Do not brandish sticks at your friends!", "别拿小棍朝朋友们挥来挥去！"]
+  ],
+  "brass": [
+    ["Grandmother has a bed with brass feet.", "奶奶有一张黄铜床架的床。"],
+    ["Is this pot made of brass?", "这口锅是黄铜做的吗？"],
+    ["Clean the brass pot for me, please.", "帮我把这口铜锅擦一擦吧。"]
+  ],
+  "bravery": [
+    ["We read about the bravery of a small bird.", "我们读到过一只小鸟的勇敢故事。"],
+    ["Do animals have bravery too?", "动物们也有勇气吗？"],
+    ["Your bravery made us all smile!", "你的勇敢让我们都笑了！"]
+  ],
+  "brawl": [
+    ["The two kids had a brawl over the toy.", "那两个孩子为了玩具打了一架。"],
+    ["Why did they start a brawl?", "他们怎么打起来啦？"],
+    ["Never start a brawl with your friends.", "千万别和朋友动手打架。"]
+  ],
+  "bray": [
+    ["I hear the animal bray near the fence.", "我听见篱笆边的动物在大声叫唤。"],
+    ["Can you bray like the animal in the story?", "你能学故事里的动物那样叫吗？"],
+    ["Listen to the animal bray at the gate!", "听那只动物在大门口叫呢！"]
+  ],
+  "breakthrough": [
+    ["My brother made a big breakthrough today.", "我哥哥今天有了个大突破。"],
+    ["Did the little robot make a breakthrough?", "小机器人有新突破了吗？"],
+    ["What a big breakthrough for the team!", "这个队的突破真了不起！"]
+  ],
+  "bred": [
+    ["This dog was bred to help people.", "这种狗生来就是帮人的。"],
+    ["Where was your little dog bred?", "你的小狗是在哪里养的？"],
+    ["These horses were bred to run fast!", "这些马养来就跑得特别快！"]
+  ],
+  "breed": [
+    ["What breed is your dog?", "你的狗是什么品种呀？"],
+    ["Some dogs breed in the spring.", "有些狗在春天繁殖宝宝。"],
+    ["This breed of cat has big blue eyes!", "这个品种的猫有蓝色的大眼睛呢！"]
+  ],
+  "breeder": [
+    ["The dog breeder has many good dogs.", "养狗人养着好多好狗。"],
+    ["Does the breeder live near the lake?", "饲养员住在湖边吗？"],
+    ["The bird breeder loves her little birds!", "养鸟人可喜欢她的小鸟啦！"]
+  ],
+  "breeding": [
+    ["Spring is breeding time for the frogs.", "春天是青蛙繁殖的季节。"],
+    ["Where do the ducks go for breeding?", "鸭子们去哪里繁殖呀？"],
+    ["The breeding of good horses takes time!", "养出一匹好马可要花时间呢！"]
+  ],
+  "brevity": [
+    ["Good stories often have brevity.", "好故事往往都很简洁。"],
+    ["Why is brevity good in a song?", "为什么唱歌也要简洁呀？"],
+    ["The brevity of her letter made me smile!", "她的信写得简短，让我会心一笑！"]
+  ],
+  "brilliancy": [
+    ["The sun's brilliancy made me close my eyes.", "太阳太亮啦，照得我睁不开眼。"],
+    ["Did you see the brilliancy of the rainbow?", "你看到彩虹的绚丽光彩了吗？"],
+    ["We saw the brilliancy of the moon at night!", "夜里月亮的光辉真美呀！"]
+  ],
+  "brochure": [
+    ["The brochure tells about the new park.", "这本小册子介绍了新公园。"],
+    ["May I take this brochure home?", "我可以把这本小册子带回家吗？"],
+    ["I got a brochure at the bookstore!", "我在书店拿到一本小册子呢！"]
+  ],
+  "broth": [
+    ["My mother makes hot broth for me.", "妈妈给我做了热汤。"],
+    ["Do you want some broth with your bread?", "你想就着面包喝点汤吗？"],
+    ["This chicken broth is so warm and nice!", "这鸡汤又暖和又好喝呀！"]
+  ],
+  "browser": [
+    ["The browser on the computer is slow today.", "电脑上的浏览器今天特别卡。"],
+    ["Can you open the browser for me?", "你能帮我打开浏览器吗？"],
+    ["Close the browser now, please.", "请现在把浏览器关掉。"]
+  ],
+  "brutal": [
+    ["The hot sun was brutal at the beach.", "海边的太阳毒得厉害。"],
+    ["Is the winter here brutal, too?", "这里的冬天也冷得难受吗？"],
+    ["Do not be brutal when you play a game.", "玩游戏的时候别太狠心。"]
+  ],
+  "budding": [
+    ["In spring, we see budding trees in the park.", "春天里，我们在公园看见刚发芽的树。"],
+    ["Are the budding flowers very small?", "刚打苞的花还很小吗？"],
+    ["Look at the budding flower by the fence!", "快看篱笆边那朵含苞的花儿！"]
+  ],
+  "budget": [
+    ["My mother has a budget for food.", "妈妈买菜有一份预算。"],
+    ["Did you keep to your budget today?", "你今天花钱没超预算吧？"],
+    ["Keep to your budget, please.", "请按预算来花钱哦。"]
+  ],
+  "buffalo": [
+    ["The buffalo runs on the big plains.", "野牛在大平原上奔跑。"],
+    ["Does the buffalo like to sit in the mud?", "野牛喜欢趴在泥里吗？"],
+    ["We saw a big buffalo near the river!", "我们在河边看见一头大野牛啦！"]
+  ],
+  "bulbous": [
+    ["The frog has big bulbous eyes.", "青蛙长着凸出的大眼睛。"],
+    ["Does the pumpkin look bulbous to you?", "你觉得这南瓜长得圆鼓鼓的吗？"],
+    ["What a bulbous melon!", "好一个圆滚滚的大甜瓜呀！"]
+  ],
+  "bunch": [
+    ["He gave her a bunch of flowers.", "他送给她一束花。"],
+    ["Why is there a bunch of sticks here?", "这里怎么有一捆小树枝呀？"],
+    ["What a big bunch of balloons!", "好大一串气球呀！"]
+  ],
+  "bunker": [
+    ["The golf ball is in the sand bunker.", "高尔夫球掉进沙坑里了。"],
+    ["How do you get out of the bunker?", "你要怎么把球打出沙坑呀？"],
+    ["My ball is in the bunker again!", "我的球又进沙坑啦！"]
+  ],
+  "buoyancy": [
+    ["Buoyancy keeps the boat on the water.", "浮力让小船浮在水面上。"],
+    ["What is buoyancy?", "什么是浮力呀？"],
+    ["Wow, buoyancy keeps the big boat up!", "哇，浮力把大船都托起来啦！"]
+  ],
+  "buoyant": [
+    ["The duck is buoyant on the pond.", "鸭子稳稳地浮在池塘上。"],
+    ["Why is the ball so buoyant?", "这个球为什么浮得这么好呀？"],
+    ["What a buoyant little boat!", "多么轻盈的小船呀！"]
+  ],
+  "burial": [
+    ["The old book tells about a burial.", "那本旧书里讲到了一场葬礼。"],
+    ["Why do people sing at a burial?", "为什么人们在葬礼上要唱歌呢？"],
+    ["Do not make noise at a burial.", "在葬礼上不要吵吵闹闹。"]
+  ],
+  "bustle": [
+    ["I hear the bustle of the city outside.", "我听见外面城市的喧闹声。"],
+    ["What a bustle in the market today!", "今天市场上可真热闹呀！"],
+    ["Why all the bustle in the house?", "屋里怎么这么忙乱呀？"]
+  ],
+  "bustling": [
+    ["Our street is bustling today.", "我们这条街今天热闹极了。"],
+    ["Is the market always so bustling?", "市场总是这么热闹吗？"],
+    ["Look at the bustling playground!", "瞧操场上那热热闹闹的样子！"]
+  ],
+  "bypass": [
+    ["Our bus takes the bypass into the city.", "我们的公交车走旁路进城。"],
+    ["Why did they make the bypass?", "他们为什么要修这条旁路呀？"],
+    ["The new bypass is very wide!", "新建的旁路可真宽呀！"]
+  ],
+  "cabinet": [
+    ["My mother put the plates in the cabinet.", "妈妈把盘子放进了橱柜。"],
+    ["Can you open the cabinet for me?", "你能帮我打开柜子吗？"],
+    ["What a tall cabinet!", "好高的一个柜子呀！"]
+  ],
+  "cacao": [
+    ["Chocolate comes from the cacao bean.", "巧克力是用可可豆做的。"],
+    ["Did you eat a cacao bean?", "你吃过可可豆吗？"],
+    ["The cacao tree is tall and green!", "可可树又高又绿呢！"]
+  ],
+  "cadence": [
+    ["I like the cadence of the rain.", "我喜欢雨点落下的节奏。"],
+    ["Can you hear the cadence of the horse's feet?", "你能听出小马蹄声的节奏吗？"],
+    ["What a nice cadence this song has!", "这首歌的节奏真好听呀！"]
+  ],
+  "caique": [
+    ["Our caique is a very nice little parrot.", "我们家的凯克鹦鹉又小又乖。"],
+    ["What does your caique like to eat?", "你的凯克鹦鹉爱吃什么呀？"],
+    ["The caique can say hello!", "这只凯克鹦鹉会说你好呢！"]
+  ],
+  "cajole": [
+    ["I cajole my cat with a small fish.", "我用小鱼哄我的小猫。"],
+    ["Did you cajole him to eat the carrot?", "你哄他吃胡萝卜了吗？"],
+    ["Mother can cajole my brother to sleep!", "妈妈总能哄得弟弟乖乖睡觉！"]
+  ],
+  "cajoling": [
+    ["The baby ate with a little cajoling.", "哄了一哄，小宝宝就把饭吃了。"],
+    ["Is a little cajoling a good thing?", "哄一哄是不是个好办法呀？"],
+    ["With much cajoling, he said yes!", "好一通哄，他总算答应啦！"]
+  ],
+  "calculation": [
+    ["The calculation was hard, but I got it right.", "这道计算题很难，可我做对了。"],
+    ["Is your calculation right?", "你的计算结果对吗？"],
+    ["Look at your calculation again!", "再检查一遍你的计算！"]
+  ],
+  "callous": [
+    ["A callous word can make a friend cry.", "一句冷漠的话会让朋友伤心。"],
+    ["Why is he so callous today?", "他今天怎么这么冷冰冰的呀？"],
+    ["Do not be callous to your little sister.", "别对妹妹那么无情。"]
+  ],
+  "callowness": [
+    ["We all have callowness when we are little.", "我们小时候都幼稚过。"],
+    ["Is callowness a bad thing to have?", "幼稚是坏事吗？"],
+    ["The baby bird's callowness is easy to see!", "雏鸟的稚嫩一眼就能看出来呀！"]
+  ],
+  "calorie": [
+    ["This cookie has a lot of calories.", "这块饼干的热量好高呀。"],
+    ["How many calories are in an apple?", "一个苹果有多少卡路里？"],
+    ["Milk has calories, and so does bread!", "牛奶有热量，面包也有呢！"]
+  ],
+  "calve": [
+    ["The cow will calve in the spring.", "母牛春天就要下牛犊了。"],
+    ["When will the cow calve?", "母牛什么时候生小牛呀？"],
+    ["The farmer watches the cow calve!", "农夫看着母牛生小牛犊呢！"]
+  ],
+  "camaraderie": [
+    ["The team has good camaraderie.", "这个队很有团队情谊。"],
+    ["Why is there so much camaraderie on your team?", "你们队的感情为什么这么好呀？"],
+    ["Camaraderie makes the game more fun!", "队友情谊让比赛更好玩！"]
+  ],
+  "camouflage": [
+    ["The tiger's camouflage is hard to see.", "老虎的保护色很难被发现。"],
+    ["Can you see the camouflage on the snake?", "你能看见蛇身上的保护色吗？"],
+    ["What good camouflage the frog has!", "青蛙的伪装色可真棒！"]
+  ],
+  "campaign": [
+    ["The city starts a campaign to clean the park.", "城市发起了一场清洁公园的活动。"],
+    ["Are you in the reading campaign at school?", "你参加学校的阅读活动了吗？"],
+    ["Our school campaign asks us to read more!", "学校的读书活动号召我们多读书！"]
+  ],
+  "canal": [
+    ["The boat goes down the long canal.", "小船沿着长长的运河往前开。"],
+    ["Can we walk by the canal today?", "今天我们能去运河边走走吗？"],
+    ["What a long green canal this is!", "这条绿绿的运河好长呀！"]
+  ],
+  "candidate": [
+    ["The candidate smiles and waves at us.", "那位候选人笑着向我们挥手。"],
+    ["Which candidate do you like?", "你喜欢哪一位候选人呀？"],
+    ["A candidate is at our school today!", "今天有一位候选人来我们学校啦！"]
+  ],
+  "canine": [
+    ["My canine friend loves to run in the park.", "我的狗狗伙伴爱在公园里跑来跑去。"],
+    ["Does your canine like to swim?", "你家狗狗喜欢游泳吗？"],
+    ["What a good canine you have!", "你这条狗真乖呀！"]
+  ],
+  "cannon": [
+    ["The big cannon sits in the park.", "大炮安放在公园里。"],
+    ["How old is that cannon?", "那门炮有多少年历史啦？"],
+    ["What a big noise the old cannon made!", "老大炮发出的声音好大呀！"]
+  ],
+  "canteen": [
+    ["I get milk at the school canteen.", "我在学校食堂拿牛奶。"],
+    ["Where is the canteen, please?", "请问食堂在哪里呀？"],
+    ["The canteen has noodles and eggs today!", "今天食堂有面条和鸡蛋呢！"]
+  ],
+  "canvas": [
+    ["She paints a boat on the canvas.", "她在画布上画了一条小船。"],
+    ["Is the new canvas for your painting?", "这块新画布是给你画画用的吗？"],
+    ["My canvas bag is old but good!", "我的帆布包虽然旧但很好用！"]
+  ],
+  "cap": [
+    ["My red cap is on my head.", "我的红帽子戴在头上。"],
+    ["Where is the cap for the bottle?", "瓶盖儿跑去哪里了？"],
+    ["Put the cap on the bottle, please.", "请把瓶盖盖回瓶子上。"]
+  ],
+  "capricious": [
+    ["My cat is capricious about her food.", "我的小猫对吃东西挑三拣四。"],
+    ["Why is my brother so capricious today?", "我哥哥今天怎么这么反复无常呀？"],
+    ["What a capricious old goat!", "这只老山羊可真善变呀！"]
+  ],
+  "capsize": [
+    ["The little boat could capsize in big waves.", "小船在大浪里可能会翻掉。"],
+    ["Did the toy boat capsize in the tub?", "玩具小船在浴缸里翻了吗？"],
+    ["Do not make the boat capsize!", "别把小船弄翻啦！"]
+  ],
+  "capsule": [
+    ["The little capsule has a seed inside.", "小小的果荚里藏着一粒种子。"],
+    ["Did you take the capsule with warm water?", "你用温水送服那颗胶囊了吗？"],
+    ["Look at the round red capsule!", "快看那颗圆圆的红色小胶囊！"]
+  ],
+  "captivating": [
+    ["The captivating story made me read all night.", "这个引人入胜的故事让我读了一晚上。"],
+    ["Is the movie captivating?", "这部电影吸引人吗？"],
+    ["What a captivating song that was!", "那首歌真是动人极了！"]
+  ],
+  "captive": [
+    ["The story tells about a captive bird.", "这个故事讲的是一只失去自由的鸟。"],
+    ["Why is the little bird captive?", "小鸟为什么被关起来了呀？"],
+    ["We should not keep birds captive!", "我们不应当把鸟儿关起来！"]
+  ],
+  "captivity": [
+    ["Big animals do not like captivity.", "大动物可不喜欢被圈养。"],
+    ["Is captivity good for big fish?", "圈养对大鱼好吗？"],
+    ["Think of the whale in captivity!", "想想被圈养的鲸鱼吧！"]
+  ],
+  "carapace": [
+    ["The turtle's carapace is hard and green.", "乌龟的背甲又硬又绿。"],
+    ["Is the crab's carapace hard too?", "螃蟹的背甲也很硬吗？"],
+    ["Look at the spots on the turtle's carapace!", "快看乌龟背甲上的斑点！"]
+  ],
+  "carat": [
+    ["One carat is very small.", "一克拉非常小。"],
+    ["How many carats is your rock?", "你那块宝石有几克拉呀？"],
+    ["This little white rock is five carats!", "这块白色的小宝石有五克拉呢！"]
+  ],
+  "caravel": [
+    ["A caravel is a boat from the old days.", "卡拉维尔帆船是很久以前的一种船。"],
+    ["Did the old caravel go over big waves?", "那艘老帆船在大浪里航行过吗？"],
+    ["The old caravel goes far over the ocean!", "老帆船远航在大海上呢！"]
+  ],
+  "carbon dioxide": [
+    ["Plants need carbon dioxide to make food.", "植物需要二氧化碳来制造养分。"],
+    ["What makes carbon dioxide?", "什么东西会产生二氧化碳呢？"],
+    ["People give off carbon dioxide too!", "人呼出的气体里也有二氧化碳呢！"]
+  ],
+  "carnival": [
+    ["The carnival has many fun games.", "狂欢节上有好多好玩的游戏。"],
+    ["Can we go to the carnival today?", "今天我们能去逛嘉年华吗？"],
+    ["What a big carnival this is!", "这场嘉年华可真盛大呀！"]
+  ],
+  "carnivore": [
+    ["A lion is a carnivore.", "狮子是食肉动物。"],
+    ["Is a cat a carnivore or not?", "小猫到底是不是食肉动物呢？"],
+    ["The tiger is a big carnivore!", "老虎可是大型食肉动物呀！"]
+  ],
+  "carnivorous": [
+    ["The carnivorous dinosaur ate meat.", "那只肉食恐龙吃肉。"],
+    ["Which animals are carnivorous?", "哪些动物是吃肉的呢？"],
+    ["Some plants are carnivorous too!", "有些植物居然也吃肉呀！"]
+  ],
+  "carouse": [
+    ["Some people in the old story carouse all night.", "从前的故事里，有些人整夜寻欢作乐。"],
+    ["Why do they carouse every night?", "他们为什么天天夜里胡闹呀？"],
+    ["Do not carouse all night like them.", "别学他们那样整夜瞎胡闹。"]
+  ],
+  "carriage": [
+    ["The horse takes the carriage down the street.", "马拉着马车沿街走。"],
+    ["Did you see the carriage by the river?", "你看见河边的那辆马车了吗？"],
+    ["The white carriage looks very old!", "这辆白色的马车看起来好古老呀！"]
+  ],
+  "carrion": [
+    ["Crows sometimes eat carrion.", "乌鸦有时会吃腐肉。"],
+    ["Do you know what carrion is?", "你知道腐肉是什么吗？"],
+    ["Do not go near carrion.", "别靠近腐肉哦。"]
+  ],
+  "cartographer": [
+    ["The cartographer draws maps of the city.", "地图绘制师画城市的地图。"],
+    ["What does a cartographer make?", "地图绘制师做的是什么呀？"],
+    ["The cartographer made a map of our river!", "地图绘制师画好了我们这条河的地图啦！"]
+  ],
+  "carver": [
+    ["The carver makes a bear from a big rock.", "雕刻师用一块大石头刻出了一只熊。"],
+    ["What is the carver making now?", "雕刻师现在在刻什么呀？"],
+    ["My grandfather is a very good carver!", "我爷爷的雕刻手艺可棒啦！"]
+  ],
+  "case": [
+    ["My pencil case has five erasers.", "我的铅笔盒里有五块橡皮。"],
+    ["What is in the big case?", "那个大盒子里装的是什么呀？"],
+    ["Put the toy back in its case.", "把玩具放回它的盒子里去。"]
+  ],
+  "castaway": [
+    ["The castaway wanted to go home.", "漂流落难的人特别想回家。"],
+    ["Was the castaway there for a long time?", "那个落难的人在那里待了很久吗？"],
+    ["The castaway found fruit near the water!", "落难的人在河边找到果子啦！"]
+  ],
+  "castings": [
+    ["Worm castings are good for the garden.", "蚯蚓粪对花园可好了。"],
+    ["Do worms make castings in the dirt?", "蚯蚓会在土里产出便便吗？"],
+    ["Look at the little castings by the flower!", "快看花儿旁边那些小小的蚯蚓粪！"]
+  ],
+  "casual": [
+    ["I like casual clothes, not a suit.", "我喜欢休闲装，不喜欢西装。"],
+    ["Is the picnic casual or not?", "这次野餐是休闲风格的吗？"],
+    ["Come in casual clothes today.", "今天穿休闲衣服来吧。"]
+  ],
+  "casualty": [
+    ["The flowers were a casualty of the big rain.", "那场大雨可让花儿遭了殃。"],
+    ["Was the snowman a casualty of the sun?", "雪人是被太阳晒得遭了殃吗？"],
+    ["My sand pie was a casualty of the wave!", "我的沙子饼被海浪冲坏啦！"]
+  ],
+  "catamaran": [
+    ["The catamaran goes fast on the water.", "双体船在水面上开得飞快。"],
+    ["Did you go on the catamaran today?", "今天你坐双体船了吗？"],
+    ["The catamaran takes many people to the coast!", "双体船能载好多人去海边呢！"]
+  ],
+  "catastrophe": [
+    ["A catastrophe is a very bad thing.", "大灾难就是非常非常糟糕的事。"],
+    ["Was the big rain a catastrophe for the bugs?", "那场大雨对小虫子来说是大灾难吗？"],
+    ["What a catastrophe!", "真是一场大灾难呀！"]
+  ],
+  "catfish": [
+    ["The catfish swims in the river.", "鲶鱼在小河里游来游去。"],
+    ["Can we see a catfish at the lake?", "我们能在湖边看见鲶鱼吗？"],
+    ["The catfish has a flat, wide head!", "鲶鱼的脑袋又扁又宽呢！"]
+  ],
+  "cathedral": [
+    ["The big cathedral is very old.", "那座大教堂非常古老。"],
+    ["Did you go into the tall cathedral?", "你进去过高高的教堂吗？"],
+    ["Look at the colorful windows in the cathedral!", "快看教堂里五彩缤纷的玻璃窗！"]
+  ],
+  "causeway": [
+    ["The bus goes over the causeway to the coast.", "公交车经过长堤开往海边。"],
+    ["Did you walk on the long causeway?", "你在那条长堤上走过吗？"],
+    ["What a wide causeway over the water!", "水面上的堤道好宽呀！"]
+  ],
+  "cautionary": [
+    ["This is a cautionary story about fire.", "这是一个关于用火安全的警示故事。"],
+    ["Why do we read cautionary stories?", "我们为什么要读有警示意义的故事呢？"],
+    ["Listen to her cautionary words!", "听听她那些劝诫的话吧！"]
+  ],
+  "cavalry": [
+    ["In the old story, the cavalry has fast horses.", "在古老的故事里，骑兵队有好马。"],
+    ["What is the cavalry?", "骑兵队是什么呀？"],
+    ["Look at the cavalry on their horses!", "快看骑在马上的骑兵队！"]
+  ],
+  "cavort": [
+    ["The goats cavort in the green field.", "小山羊们在绿色的田野里撒欢。"],
+    ["Where do the deer cavort?", "小鹿们喜欢在哪里撒欢呀？"],
+    ["Look at the monkeys cavorting in the trees!", "快看猴子们在树上蹦蹦跳跳呢！"]
+  ],
+  "cello": [
+    ["She plays the cello at school.", "她在学校拉大提琴。"],
+    ["Can your brother play the cello?", "你哥哥会拉大提琴吗？"],
+    ["I love the low song of the cello!", "我喜欢大提琴低低的琴声！"]
+  ],
+  "cellophane": [
+    ["The candy is in cellophane.", "糖果包在玻璃纸里。"],
+    ["What is cellophane made of?", "玻璃纸是用什么做的呀？"],
+    ["Take the cellophane off the candy, please.", "请把糖果外面的玻璃纸剥掉。"]
+  ]
+}

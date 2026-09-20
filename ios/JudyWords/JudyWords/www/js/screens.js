@@ -113,7 +113,7 @@
           </div>
 
           <div class="card trail-card">
-            <div class="trail-title">🗺️ 冒险地图（RAZ 29 级 · 本 app 到 L 级）</div>
+            <div class="trail-title">🗺️ 冒险地图（RAZ 全 29 级）</div>
             <div class="trail">${trailHtml}</div>
             <div class="re-place-row">
               <button class="btn ghost small" data-nav="placement">🧭 重新测评定级</button>

@@ -1,0 +1,602 @@
+{
+"eclipse": [
+  ["We watched the eclipse at school today.", "我们今天在学校观看了日食。"],
+  ["Did you see the eclipse in the sky?", "你看见天上的日食了吗？"],
+  ["What a cool eclipse!", "好酷的日食呀！"]
+],
+"ecological": [
+  ["The ecological forest is home to many animals.", "这片生态森林是许多动物的家园。"],
+  ["Did you see the ecological garden at school?", "你在学校看过生态小花园吗？"],
+  ["How fun the ecological park is!", "生态公园多好玩呀！"]
+],
+"ecology": [
+  ["We read about ecology in our book.", "我们在书里读了生态学。"],
+  ["What does ecology tell us about animals?", "关于动物，生态学告诉我们什么呢？"],
+  ["How fun our ecology walk was!", "我们的生态观察散步多有趣呀！"]
+],
+"economic": [
+  ["The store does well in good economic times.", "经济好的时候，这家店的生意可好啦。"],
+  ["Why do people make economic maps for a city?", "人们为什么要为城市画经济地图呢？"],
+  ["Look at the big economic map in our classroom!", "快看我们教室里这张大大的经济地图！"]
+],
+"economical": [
+  ["This little car is very economical.", "这辆小车非常经济省油。"],
+  ["Try walking to school, it is economical and fun!", "试试走路上学吧，省钱又好玩！"],
+  ["What an economical little bike!", "多么划算的一辆小自行车呀！"]
+],
+"economics": [
+  ["My brother reads a book about economics.", "我哥哥在读一本关于经济学的书。"],
+  ["Is economics hard at school?", "经济学在学校里难学吗？"],
+  ["Wow, I love economics time at school!", "哇，我好爱上学校的经济学课呀！"]
+],
+"economy": [
+  ["The economy of our city is very good.", "我们城市的经济非常好。"],
+  ["How does the economy work?", "经济是怎样运转的呢？"],
+  ["How a good economy helps every family!", "好的经济能帮到每个家庭呀！"]
+],
+"ecosystem": [
+  ["The pond is a little ecosystem.", "这个池塘就是一个小小的生态系统。"],
+  ["What lives in this forest ecosystem?", "这片森林生态系统里住着什么呢？"],
+  ["Look at the little ecosystem in the bucket!", "快看桶里的这个小生态系统！"]
+],
+"edible": [
+  ["This fruit is edible and yummy.", "这种水果能吃，还很好吃。"],
+  ["Are the leaves of this plant edible?", "这种植物的叶子能吃吗？"],
+  ["Let's find edible fruit in the garden!", "我们去花园里找能吃的果子吧！"]
+],
+"editor": [
+  ["The editor reads many stories every day.", "编辑每天要读好多故事。"],
+  ["Does the editor work at the bookstore?", "编辑是在书店上班吗？"],
+  ["How fast the editor reads my story!", "编辑读我的故事读得好快呀！"]
+],
+"editorial": [
+  ["Grandfather reads an editorial every day.", "爷爷每天都会读一篇社论。"],
+  ["What is an editorial in the paper?", "报纸上的社论是什么呀？"],
+  ["Read the editorial with Grandfather!", "和爷爷一起读社论吧！"]
+],
+"eerie": [
+  ["The old tree makes an eerie noise.", "那棵老树会发出阴森森的声音。"],
+  ["Can you hear the eerie owl at night?", "晚上你能听到猫头鹰怪里怪气的叫声吗？"],
+  ["How eerie the old house looks!", "这座老房子看起来好吓人呀！"]
+],
+"efficient": [
+  ["The little robot is very efficient.", "这个小机器人干活特别麻利。"],
+  ["Are bees efficient workers?", "蜜蜂是干活很高效的劳动者吗？"],
+  ["Be efficient and clean your room fast!", "麻利点，快点把房间收拾好吧！"]
+],
+"elaborate": [
+  ["Grandmother made an elaborate dress for my doll.", "奶奶给我的娃娃做了一条特别精致的裙子。"],
+  ["How did you make this elaborate kite?", "你是怎么做出这只精美风筝的？"],
+  ["How elaborate your drawing is!", "你的画画得多么精美呀！"]
+],
+"elated": [
+  ["She was elated about her new bike.", "有了新自行车，她开心极了。"],
+  ["Why does he look so elated today?", "他今天怎么看起来这么兴高采烈呀？"],
+  ["How elated I feel when I get a gift!", "收到礼物的时候我真是乐开了花呀！"]
+],
+"elected": [
+  ["The kids elected a helper for the classroom.", "同学们选出了一名班级小助手。"],
+  ["Was your friend elected today?", "你的朋友今天当选了吗？"],
+  ["Say hello to our elected helper!", "向我们当选的小助手问好吧！"]
+],
+"electromagnet": [
+  ["The big spoon sticks to the electromagnet.", "大勺子一下子就吸在电磁铁上。"],
+  ["What sticks to the electromagnet?", "什么东西能吸在电磁铁上呢？"],
+  ["Wow, the pot hung on the electromagnet!", "哇，铁锅都挂在电磁铁上啦！"]
+],
+"electromagnetic": [
+  ["The electromagnetic train runs very fast.", "电磁列车跑得非常快。"],
+  ["Is light an electromagnetic wave?", "光是一种电磁波吗？"],
+  ["How fast the electromagnetic train goes!", "电磁列车跑起来真快呀！"]
+],
+"electron": [
+  ["An electron is too small to see.", "电子小得根本看不见。"],
+  ["What does an electron do inside the computer?", "电子在电脑里面做些什么呢？"],
+  ["Wow, the electron runs so fast!", "哇，电子跑得好快呀！"]
+],
+"electronic": [
+  ["I have a small electronic game.", "我有一个小小的电子游戏机。"],
+  ["Do you like electronic music?", "你喜欢电子音乐吗？"],
+  ["Wow, this electronic dog can dance!", "哇，这只电子狗还会跳舞呢！"]
+],
+"element": [
+  ["The book tells about every element.", "这本书讲了每一种元素。"],
+  ["Which element is in the air we need?", "我们需要的空气里含有哪种元素呢？"],
+  ["How many things are made of this element!", "用这种元素能做出好多东西呀！"]
+],
+"elevation": [
+  ["The city is at a high elevation.", "这座城市海拔很高。"],
+  ["What is the elevation of this cliff?", "这座悬崖的海拔是多少？"],
+  ["How high the elevation is up here!", "这里的海拔好高呀！"]
+],
+"eliminate": [
+  ["The game will eliminate one team today.", "今天的比赛会淘汰一支队伍。"],
+  ["Can soap eliminate all the dirt?", "肥皂能把脏东西统统清掉吗？"],
+  ["Wow, he can eliminate ten bugs so fast!", "哇，他这么快就消掉了十只小虫！"]
+],
+"elite": [
+  ["The elite team plays baseball very well.", "那支精英棒球队打得特别好。"],
+  ["Is that the elite swim team?", "那是精英游泳队吗？"],
+  ["Wow, the elite team runs so fast!", "哇，精英队跑得好快呀！"]
+],
+"eloquent": [
+  ["Grandmother is eloquent when she tells stories.", "奶奶讲故事的时候口才特别好。"],
+  ["Who is the most eloquent kid in your classroom?", "你们教室里谁口才最棒呀？"],
+  ["How eloquent he is on the stage!", "他在台上讲得多有口才呀！"]
+],
+"elusive": [
+  ["The lizard is very elusive.", "这只蜥蜴特别难抓。"],
+  ["Why is that little fish so elusive?", "为什么那条小鱼这么难捉呀？"],
+  ["What an elusive little bug!", "这只小虫可真难逮呀！"]
+],
+"emanate": [
+  ["Warm light emanates from the window.", "暖暖的光从窗户里透出来。"],
+  ["Does that nice music emanate from the school?", "那好听的音乐是从学校传出来的吗？"],
+  ["Wow, warm air emanates from the stove!", "哇，暖烘烘的空气正从炉子那边飘过来呢！"]
+],
+"emancipated": [
+  ["The story tells about emancipated people.", "这个故事讲了获得解放的人们。"],
+  ["How did the emancipated people feel?", "获得解放的人们心情怎么样呢？"],
+  ["Sing for the emancipated people!", "为获得解放的人们唱歌吧！"]
+],
+"emancipator": [
+  ["The old story tells about an emancipator.", "这个老故事讲了一位解放者。"],
+  ["Who was the emancipator in the story?", "故事里的解放者是谁呢？"],
+  ["How the people loved their emancipator!", "人们多么爱戴他们的解放者呀！"]
+],
+"embalm": [
+  ["The old book tells how people used to embalm.", "这本老书讲了古时候人们是怎么做防腐处理的。"],
+  ["Why did people embalm in the old days?", "古时候人们为什么要做防腐处理呢？"],
+  ["Read this page to see how they embalm.", "读读这一页，看看他们是怎么做的吧。"]
+],
+"embalmer": [
+  ["The embalmer worked in the old city.", "防腐师在这座古城里工作。"],
+  ["What did the embalmer do all day?", "防腐师一整天都做些什么呢？"],
+  ["How hard the embalmer worked!", "防腐师干活可真用心呀！"]
+],
+"embarrassed": [
+  ["My brother was embarrassed at the school play.", "我哥哥在学校的演出上觉得好尴尬。"],
+  ["Why is she embarrassed in the classroom?", "她在教室里为什么这么不好意思呀？"],
+  ["Don't be embarrassed, just try again!", "别难为情，再试一次就好啦！"]
+],
+"embarrassing": [
+  ["I had an embarrassing day at school.", "我在学校过了尴尬的一天。"],
+  ["What was so embarrassing about the game?", "那场游戏有什么好尴尬的呀？"],
+  ["How embarrassing that was!", "那真是太尴尬啦！"]
+],
+"embarrassment": [
+  ["A little embarrassment is ok for us all.", "有一点点难为情，我们大家都没关系。"],
+  ["Can you laugh about a little embarrassment?", "你能笑着看待小小的尴尬吗？"],
+  ["Wow, what an embarrassment at lunch today!", "哇，今天吃午饭时可真让人难为情呀！"]
+],
+"embers": [
+  ["Red embers were in the old fire.", "旧火堆里还有红红的余烬。"],
+  ["Are the embers hot or cold now?", "现在余烬是烫的还是凉的呢？"],
+  ["Look at the red embers in the fire!", "快看火里那些红红的余烬呀！"]
+],
+"emerge": [
+  ["The moon will emerge at night.", "月亮会在夜里悄悄露出来。"],
+  ["What animals emerge from the pond in spring?", "春天里会有什么动物从池塘里出来呢？"],
+  ["Look, two little turtles emerge from the sand!", "看，两只小乌龟从沙子里钻出来啦！"]
+],
+"emigrant": [
+  ["The emigrant takes a boat to a new city.", "移民坐船去一座新的城市。"],
+  ["What does the emigrant put in her suitcase?", "移民会在行李箱里装些什么呢？"],
+  ["Look at the emigrant waving from the boat!", "快看船上那位朝我们挥手的移民呀！"]
+],
+"emigrate": [
+  ["The family will emigrate to a new city.", "这一家人要搬到一座新的城市去。"],
+  ["Why did they emigrate with all their things?", "他们为什么带着全部家当搬走呢？"],
+  ["Let's write letters when we emigrate!", "我们搬走以后要互相写信哦！"]
+],
+"emissions": [
+  ["Cars make a lot of emissions.", "汽车会产生好多尾气排放。"],
+  ["What makes emissions in a big city?", "大城市里是什么在产生排放呢？"],
+  ["Bikes are good, they make no emissions!", "自行车真好，一点排放都没有！"]
+],
+"emit": [
+  ["The stove emits warm air.", "炉子会散出暖暖的热气。"],
+  ["Does the candle emit a warm light?", "蜡烛发出的是暖暖的光吗？"],
+  ["Wow, the lighthouse emits a big light!", "哇，灯塔射出好亮的一道光呀！"]
+],
+"emotion": [
+  ["Love is a warm emotion.", "爱是一种暖暖的情感。"],
+  ["What emotion do you feel today?", "你今天的情绪是什么样的呢？"],
+  ["Every emotion is ok!", "每一种情绪都是可以的呀！"]
+],
+"emotional": [
+  ["The movie was very emotional.", "这部电影特别打动人心。"],
+  ["Why was Grandmother so emotional at the song?", "奶奶听到这首歌时为什么这么动情呀？"],
+  ["What an emotional day we had!", "我们度过了多么让人动情的一天呀！"]
+],
+"employment": [
+  ["Father found new employment in the city.", "爸爸在城里找到了新工作。"],
+  ["Does the store give employment to many people?", "这家商店雇用了好多人吗？"],
+  ["Good employment helps every family!", "有好工作，对每个家庭都好呀！"]
+],
+"empower": [
+  ["Books empower kids to dream big.", "书能让孩子们敢于做大大的梦。"],
+  ["How does reading empower you?", "读书是怎样让你更有力量的呢？"],
+  ["Use nice words to empower your friends!", "用好听的话给朋友们加油打气吧！"]
+],
+"empowerment": [
+  ["Helping others gives me empowerment.", "帮助别人让我觉得自己充满力量。"],
+  ["What gives you a feeling of empowerment?", "什么事情会让你觉得特别有力量呢？"],
+  ["Wow, empowerment makes me want to try!", "哇，这股力量让我什么都想试一试！"]
+],
+"empress": [
+  ["The empress has a long purple dress.", "女皇有一条长长的紫裙子。"],
+  ["Where does the empress live?", "女皇住在哪里呢？"],
+  ["All the people wave to the empress!", "所有人都朝女皇挥手呢！"]
+],
+"enchant": [
+  ["The fairy can enchant the little forest.", "仙女能把小森林变得像魔法世界一样。"],
+  ["Did the music enchant you?", "那段音乐把你迷住了吗？"],
+  ["How the old song can enchant us all!", "这首老歌能把我们全都迷住呀！"]
+],
+"encroaching": [
+  ["The sand is encroaching on the little garden.", "沙子正一点点侵占小花园。"],
+  ["Is the big wave encroaching on the beach?", "大浪是不是在一步步侵占沙滩呀？"],
+  ["The tall grass is encroaching on our sidewalk!", "高高的野草都快爬到我们的人行道上啦！"]
+],
+"encryption": [
+  ["Encryption makes my words hard to read.", "加密会让文字变得很难读懂。"],
+  ["Who can read a letter with encryption?", "加了密的信谁能读得懂呢？"],
+  ["Good encryption keeps our letters just for us!", "好的加密能让信只有我们自己看得懂！"]
+],
+"endanger": [
+  ["The dry summer can endanger the little fish.", "干旱的夏天会让小鱼们陷入危险。"],
+  ["Why is it bad to endanger animals?", "为什么让动物遇到危险是不对的？"],
+  ["Don't endanger the little turtles!", "别让小海龟们遇到危险哦！"]
+],
+"endurance": [
+  ["Swimming gives you good endurance.", "游泳能让你有很好的耐力。"],
+  ["Who has more endurance, you or your dog?", "你和你的狗谁耐力更好呢？"],
+  ["Wow, that long walk takes a lot of endurance!", "哇，走那么长的路可真需要耐力呀！"]
+],
+"endure": [
+  ["I can endure the long walk home.", "走好长的路回家，我也能坚持下来。"],
+  ["Can you endure the hot sun at the beach?", "海滩上太阳这么晒，你受得了吗？"],
+  ["How the little turtle endures the long winter!", "小乌龟熬过漫漫寒冬，真了不起呀！"]
+],
+"energetic": [
+  ["My little dog is very energetic.", "我家的小狗精力特别旺盛。"],
+  ["Why are the kids so energetic today?", "孩子们今天怎么这么有活力呀？"],
+  ["Wow, the energetic monkey jumps all day!", "哇，那只活力十足的猴子跳了一整天！"]
+],
+"engagement": [
+  ["Her engagement in the game made us smile.", "她在游戏中的投入让大家笑了。"],
+  ["How is your engagement in the classroom?", "你在课堂上的参与度怎么样呀？"],
+  ["I love your engagement in the school play!", "我真喜欢你在学校演出中的那份投入！"]
+],
+"engineer": [
+  ["My father is an engineer at the big bridge.", "我爸爸是那座大桥的工程师。"],
+  ["What does an engineer make?", "工程师都造些什么呢？"],
+  ["One day I will be an engineer!", "长大以后我也要当工程师！"]
+],
+"engineering": [
+  ["Engineering helps us make big bridges.", "工程学帮我们造出大大的桥。"],
+  ["Is engineering fun at school?", "在学校上工程课好玩吗？"],
+  ["Wow, engineering made this long tunnel!", "哇，这条长长的隧道就是工程做出来的！"]
+],
+"engrave": [
+  ["I will engrave a little bird on the log.", "我要在木头上刻一只小鸟。"],
+  ["What should we engrave on the gift?", "我们在礼物上刻点什么好呢？"],
+  ["Wow, look what they engrave on the gate!", "哇，快看他们在大门上刻的花纹！"]
+],
+"engraved": [
+  ["A little bird was engraved on the gate.", "大门上刻着一只小鸟。"],
+  ["What is engraved on this old bench?", "这条旧长椅上刻着什么呀？"],
+  ["How nice the engraved cup is!", "这个刻了花的杯子多好看呀！"]
+],
+"engrossed": [
+  ["He was engrossed in his new book.", "他读新书读得入了迷。"],
+  ["Why is she so engrossed in that story?", "她读那个故事怎么读得这么入神呀？"],
+  ["How engrossed we were in the movie!", "我们看电影看得多入迷呀！"]
+],
+"engulf": [
+  ["The big wave can engulf the sand.", "大浪能把沙子整个吞没。"],
+  ["Did the water engulf the little log house?", "大水把小木屋都淹掉了吗？"],
+  ["How the big waves engulf the rocks!", "大浪扑向礁石，一下子就把它们吞没了！"]
+],
+"enhance": [
+  ["A colorful bow will enhance your hat.", "一个彩色的蝴蝶结能让你的帽子更好看。"],
+  ["How can we enhance this old garden?", "我们怎么能让这个旧花园更美呢？"],
+  ["How music can enhance a cold day!", "音乐能把冷冷的日子变得暖暖的呀！"]
+],
+"enlist": [
+  ["I will enlist my friends to clean the park.", "我要召集朋友们一起打扫公园。"],
+  ["Who can we enlist for our team?", "我们能拉谁来加入队伍呢？"],
+  ["Let's enlist our family for the big game!", "咱们把全家人都叫来参加大赛吧！"]
+],
+"enraged": [
+  ["The bull was enraged by the red cape.", "公牛被那块红斗篷激怒了。"],
+  ["Why does the bear look so enraged?", "那头熊为什么看起来气呼呼的呀？"],
+  ["Don't make the big dog enraged!", "别把大狗惹毛啦！"]
+],
+"enraptured": [
+  ["She was enraptured by the nice song.", "她被那首好听的歌迷住了。"],
+  ["Are the kids enraptured by the circus?", "孩子们看马戏看入迷了吗？"],
+  ["How enraptured the little girl was by the rainbow!", "小姑娘看彩虹看得多入迷呀！"]
+],
+"enrichment": [
+  ["Art time gives us enrichment.", "美术时光让我们的学习更丰富。"],
+  ["What enrichment is at school today?", "今天学校有什么趣味拓展活动呢？"],
+  ["How much fun the music enrichment was!", "那次音乐拓展活动多有意思呀！"]
+],
+"ensemble": [
+  ["The music ensemble plays on the stage.", "乐团在舞台上演出。"],
+  ["Did you hear our drum ensemble?", "你听到我们的鼓乐合奏了吗？"],
+  ["How well the ensemble plays together!", "这个乐团合奏得多整齐好听呀！"]
+],
+"enslaved": [
+  ["The book tells how some people were enslaved.", "这本书讲了有些人曾被奴役的事。"],
+  ["Who helped the enslaved people?", "谁帮助了那些被奴役的人们呢？"],
+  ["Today no one can be enslaved at all!", "现在谁也不能奴役任何人了！"]
+],
+"enslaver": [
+  ["The story has a bad enslaver in it.", "故事里有一个坏坏的奴役别人的人。"],
+  ["What did the enslaver do in the story?", "故事里那个奴役别人的人都做了什么？"],
+  ["The enslaver was stopped by good people!", "那个奴役别人的人被好人们拦住啦！"]
+],
+"enterprising": [
+  ["My enterprising friend made a little market at home.", "我那位有点子的朋友在家办了个小集市。"],
+  ["How did the enterprising kid get so many acorns?", "这个有本事的孩子是怎么收了这么多橡子的？"],
+  ["The enterprising kid works hard every day!", "这个有闯劲的孩子每天都特别努力！"]
+],
+"enthusiasm": [
+  ["He sings with a lot of enthusiasm.", "他唱歌特别有热情。"],
+  ["Where does your enthusiasm for art come from?", "你对画画的热情是从哪儿来的呀？"],
+  ["What enthusiasm at the soccer game!", "足球赛上的热情真高呀！"]
+],
+"enthusiastic": [
+  ["The kids are enthusiastic about the picnic.", "孩子们对野餐期待满满。"],
+  ["Is your brother enthusiastic about the new game?", "你哥哥对新游戏有兴致吗？"],
+  ["The enthusiastic team jumps up and down!", "热情满满的队员们又蹦又跳！"]
+],
+"entomologist": [
+  ["An entomologist knows a lot about bugs.", "昆虫学家特别懂小虫子。"],
+  ["Does the entomologist work in the forest?", "昆虫学家是在森林里工作吗？"],
+  ["Wow, the entomologist found a new beetle!", "哇，昆虫学家发现了一种新甲虫！"]
+],
+"entranced": [
+  ["My cat was entranced by the toy mouse.", "我家猫被玩具小老鼠迷得不行。"],
+  ["Are you entranced by the movie?", "你被这部电影迷住了吗？"],
+  ["How entranced we were by the sunset!", "我们看日落看得都入迷啦！"]
+],
+"entrapment": [
+  ["The hole in the sand was an entrapment.", "沙地上的那个洞是个陷阱。"],
+  ["Did the little mouse get out of the entrapment?", "小老鼠从陷阱里跑出来了吗？"],
+  ["Look out for the entrapment!", "小心那个陷阱哦！"]
+],
+"entreat": [
+  ["I entreat you to open the door.", "我求求你把门打开吧。"],
+  ["Why does the little dog entreat us for food?", "小狗为什么总向我们讨吃的呢？"],
+  ["Let's entreat Mother for one more story!", "咱们求妈妈再讲一个故事吧！"]
+],
+"entrepreneur": [
+  ["The entrepreneur opened a small cookie store.", "那位创业者开了一家小小的曲奇店。"],
+  ["What does an entrepreneur do?", "创业者是做什么的呢？"],
+  ["One day I will be an entrepreneur!", "长大以后我也要当创业者！"]
+],
+"envious": [
+  ["I was envious of her new backpack.", "我好羡慕她的新书包。"],
+  ["Are you envious of my big cookie?", "你在眼馋我的大曲奇吗？"],
+  ["Don't be envious of your friend's new toy!", "别眼红朋友的新玩具哦！"]
+],
+"environment": [
+  ["We keep our environment clean.", "我们让周围的环境干干净净。"],
+  ["How can we help the environment?", "我们能为环境做点什么呢？"],
+  ["A clean environment is good for every animal!", "干净的环境对每只动物都好！"]
+],
+"environmental": [
+  ["Our school has an environmental garden.", "我们学校有一个环保小花园。"],
+  ["Did you read the environmental book?", "你读过那本讲环保的书吗？"],
+  ["Let's do environmental work at the park!", "我们去公园做环保吧！"]
+],
+"envision": [
+  ["I envision a big garden for our school.", "我想象我们学校会有一个大花园。"],
+  ["What do you envision for our old playground?", "你希望我们的旧游乐场变成什么样呢？"],
+  ["Close your eyes and envision a rainbow!", "闭上眼睛，想象一道彩虹吧！"]
+],
+"epidemic": [
+  ["We read about an epidemic in our book.", "我们在书里读了关于流行病的知识。"],
+  ["How do people stop an epidemic?", "人们是怎样挡住流行病的呢？"],
+  ["Keep clean to stop the epidemic!", "保持干净，就能挡住流行病！"]
+],
+"epiphyte": [
+  ["An epiphyte lives high on a big tree.", "附生植物高高地住在大树上。"],
+  ["What does an epiphyte need to live?", "附生植物活下去需要什么呢？"],
+  ["Look at the little epiphyte in the rainforest!", "快看雨林里那株小小的附生植物！"]
+],
+"epitaph": [
+  ["People write an epitaph with nice words.", "人们会用美好的话语写下墓志铭。"],
+  ["What does the old epitaph say?", "这段老墓志铭写了什么呢？"],
+  ["How old this epitaph is!", "这块墓志铭的年代好久远呀！"]
+],
+"epitome": [
+  ["She is the epitome of a good friend.", "她就是好朋友的典范。"],
+  ["What is the epitome of a yummy snack?", "什么才是最美味小点心的代表呢？"],
+  ["That was the epitome of a fun day!", "那真是快乐一天的最好代表呀！"]
+],
+"equestrian": [
+  ["The equestrian sits on a tall black horse.", "骑手坐在一匹高高的黑马上。"],
+  ["Is the little equestrian on the big horse?", "那个小骑手骑的是那匹大马吗？"],
+  ["How fast the equestrian goes on her horse!", "骑手骑马跑得多快呀！"]
+],
+"equipment": [
+  ["We need good equipment for the camp.", "我们去露营需要好的装备。"],
+  ["Where do you keep your soccer equipment?", "你的足球装备放在哪儿呢？"],
+  ["What a lot of equipment in the gym!", "体育馆里的器材可真多呀！"]
+],
+"era": [
+  ["Dinosaurs lived in a very old era.", "恐龙生活在一个非常久远的时代。"],
+  ["What do you know about that old era?", "关于那个古老的时代你知道些什么呢？"],
+  ["In that old era, there were no planes!", "在那个古老的时代，还没有飞机呢！"]
+],
+"ermine": [
+  ["The little ermine turns white in winter.", "小白貂一到冬天就变成白色。"],
+  ["Can you find the white ermine in the snow?", "你能在雪地里找到白貂吗？"],
+  ["How fast the little ermine runs!", "小貂跑起来可真快呀！"]
+],
+"erode": [
+  ["Waves erode the sand on the beach.", "海浪会一点点侵蚀沙滩。"],
+  ["How did water erode this big cliff?", "水是怎么侵蚀出这么大的悬崖的？"],
+  ["Wow, the river can erode the mud so fast!", "哇，河水冲走泥巴的速度真快呀！"]
+],
+"errand": [
+  ["I run an errand for Mother.", "我帮妈妈跑腿办事。"],
+  ["Can you do an errand at the store?", "你能帮我去商店办件事吗？"],
+  ["Let's go on an errand to the market!", "咱们去市场办件事吧！"]
+],
+"erroneous": [
+  ["The old map was erroneous about our city.", "那张老地图上我们城市的信息是错的。"],
+  ["Is this number right or erroneous?", "这个数字是对还是错的呀？"],
+  ["That erroneous story made us all laugh!", "那个错漏百出的故事让我们哈哈大笑！"]
+],
+"eruption": [
+  ["The book tells about a big eruption.", "这本书讲了一次大喷发。"],
+  ["What comes out in a big eruption?", "大喷发的时候会喷出什么东西呢？"],
+  ["Wow, the eruption in that movie was big!", "哇，那部电影里的喷发场面好大呀！"]
+],
+"escapade": [
+  ["The duck's little escapade made mud pies.", "小鸭子调皮玩闹，踩出了一个个泥巴饼。"],
+  ["What escapade did the monkey do today?", "猴子今天又搞了什么恶作剧呀？"],
+  ["What an escapade, mud on the new rug!", "瞧你干的好事，新地毯上全是泥！"]
+],
+"escapee": [
+  ["The hamster is a little escapee.", "这只仓鼠是个溜出笼的小家伙。"],
+  ["Where is the little escapee now?", "那个小逃家选手现在躲哪儿呢？"],
+  ["There's the little escapee under the bed!", "小逃家选手就在床底下呢！"]
+],
+"essay": [
+  ["I will write an essay about my dog.", "我要写一篇关于我家小狗的作文。"],
+  ["What is your essay about?", "你的作文写的是什么呀？"],
+  ["How good your essay is!", "你的作文写得多棒呀！"]
+],
+"essential": [
+  ["Water is essential for every animal.", "水对每只动物来说都必不可少。"],
+  ["Why is sleep essential for kids?", "为什么睡觉对孩子们这么重要呢？"],
+  ["How essential water is for us all!", "水对我们大家是多么重要呀！"]
+],
+"estancia": [
+  ["The horses run on the big estancia.", "马儿们在大庄园里奔跑。"],
+  ["Who works on the estancia?", "谁在庄园里干活呢？"],
+  ["What a big estancia with so many cows!", "这座大庄园里的牛真多呀！"]
+],
+"estate": [
+  ["The old estate has a very big garden.", "那座老庄园有一个特别大的花园。"],
+  ["Who lives on that big estate?", "谁住在那座大宅院里呢？"],
+  ["How big the estate by the lake is!", "湖边那座庄园好大呀！"]
+],
+"estimate": [
+  ["I estimate there are ten cookies in the box.", "我估摸着盒子里有十块曲奇。"],
+  ["Can you estimate how many apples we have?", "你能估一估我们有多少个苹果吗？"],
+  ["What a close estimate that was!", "这个估算得可真准呀！"]
+],
+"estuary": [
+  ["Fish from the river swim in the estuary.", "河里来的鱼在入海口游来游去。"],
+  ["What animals live in the estuary?", "入海口里住着什么动物呢？"],
+  ["How big the estuary looks at sunset!", "日落时的入海口看起来好开阔呀！"]
+],
+"ethanol": [
+  ["This green car runs on ethanol.", "这辆绿色汽车烧的是乙醇。"],
+  ["Is ethanol made from corn?", "乙醇是用玉米做的吗？"],
+  ["Wow, farmers make ethanol from corn plants!", "哇，农民伯伯能用玉米做出乙醇呢！"]
+],
+"ethic": [
+  ["A good work ethic helps at school.", "认真做事的好态度在学校很管用。"],
+  ["Do you have a good work ethic?", "你做事有认真的好态度吗？"],
+  ["What a good work ethic you have!", "你做事的态度真棒呀！"]
+],
+"ethnicity": [
+  ["Every ethnicity is welcome at our school.", "我们学校欢迎每一个民族的孩子。"],
+  ["Do kids of every ethnicity play together?", "不同民族的孩子能一起玩吗？"],
+  ["People of every ethnicity are all friends here!", "在这里，各民族的人都是好朋友！"]
+],
+"etiquette": [
+  ["Good table etiquette makes lunch nice.", "好的餐桌礼仪让午饭吃得更加愉快。"],
+  ["What is good etiquette at the table?", "餐桌上怎样做才有礼貌呢？"],
+  ["Please use nice etiquette at lunch!", "吃午饭时请讲礼貌哦！"]
+],
+"evacuate": [
+  ["We evacuate the building in a fire drill.", "消防演习时我们要撤离大楼。"],
+  ["Where do we go when we evacuate?", "撤离的时候我们要去哪里呢？"],
+  ["Walk fast when we evacuate, don't run!", "撤离时要快快走，不要跑哦！"]
+],
+"evacuating": [
+  ["The kids are evacuating the school building.", "孩子们正在撤离教学楼。"],
+  ["Who is evacuating the big building?", "是谁正在从大楼里撤离呢？"],
+  ["The wave is coming, and the crabs are evacuating!", "大浪来啦，螃蟹们都搬家啦！"]
+],
+"evacuation": [
+  ["The evacuation drill at school was fast.", "学校的疏散演习进行得很快。"],
+  ["What do we take in an evacuation?", "撤离的时候我们要带些什么呢？"],
+  ["How fast our evacuation drill was today!", "我们今天的疏散演习真迅速呀！"]
+],
+"evacuee": [
+  ["The evacuee got a warm meal at the school.", "撤离来的朋友在学校吃到了热乎乎的饭。"],
+  ["How can we help the evacuee?", "我们能帮撤离来的朋友做点什么呢？"],
+  ["What a warm welcome for the evacuee!", "给撤离来的朋友多热情的欢迎呀！"]
+],
+"evaporate": [
+  ["Water will evaporate in the hot sun.", "水在烈日下会蒸发。"],
+  ["Where does the rain go when it evaporates?", "雨蒸发以后去哪里了呢？"],
+  ["How fast the water in the hot pan evaporates!", "热锅里的水蒸发得真快呀！"]
+],
+"evergreen": [
+  ["The evergreen tree is green in winter.", "常青树在冬天也是绿的。"],
+  ["Do you see the evergreen by the gate?", "你看见大门旁那棵常青树了吗？"],
+  ["How green the big evergreen looks in the snow!", "雪地里的大常青树多么翠绿呀！"]
+],
+"exact": [
+  ["What is the exact time?", "现在的准确时间是几点呀？"],
+  ["That is the exact hat I want.", "那正是我想要的那顶帽子。"],
+  ["How exact your drawing is!", "你画得和真的一模一样呀！"]
+],
+"exaggerated": [
+  ["That fish story was a little exaggerated.", "那个钓鱼的故事有点夸张啦。"],
+  ["Was that story about the big fish exaggerated?", "那个关于大鱼的故事是不是夸张了呀？"],
+  ["How exaggerated that tall story was!", "那个夸张的故事编得也太离谱啦！"]
+],
+"exasperated": [
+  ["Mother got exasperated at all the noise.", "吵吵闹闹的，妈妈都有点招架不住了。"],
+  ["Why does Father look so exasperated?", "爸爸怎么一脸无奈呀？"],
+  ["Don't get exasperated with your little brother!", "别被小弟弟气得没办法啦！"]
+],
+"excavate": [
+  ["The team will excavate old tools in the dirt.", "考古队要从土里挖出古老的工具。"],
+  ["What did they excavate near the old gate?", "他们在旧城门附近挖出了什么呀？"],
+  ["Wow, look what they excavate from the sand!", "哇，快看他们从沙子里挖出了什么！"]
+],
+"excavation": [
+  ["The excavation is at the old city gate.", "发掘现场就在旧城门那儿。"],
+  ["What was found at the excavation?", "在发掘现场找到了什么呀？"],
+  ["The excavation goes down, down, down!", "这个发掘坑好深呀，一直往下挖呢！"]
+],
+"exceed": [
+  ["The big fish can exceed two feet long.", "这种大鱼能长到超过两英尺长。"],
+  ["Did the snake exceed three feet?", "那条蛇超过三英尺了吗？"],
+  ["Wow, this snowman will exceed the fence!", "哇，这个雪人快要高过栅栏啦！"]
+],
+"excel": [
+  ["I excel at art in school.", "我在学校的美术方面很出色。"],
+  ["Does your sister excel at tennis?", "你的姐姐网球打得特别厉害吗？"],
+  ["How you excel at the high jump!", "你跳高跳得真出色呀！"]
+],
+"exceptional": [
+  ["She is an exceptional swimmer.", "她是个特别出色的游泳好手。"],
+  ["What made this an exceptional day?", "什么事让今天变得这么特别呀？"],
+  ["How exceptional your drawing is!", "你的画真是棒极了呀！"]
+],
+"executive": [
+  ["The executive works in a tall city building.", "那位主管在一栋高高的城市大楼里上班。"],
+  ["What does the executive do at work?", "主管上班都做些什么呢？"],
+  ["The executive takes the fast train to work!", "主管坐特别快的火车去上班！"]
+],
+"exhale": [
+  ["Run fast, then stop and exhale.", "快跑一阵，然后停下呼气。"],
+  ["I exhale warm air in the cold snow.", "冷冷的雪天里，我呼出暖暖的气。"],
+  ["When you exhale, where does the air go?", "你呼气的时候，空气去哪儿了呢？"]
+]
+}

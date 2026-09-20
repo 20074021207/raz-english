@@ -18,3 +18,22 @@
 [walk] We walk to school together. → 与 together 重复
 [who] Who is at the door? → 与 door 重复
 [write] I write a letter to my grandmother. → 与 letter 重复
+[manifest] Her love of art manifests in her drawings. → 墙外词:drawings
+[microorganism] Look at the drawings of microorganisms! → 墙外词:drawings
+[parliament] Who works in parliament? → 与 Parliament 重复
+[suction] The suction cup stuck to the window. → 墙外词:stuck
+[suction] Wow, the suction took my hat! → 墙外词:took
+[sullen] The sullen kid sat by the window. → 墙外词:sat
+[suspect] I suspect the cat took the cookie. → 墙外词:took
+[sward] The bunny ran on the green sward. → 墙外词:ran
+[swarm] A swarm of bees flew to the tree. → 墙外词:flew
+[swift] The swift fox ran into the forest. → 墙外词:ran
+[tension] He felt tension about the big game. → 墙外词:felt
+[terrier] The small terrier sat by the door all day! → 墙外词:sat
+[terror] The mouse ran off in terror! → 墙外词:ran
+[theory] My theory is the cat took my sock. → 墙外词:took
+[valiant] The valiant pilot flew over the big rain. → 墙外词:flew
+[velarium] The velarium kept the sun off the seats. → 墙外词:kept
+[vigil] The mother kept vigil all night. → 墙外词:kept
+[vow] She kept her vow and came back! → 墙外词:kept；墙外词:came
+[voyage] The boat went on a long voyage. → 墙外词:went
