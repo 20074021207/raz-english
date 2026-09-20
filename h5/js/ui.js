@@ -5,6 +5,29 @@
   const util = NG.util;
 
   NG.ui = {
+    /** 喇叭发音图标（配合 .q-speak 等按钮使用，currentColor 随主题） */
+    speaker() {
+      return `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M11 5 6 9H2v6h4l5 4z" fill="currentColor" stroke="none"/>
+        <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
+        <path d="M18.5 5.5a9 9 0 0 1 0 13"/>
+      </svg>`;
+    },
+
+    /** 主题：解析 跟随系统/深色/浅色 并落到 <html data-theme>；auto 监听系统切换 */
+    applyTheme() {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      const apply = () => {
+        const t = (NG.state && NG.state.s && NG.state.s.settings.theme) || 'auto';
+        document.documentElement.dataset.theme = t === 'auto' ? (mq.matches ? 'dark' : 'light') : t;
+      };
+      apply();
+      if (!NG.ui._themeWatch) {
+        NG.ui._themeWatch = true;
+        try { mq.addEventListener('change', apply); } catch (e) { /* 旧浏览器忽略 */ }
+      }
+    },
+
     /** 朱迪吉祥物（兔子警官 SVG，统一替换各处 🐰 emoji） */
     judy(cls) {
       return `<svg class="judy ${cls || ''}" viewBox="0 0 120 132" xmlns="http://www.w3.org/2000/svg" aria-label="朱迪">
@@ -70,7 +93,7 @@
       const p = util.clamp(pct, 0, 100);
       const color = p >= 100 ? 'var(--emerald)' : 'var(--primary-bright)';
       return `
-        <div class="goal-ring" style="background:conic-gradient(${color} ${p * 3.6}deg, #e6eef3 0deg)">
+        <div class="goal-ring" style="background:conic-gradient(${color} ${p * 3.6}deg, var(--ring-track, #e6eef3) 0deg)">
           <div class="pct"><b>${Math.round(p)}%</b><span>今日</span></div>
         </div>`;
     },

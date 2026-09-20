@@ -127,8 +127,13 @@
 
       root.querySelector('#btn-settings').addEventListener('click', () => {
         NG.sfx.tap();
-        NG.ui.modal('⚙️ 设置',
-          `声音：${s.settings.sound ? '开启' : '关闭'}<br>当前级别：${s.level} · 连续学习 ${s.streak.days} 天`,
+        const themeOpts = [['auto', '跟随系统'], ['dark', '深色'], ['light', '浅色']];
+        const cur = s.settings.theme || 'auto';
+        const mask = NG.ui.modal('⚙️ 设置',
+          `<div class="theme-row" id="theme-row">
+            ${themeOpts.map(([v, label]) => `<button class="theme-opt${cur === v ? ' on' : ''}" data-theme-v="${v}">${cur === v ? '✓ ' : ''}${label}</button>`).join('')}
+          </div>
+          <div class="muted mt-8">当前级别：${s.level} · 连续学习 ${s.streak.days} 天</div>`,
           [
             { label: s.settings.sound ? '🔇 关闭音效' : '🔊 开启音效', cls: 'ghost', onClick: () => { s.settings.sound = !s.settings.sound; S.save(); NG.screens.home.render(root); } },
             { label: '🧭 重新定级', cls: 'ghost', onClick: () => NG.app.go('placement') },
@@ -138,6 +143,18 @@
             ]) },
             { label: '关闭', cls: '' },
           ]);
+        // 主题三档切换：点选即存即生效（跟随系统时监听系统深浅变化）
+        mask.querySelectorAll('.theme-opt').forEach((b) => b.addEventListener('click', () => {
+          s.settings.theme = b.dataset.themeV;
+          S.save();
+          NG.sfx.tap();
+          NG.ui.applyTheme();
+          mask.querySelectorAll('.theme-opt').forEach((x) => {
+            const label = themeOpts.find(([v]) => v === x.dataset.themeV)[1];
+            x.classList.toggle('on', x === b);
+            x.textContent = (x === b ? '✓ ' : '') + label;
+          });
+        }));
       });
     },
 
@@ -216,8 +233,11 @@
           </div>
           <div class="qzone">
             <span class="qtype-badge">这个单词是什么意思？</span>
-            <div class="q-word-big">${NG.questions.labelHtml(q.word)}</div>
-            <div class="q-phone">/${util.esc(D.lookup(q.word).p)}/ · 点击单词听发音</div>
+            <div class="q-word-row">
+              <div class="q-word-big">${NG.questions.labelHtml(q.word)}</div>
+              <button class="q-speak" id="q-speak" aria-label="听发音">${NG.ui.speaker()}</button>
+            </div>
+            <div class="q-phone">/${util.esc(D.lookup(q.word).p)}/</div>
             <div class="opts" id="opts">
               ${options.map((o, i) => `<button class="opt" data-i="${i}">${util.esc(o)}</button>`).join('')}
             </div>
@@ -228,9 +248,9 @@
           </div>
         </div>`;
 
-      // 出题即朗读单词；点击大词可重听（与音节切换并存）
+      // 出题即朗读单词；点击喇叭重听
       setTimeout(() => NG.audio.speak(q.word), 300);
-      root.querySelector('.q-word-big').addEventListener('click', () => NG.audio.speak(q.word));
+      root.querySelector('#q-speak').addEventListener('click', () => { NG.sfx.tap(); NG.audio.speak(q.word); });
       // 定级题干单词同样支持 音节拼读 / 原形 点击切换
       NG.questions.bindSyllableToggle(root.querySelector('.q-word-big'), q.word, NG.syllables && NG.syllables.get(q.word));
 

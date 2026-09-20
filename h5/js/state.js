@@ -25,7 +25,7 @@
     bossAttemptAt: 0,          // 进行中的 Boss 战开始时间（防刷新逃逸，见 load()）
     badges: {},                // id -> timestamp
     totals: { lessons: 0, bossWins: 0, answers: 0, correct: 0 },
-    settings: { sound: true },
+    settings: { sound: true, theme: 'auto' },   // theme: auto|dark|light
   });
 
   let s = null;

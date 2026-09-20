@@ -233,7 +233,7 @@
 
       const body = q.type === 'spell'
         ? NG.questions.spellBody(q, info, { tools: true })
-        : NG.questions.choiceBody(q, info, { speakableWord: q.type === 'en2cn' });
+        : NG.questions.choiceBody(q, info);
 
       root.innerHTML = `
         <div class="screen">
@@ -280,7 +280,7 @@
         NG.questions.bindSpell(root, q, (ok) => done(ok, null), { tools: true });
         setTimeout(() => NG.audio.speak(q.word), 300);
       } else {
-        NG.questions.bindChoice(root, q, info, (ok, btn) => done(ok, btn), { speakableWord: q.type === 'en2cn' });
+        NG.questions.bindChoice(root, q, info, (ok, btn) => done(ok, btn));
         // 单词测验：所有题型出题即朗读单词（cloze 除外——目标词即答案，不能泄露）
         if (q.type !== 'cloze') setTimeout(() => NG.audio.speak(q.word), 300);
       }

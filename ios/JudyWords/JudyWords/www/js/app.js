@@ -40,5 +40,6 @@
 
   // 启动
   NG.state.load();
+  NG.ui.applyTheme();   // 主题：跟随系统/深色/浅色
   NG.app.go(NG.state.s.placementDone ? 'home' : 'placement');
 })();

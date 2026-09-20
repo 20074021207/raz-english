@@ -28,6 +28,7 @@
   --grad-hero: linear-gradient(140deg, #00a4dd 0%, #00628f 100%);
   --grad-boss: linear-gradient(165deg, #41275e 0%, #221338 70%);
   --grad-sun: linear-gradient(140deg, #ffc25e 0%, #f08a00 100%);
+  --sky: linear-gradient(180deg, #7ccfef 0%, #b8e3f7 55%, #dff1fb 100%);
 
   --radius: 20px;
   --shadow: 0 4px 16px rgba(0, 50, 80, 0.10);
@@ -42,7 +43,7 @@ html, body { height: 100%; }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  background: linear-gradient(180deg, #7ccfef 0%, #b8e3f7 55%, #dff1fb 100%);
+  background: var(--sky);
   color: var(--ink);
   -webkit-user-select: none;
   user-select: none;
@@ -277,7 +278,7 @@ body {
 .btn.success { background: linear-gradient(140deg, #4ddc87, #1fa85c); box-shadow: 0 6px 16px rgba(35, 170, 105, 0.35); }
 .btn.warn { background: var(--grad-sun); box-shadow: 0 6px 16px rgba(230, 145, 10, 0.35); }
 .btn.ghost {
-  background: #fff;
+  background: var(--card);
   color: var(--primary);
   border: 2px solid var(--primary-soft);
   box-shadow: var(--shadow);
@@ -633,7 +634,7 @@ body {
 .slot {
   width: 42px; height: 50px;
   border-radius: 12px;
-  background: #fff;
+  background: var(--card);
   border: 2px dashed #c5d7e1;
   display: flex; align-items: center; justify-content: center;
   font-size: 22px;
@@ -656,7 +657,7 @@ body {
   width: 46px; height: 50px;
   border: none;
   border-radius: 12px;
-  background: #fff;
+  background: var(--card);
   box-shadow: 0 3px 0 #cfdee7, var(--shadow);
   font-size: 21px;
   font-weight: 900;
@@ -816,7 +817,7 @@ body {
 .tabs::-webkit-scrollbar { display: none; }
 .tab {
   border: none;
-  background: #fff;
+  background: var(--card);
   border-radius: 999px;
   padding: 8px 15px;
   font-size: 13.5px;
@@ -834,7 +835,7 @@ body {
   flex: 1;
   border: none;
   border-radius: 14px;
-  background: #fff;
+  background: var(--card);
   box-shadow: var(--shadow);
   padding: 11px 14px;
   font-size: 16px;  /* ≥16px，避免 iOS 聚焦时自动放大 */
@@ -1160,3 +1161,55 @@ body {
 /* 重新定级入口 */
 .re-place-row { margin-top: 12px; display: flex; justify-content: center; }
 .re-place-row .btn.small { padding: 9px 16px; font-size: 13.5px; border-radius: 12px; }
+
+/* ---------- 主题：深色（跟随系统/手动，见 ui.applyTheme） ---------- */
+:root[data-theme="dark"] {
+  --sky: linear-gradient(180deg, #0c1c28 0%, #14303f 55%, #102433 100%);
+  --bg: #102433;
+  --card: #1b3140;
+  --ink: #eaf2f7;
+  --ink-2: #b4c6d2;
+  --muted: #71889a;
+  --line: rgba(255, 255, 255, 0.09);
+  --primary: #4db3e8;
+  --primary-soft: rgba(0, 144, 212, 0.18);
+  --emerald-soft: rgba(46, 204, 113, 0.16);
+  --rose-soft: rgba(231, 76, 60, 0.18);
+  --amber-soft: rgba(245, 166, 35, 0.16);
+  --indigo-soft: rgba(129, 140, 248, 0.22);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --ring-track: rgba(255, 255, 255, 0.14);
+}
+:root[data-theme="dark"] .sent-row { background: rgba(255, 255, 255, 0.05); }
+:root[data-theme="dark"] .learn-dots .dot { background: rgba(255, 255, 255, 0.25); }
+:root[data-theme="dark"] .slot { border-color: rgba(255, 255, 255, 0.3); box-shadow: none; }
+:root[data-theme="dark"] .tile { box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35), var(--shadow); }
+:root[data-theme="dark"] .node.locked { background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.4); border-color: rgba(255, 255, 255, 0.1); }
+:root[data-theme="dark"] .node.done { background: rgba(46, 204, 113, 0.12); border-color: rgba(46, 204, 113, 0.3); }
+:root[data-theme="dark"] .trail .link { background: rgba(255, 255, 255, 0.15); }
+:root[data-theme="dark"] .float-txt { text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45); }
+:root[data-theme="dark"] .combo-banner { text-shadow: 0 3px 0 rgba(0, 0, 0, 0.45), 0 6px 18px rgba(255, 140, 0, 0.4); }
+:root[data-theme="dark"] .theme-opt { border-color: rgba(255, 255, 255, 0.15); }
+
+/* ---------- 测验题干：单词 + 喇叭发音 ---------- */
+.q-word-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.q-speak {
+  width: 46px; height: 46px;
+  border: none; border-radius: 50%;
+  background: var(--primary-soft); color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; box-shadow: var(--shadow); flex-shrink: 0;
+  transition: transform 0.12s;
+}
+.q-speak:active { transform: scale(0.88); }
+.screen.dark .q-speak { background: rgba(255, 255, 255, 0.14); color: #ffd44d; }
+
+/* ---------- 设置面板：主题三档切换 ---------- */
+.theme-row { display: flex; gap: 8px; justify-content: center; }
+.theme-opt {
+  border: 2px solid var(--primary-soft); background: var(--card); color: var(--ink-2);
+  border-radius: 12px; padding: 9px 14px; font-size: 13.5px; font-weight: 800;
+  cursor: pointer; font-family: inherit;
+}
+.theme-opt.on { border-color: var(--primary-bright); background: var(--primary-soft); color: var(--primary); }

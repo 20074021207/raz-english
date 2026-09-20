@@ -63,17 +63,19 @@
 
   /**
    * 选择题题干（en2cn / cn2en / listen / cloze），写入 q._options / q._answer
-   * @param {object} opts speakableWord: 题干单词可点击发音（课程练习的 en2cn；Boss 战不提供）
+   * en2cn 题干为 单词+喇叭图标：喇叭发音，点击单词切换音节/原形（由 bindSyllableToggle 负责）
    */
-  function choiceBody(q, info, opts) {
-    const o = opts || {};
+  function choiceBody(q, info) {
     let options, body;
     if (q.type === 'en2cn') {
       options = util.shuffle([info.t, ...D.distractorTrans(info.l, q.word, 3)]);
       body = `
         <span class="qtype-badge">📖 词义选择</span>
-        <div class="q-word-big${o.speakableWord ? ' speakable' : ''}">${labelHtml(q.word)}</div>
-        <div class="q-phone">/${util.esc(info.p)}/${o.speakableWord ? ' · 点击单词听发音' : ''}</div>
+        <div class="q-word-row">
+          <div class="q-word-big">${labelHtml(q.word)}</div>
+          <button class="q-speak" id="q-speak" aria-label="听发音">${NG.ui.speaker()}</button>
+        </div>
+        <div class="q-phone">/${util.esc(info.p)}/</div>
         <div class="opts" id="opts">${optsHtml(options, false)}</div>`;
     } else if (q.type === 'cn2en') {
       options = util.shuffle([q.word, ...D.distractorWords(info.l, q.word, 3)]);
@@ -135,16 +137,14 @@
 
   /**
    * 绑定选择题作答：判分标记 / cloze 回填 / listen 揭示 / 答对朗读
+   * 题干喇叭 = 发音；点击题干单词 = 切换音节/原形
    * @param {function} onAnswer (ok, chosenEl) 作答后回调一次
-   * @param {object} opts speakableWord: 绑定题干单词点击发音
    */
-  function bindChoice(root, q, info, onAnswer, opts) {
-    const o = opts || {};
-    if (o.speakableWord) {
-      const w = root.querySelector('.q-word-big');
-      if (w) w.addEventListener('click', () => NG.audio.speak(q.word));
-    }
-    // 题干/揭示词的音节切换（点击 bas·ket·ball ↔ basketball）
+  function bindChoice(root, q, info, onAnswer) {
+    // 喇叭图标：点击听发音
+    const speakBtn = root.querySelector('#q-speak');
+    if (speakBtn) speakBtn.addEventListener('click', () => { NG.sfx.tap(); NG.audio.speak(q.word); });
+    // 题干单词的音节切换（点击 bas·ket·ball ↔ basketball）
     const stemWord = root.querySelector('.q-word-big');
     if (stemWord) bindSyllableToggle(stemWord, q.word, NG.syllables && NG.syllables.get(q.word));
     const replay = root.querySelector('#q-replay');
