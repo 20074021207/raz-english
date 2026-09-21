@@ -3,7 +3,9 @@
  *
  * 题型（对齐 app/src/types/exercise.ts 的词汇训练子集 + 例句填空扩展）：
  *   en2cn  词义选择   cn2en 反向选择   listen 听音辨词   spell 碎片组装
- *   cloze  例句填空（情境锚定，对齐 methodology_6month.md §3 情境烙印）
+ *   cloze  例句填空（情境锚定，对齐 methodology_6month.md §3 情境烙印；
+ *          仅当该词有「目标词恰一次独立出现」的精语料例句时可选，
+ *          语料未覆盖词不配例句：学习卡只读单词，读完即解锁）
  * 生命周期（对齐 docs §4 The Dumb Player）：
  *   答错的题以新题型重新压入队尾，直到清空队列才结算。
  */
@@ -19,8 +21,15 @@
     return /^[a-z]{3,8}$/.test(word);
   }
 
+  /** 例句填空仅当该词有「目标词恰一次独立出现」的精语料句子时可选 */
+  function clozeable(word) {
+    return NG.sentences.clozeSentences(word).length > 0;
+  }
+
+  /** @param {string|string[]=} exclude 排除题型（错题重排队时避免重复刚失败的型） */
   function pickType(word, exclude) {
-    let pool = ALL_TYPES.filter((t) => t !== exclude && (t !== 'spell' || spellable(word)));
+    const ex = Array.isArray(exclude) ? exclude : (exclude ? [exclude] : []);
+    let pool = ALL_TYPES.filter((t) => !ex.includes(t) && (t !== 'spell' || spellable(word)));
     if (!pool.length) pool = ['en2cn'];
     return util.pick(pool);
   }
@@ -29,14 +38,13 @@
    * @param {string} word
    * @param {boolean} isReview 是否复习轮
    * @param {string=} forceType 指定题型
-   * @param {string=} excludeType 排除题型（错题重排队时避免重复刚失败的型）
+   * @param {string|string[]=} excludeType 排除题型
    */
   function makeEx(word, isReview, forceType, excludeType) {
-    const t = forceType || pickType(word, excludeType);
+    let t = forceType || pickType(word, excludeType);
+    if (t === 'cloze' && !clozeable(word)) t = pickType(word, ['cloze', ...(excludeType || [])]);
     const ex = { word, type: t, isReview: !!isReview, tries: 0 };
-    if (t === 'cloze') {
-      ex.sentence = util.pick(NG.sentences.get(word));   // 该词随机一条双语例句
-    }
+    if (t === 'cloze') ex.sentence = util.pick(NG.sentences.clozeSentences(word));
     return ex;
   }
 
@@ -86,12 +94,13 @@
       }
 
       // 新词：两道题（识别类 + 回忆类），复习词：一道题
+      // 第二题题型按词资格过滤：长词/带撇号词不可拼写，无合格例句的词不可填空
       const exs = [];
       fresh.forEach((w) => {
         const first = util.pick(['en2cn', 'cn2en']);
-        const second = util.pick(first === 'en2cn'
-          ? ['cn2en', 'listen', 'spell', 'cloze']
-          : ['en2cn', 'listen', 'spell', 'cloze']);
+        const second = util.pick((first === 'en2cn' ? ['cn2en', 'listen'] : ['en2cn', 'listen'])
+          .concat(spellable(w) ? ['spell'] : [])
+          .concat(clozeable(w) ? ['cloze'] : []));
         exs.push(makeEx(w, false, first));
         exs.push(makeEx(w, false, second));
       });
@@ -136,6 +145,7 @@
             <div class="phone">/${util.esc(info.p)}/</div>
             <div class="trans">${util.esc(info.t)}</div>
             <button class="speak-btn" id="ls-speak">🔊</button>
+            ${sents.length ? `
             <div class="sent-list">
               ${sents.map((s, j) => `
                 <div class="sent-row" data-s="${j}">
@@ -145,7 +155,7 @@
                     <div class="sent-zh">${util.esc(s.zh)}</div>
                   </div>
                 </div>`).join('')}
-            </div>
+            </div>` : ''}
           </div>
           <button class="btn success mt-12" id="ls-next" disabled>🎧 朱迪正在朗读…</button>
         </div>`;
@@ -173,6 +183,7 @@
         if (playedAll || stamp !== this.gateStamp) return;
         playedAll = true;
         clearHighlights();
+        if (!sents.length) unlockBtn();   // 无例句卡（语料未覆盖词）：单词读完即解锁
       };
       this._releaseGate = () => { unlockBtn(); finishAll(); };   // 供 E2E 使用
 

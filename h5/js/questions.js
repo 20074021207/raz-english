@@ -14,8 +14,6 @@
   const util = NG.util;
   const D = NG.data;
 
-  const escRe = (w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
   // 英文单词按音节形态显示（bas·ket·ball）；引擎不可用/单音节时回退原形
   const wordLabel = (w) => (NG.syllables && NG.syllables.get(w)) || w;
 
@@ -96,10 +94,8 @@
         <div class="listen-reveal" id="listen-reveal"></div>`;
     } else { // cloze
       options = util.shuffle([q.word, ...D.distractorWords(info.l, q.word, 3)]);
-      const blanked = util.esc(q.sentence.en).replace(
-        new RegExp(escRe(q.word), 'i'),
-        '<span class="blank" id="cloze-blank">&nbsp;____&nbsp;</span>'
-      );
+      // 先按词边界匹配挖空、后 HTML 转义：含撇号词（Valentine's Day）不会被实体化破坏
+      const blanked = NG.sentences.blankFirst(q.sentence.en, q.word);
       body = `
         <span class="qtype-badge">📝 例句填空</span>
         <div class="q-prompt">选出填入空格的单词</div>
