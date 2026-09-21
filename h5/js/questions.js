@@ -14,9 +14,6 @@
   const util = NG.util;
   const D = NG.data;
 
-  // 英文单词按音节形态显示（bas·ket·ball）；引擎不可用/单音节时回退原形
-  const wordLabel = (w) => (NG.syllables && NG.syllables.get(w)) || w;
-
   // 音节点的间隙用 span 收紧（.syl-dot），比纯文本排得紧
   const sylHtml = (syl) => util.esc(syl).replace(/·/g, '<span class="syl-dot">·</span>');
   // 显示用 HTML：有多音节划分返回带收紧点的音节形态，否则原形
@@ -236,5 +233,5 @@
   }
 
   NG.questions = { spellPads, choiceBody, spellBody, bindChoice, bindSpell,
-    wordLabel, sylHtml, labelHtml, bindSyllableToggle };
+    sylHtml, labelHtml, bindSyllableToggle };
 })();

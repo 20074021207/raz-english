@@ -14,8 +14,8 @@
   const usableByLevel = {};
   levels.forEach((lv) => {
     usableByLevel[lv] = [];
-    byLevel[lv].forEach(([w, t, p, pos]) => {
-      idx.set(w, { t, p, pos: pos || '', l: lv });
+    byLevel[lv].forEach(([w, t, p]) => {
+      idx.set(w, { t, p, l: lv });
       if (t) usableByLevel[lv].push(w);
     });
   });

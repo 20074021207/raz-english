@@ -21,7 +21,8 @@
       }
       const mastered = S.masteredInLevel(s.level);
       const bossLeft = S.bossRemaining();
-      const due = S.dueCount();
+      // 每课实际只穿插 SESSION_REVIEW_MAX 个复习词，文案与之一致
+      const reviewN = Math.min(S.dueCount(), C.SESSION_REVIEW_MAX);
       const goalPct = Math.min(100,
         (s.daily.newWords / NG.CONFIG.DAILY_GOAL_NEW) * 50 +
         (s.daily.reviews / NG.CONFIG.DAILY_GOAL_REVIEW) * 50);
@@ -94,7 +95,7 @@
             ${NG.ui.bar(mastered / NG.CONFIG.BOSS_TARGET_WORDS * 100)}
             <div class="bar-label"><span>已掌握 ${mastered}</span><span>目标 ${NG.CONFIG.BOSS_TARGET_WORDS}</span></div>
             <div class="mt-16">
-              <button class="btn warn" data-nav="lesson">${due > 0 ? `▶ 开始学习（含 ${due} 个复习）` : '▶ 开始学习'}</button>
+              <button class="btn warn" data-nav="lesson">${reviewN > 0 ? `▶ 开始学习（含 ${reviewN} 个复习）` : '▶ 开始学习'}</button>
             </div>
           </div>
 
@@ -141,7 +142,7 @@
           </div>
           <div class="muted mt-8">当前级别：${s.level} · 连续学习 ${s.streak.days} 天</div>`,
           [
-            { label: s.settings.sound ? '🔇 关闭音效' : '🔊 开启音效', cls: 'ghost', onClick: () => { s.settings.sound = !s.settings.sound; S.save(); NG.screens.home.render(root); } },
+            { label: s.settings.sound ? '🔇 全部静音（朗读+音效）' : '🔊 取消静音', cls: 'ghost', onClick: () => { s.settings.sound = !s.settings.sound; S.save(); NG.screens.home.render(root); } },
             { label: '📤 导出进度', cls: 'ghost', onClick: () => this.showExport() },
             { label: '📥 导入进度', cls: 'ghost', onClick: () => this.showImport() },
             { label: '🧭 重新定级', cls: 'ghost', onClick: () => NG.app.go('placement') },

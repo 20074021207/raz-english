@@ -29,7 +29,10 @@
   /** @param {string|string[]=} exclude 排除题型（错题重排队时避免重复刚失败的型） */
   function pickType(word, exclude) {
     const ex = Array.isArray(exclude) ? exclude : (exclude ? [exclude] : []);
-    let pool = ALL_TYPES.filter((t) => !ex.includes(t) && (t !== 'spell' || spellable(word)));
+    const listenOk = NG.audio.soundOn();   // 静音时不出听音题（听不见无法作答）
+    let pool = ALL_TYPES.filter((t) => !ex.includes(t)
+      && (t !== 'spell' || spellable(word))
+      && (t !== 'listen' || listenOk));
     if (!pool.length) pool = ['en2cn'];
     return util.pick(pool);
   }
@@ -94,11 +97,12 @@
       }
 
       // 新词：两道题（识别类 + 回忆类），复习词：一道题
-      // 第二题题型按词资格过滤：长词/带撇号词不可拼写，无合格例句的词不可填空
+      // 第二题题型按词资格过滤：静音不出听音题，长词/带撇号词不可拼写，无合格例句的词不可填空
       const exs = [];
       fresh.forEach((w) => {
         const first = util.pick(['en2cn', 'cn2en']);
-        const second = util.pick((first === 'en2cn' ? ['cn2en', 'listen'] : ['en2cn', 'listen'])
+        const second = util.pick((first === 'en2cn' ? ['cn2en'] : ['en2cn'])
+          .concat(NG.audio.soundOn() ? ['listen'] : [])
           .concat(spellable(w) ? ['spell'] : [])
           .concat(clozeable(w) ? ['cloze'] : []));
         exs.push(makeEx(w, false, first));
@@ -161,7 +165,8 @@
         </div>`;
 
       // ── 朗读门控（两段式）：单词读完即解锁「下一个」（学习主目标达成），
-      //    例句继续自动朗读强化语境；点例句/喇叭可打断并单独听（跳过门控） ──
+      //    例句继续自动朗读强化语境；点例句/喇叭可打断并单独听（跳过门控）；
+      //    静音时不启动朗读，直接解锁（无门控） ──
       this.gateStamp = (this.gateStamp || 0) + 1;
       const stamp = this.gateStamp;
       const btn = root.querySelector('#ls-next');
@@ -193,13 +198,17 @@
       setTimeout(unlockBtn, 900 + word.length * 130 + 2500);
       setTimeout(finishAll, texts.reduce((a, t) => a + 8500 + t.length * 180 + 280, 0) + 6000);
 
-      NG.audio.speakSequence(texts, (idx) => {
-        if (stamp !== this.gateStamp) return;
-        rows.forEach((r) => r.classList.remove('speaking'));
-        if (wordEl) wordEl.classList.toggle('speaking', idx === 0);
-        if (idx > 0 && rows[idx - 1]) rows[idx - 1].classList.add('speaking');
-        if (idx === 1) unlockBtn();          // 例句 1 开始 = 单词已读完
-      }, finishAll);
+      if (NG.audio.soundOn()) {
+        NG.audio.speakSequence(texts, (idx) => {
+          if (stamp !== this.gateStamp) return;
+          rows.forEach((r) => r.classList.remove('speaking'));
+          if (wordEl) wordEl.classList.toggle('speaking', idx === 0);
+          if (idx > 0 && rows[idx - 1]) rows[idx - 1].classList.add('speaking');
+          if (idx === 1) unlockBtn();          // 例句 1 开始 = 单词已读完
+        }, finishAll);
+      } else {
+        unlockBtn();                           // 静音：无朗读门控
+      }
 
       // 手动点击 → 打断序列并直接解锁（孩子主动点读视为完成）
       const manualUnlock = (speakText) => {
@@ -314,7 +323,7 @@
       const masteredGain = [...new Set(sess.queue.map((q) => q.word))]
         .filter((w) => (this.masterBefore[w] ?? 0) < S.MASTER_AT && S.s.words[w] && S.s.words[w].m >= S.MASTER_AT)
         .length;
-      const { stars, xp } = S.awardLesson(this.correct, this.answers, this.maxCombo, masteredGain);
+      const { stars, xp, dailyBonus } = S.awardLesson(this.correct, this.answers, this.maxCombo, masteredGain);
       const newBadges = S.checkBadges();
 
       root.innerHTML = `
@@ -347,6 +356,7 @@
         setTimeout(() => NG.sfx.star(), 300 + i * 180));
       newBadges.forEach((b, i) =>
         setTimeout(() => NG.fx.toast(`获得徽章【${b.name}】！`, b.icon), 1200 + i * 900));
+      if (dailyBonus) setTimeout(() => NG.fx.toast('每日目标达成，奖励 2 颗星星！', '🎁'), 1400);
     },
   };
 })();

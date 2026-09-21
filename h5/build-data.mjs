@@ -2,11 +2,11 @@
 /**
  * RAZ 词库 → H5 内嵌数据构建脚本（零依赖）
  *
- * 从 assets/dicts/raz/ 读取 AA–L 共 13 级词库（约 5,300 词，覆盖四年级学生
- * 定级测试的全部可达区间），做儿童友好释义清洗后压缩为 h5/data/raz-data.js。
+ * 从 assets/dicts/raz/ 读取 AA–Z2 全 29 级词库（12,526 行 / 5,837 唯一词），
+ * 做儿童友好释义清洗后压缩为 h5/data/raz-data.js。
  *
- * 输出格式（数组三元组，体积最小化）:
- *   window.RAZ_DATA = { levels: ["AA",...], words: { D: [["fox","狐狸；狡猾的人","fɒks"], ...] } }
+ * 输出格式（数组四元组，体积最小化；第 4 列词性供 corpus-build 例句构建消费）:
+ *   window.RAZ_DATA = { levels: ["AA",...,"Z2"], words: { D: [["fox","狐狸；狡猾的人","fɒks","n"], ...] } }
  *
  * 用法: node build-data.mjs
  */

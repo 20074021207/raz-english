@@ -10,6 +10,12 @@
   let unlocked = false;
   let ctx = null;
 
+  /** 声音总开关：设置里的 🔇 同时控制音效与朗读（静音 = 全部不出声；
+   *  静音时课程层负责不出「听音辨词」题型，避免无声不可答） */
+  function soundOn() {
+    return !NG.state || !NG.state.s || NG.state.s.settings.sound !== false;
+  }
+
   function ensureCtx() {
     if (!ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
@@ -286,7 +292,7 @@
 
     /** 单词/短文本：有道发音（失败自动回退本地语音） */
     speak(word) {
-      if (!word) return;
+      if (!word || !soundOn()) return;
       unlock();
       seqId++;              // 终止进行中的序列
       stopCurrent();        // 停掉在播音频，杜绝叠音
@@ -298,10 +304,12 @@
      * iOS App：整组一次交给原生层排播（句间原生 1 秒，无逐句往返损耗）；
      * 浏览器：逐句链，句子走多级回退通道。
      * onItem(i) 在每条开始时回调；onDone() 在全部完成后回调（被取消不回调）。
+     * 静音时不启动朗读，直接回调 onDone（调用方自行决定是否跳过门控）。
      */
     speakSequence(texts, onItem, onDone) {
       unlock();
       stopCurrent();
+      if (!soundOn()) { if (onDone) setTimeout(onDone, 0); return; }
       const id = ++seqId;
       if (nativeSpeakSequence(texts,
         (idx) => { if (id === seqId && onItem) onItem(idx); },
@@ -326,11 +334,14 @@
       seqId++;
       stopCurrent();
     },
+
+    /** 声音总开关（设置 🔇 同时静音朗读与音效） */
+    soundOn,
   };
 
   /* ---------------- 合成音效（WebAudio，零素材） ---------------- */
   function tone(freq, t0, dur, type, vol, when) {
-    if (!NG.state || !NG.state.s || !NG.state.s.settings.sound) return;
+    if (!soundOn()) return;
     const c = ensureCtx();
     if (!c) return;
     const osc = c.createOscillator();

@@ -104,7 +104,7 @@
       return pool.map((w, idx) => {
         const t = idx % 3;
         let type = 'en2cn';
-        if (t === 1) type = 'listen';
+        if (t === 1) type = NG.audio.soundOn() ? 'listen' : 'en2cn';   // 静音时听音题不可答，回退词义选择
         if (t === 2 && spellable(w)) type = 'spell';
         return { word: w, lv: D.lookup(w).l, type };
       });

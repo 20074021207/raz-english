@@ -54,14 +54,37 @@
         s.bossCooldownUntil = Math.max(s.bossCooldownUntil, s.bossAttemptAt + NG.CONFIG.BOSS_COOLDOWN_H * 3600000);
       }
       s.bossAttemptAt = 0;
-      save();
+      save(true);
     }
     return s;
   }
 
-  function save() {
-    try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { /* 存储满等极端情况静默 */ }
+  /* ---------------- 持久化 ----------------
+   * 学习期每答一题都会 save()，全量序列化随进度增长（学满约 478KB），
+   * 合并为 800ms 防抖写盘；页面隐藏/关闭时自动 flush，刷新逃逸防护不受影响。
+   * Boss 战状态机等关键路径传 immediate=true 同步落盘。 */
+  let saveTimer = null;
+
+  function doSave() {
+    try { localStorage.setItem(KEY, JSON.stringify(s)); }
+    catch (e) { console.warn('[NG] 进度保存失败（存储空间不足？）', e); }
   }
+
+  function flushSave() {
+    if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; doSave(); }
+  }
+
+  function save(immediate) {
+    if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
+    if (immediate) { doSave(); return; }
+    if (!saveTimer) saveTimer = setTimeout(() => { saveTimer = null; doSave(); }, 800);
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushSave();
+  });
+  window.addEventListener('pagehide', flushSave);
+  window.addEventListener('beforeunload', flushSave);
 
   /* ---------------- 徽章定义 ---------------- */
   const BADGES = [
@@ -88,7 +111,7 @@
 
     reset() {
       s = defaults();
-      save();
+      save(true);
     },
 
     /* ---------------- 派生统计 ---------------- */
@@ -107,11 +130,6 @@
         if (st.l === lv && st.m >= MASTER_AT) n++;
       }
       return n;
-    },
-
-    /** 本级新词剩余（未学过的可用词数） */
-    freshLeft(lv) {
-      return NG.data.usableWords(lv).filter((w) => !s.words[w]).length;
     },
 
     dueWords(maxN) {
@@ -184,7 +202,8 @@
       save();
     },
 
-    /** 课程结算奖励，返回 { stars, xp } */
+    /** 课程结算奖励，返回 { stars, xp, dailyBonus }；dailyBonus=true 表示本次达成每日双目标
+     *  （UI 提示由调用方负责，与 checkBadges 同一约定） */
     awardLesson(correctCount, totalCount, maxCombo, masteredGain) {
       const acc = totalCount ? correctCount / totalCount : 0;
       let stars = 1;                                  // 保底 1 星（无惩罚原则）
@@ -196,36 +215,37 @@
       s.xp += xp;
       s.totals.lessons++;
       if (maxCombo > s.bestCombo) s.bestCombo = maxCombo;
-      NG.state.awardDailyBonus();
+      const dailyBonus = NG.state.awardDailyBonus();
       save();
-      return { stars, xp };
+      return { stars, xp, dailyBonus };
     },
 
-    /** 每日双目标达成 → +2 星（一次性） */
+    /** 每日双目标达成 → +2 星（一次性），返回是否本次达成 */
     awardDailyBonus() {
-      if (s.daily.rewarded) return;
+      if (s.daily.rewarded) return false;
       if (s.daily.newWords >= NG.CONFIG.DAILY_GOAL_NEW && s.daily.reviews >= NG.CONFIG.DAILY_GOAL_REVIEW) {
         s.daily.rewarded = true;
         s.stars += 2;
-        setTimeout(() => NG.fx && NG.fx.toast('每日目标达成，奖励 2 颗星星！', '🎁'), 1400);
+        return true;
       }
+      return false;
     },
 
     /* ---------------- Boss 战 ---------------- */
-    /** 战斗开始登记：正常收场由 endBossAttempt 清除，中途逃逸则由 load() 补记冷却 */
+    /** 战斗开始登记：正常收场由 endBossAttempt 清除，中途逃逸则由 load() 补记冷却（立即落盘防刷新逃逸） */
     startBossAttempt() {
       s.bossAttemptAt = Date.now();
-      save();
+      save(true);
     },
 
     endBossAttempt() {
       s.bossAttemptAt = 0;
-      save();
+      save(true);
     },
 
     startBossCooldown() {
       s.bossCooldownUntil = Date.now() + NG.CONFIG.BOSS_COOLDOWN_H * 3600000;
-      save();
+      save(true);
     },
 
     /** Boss 胜利：晋级到下一级 */
@@ -237,7 +257,7 @@
       s.totals.bossWins++;
       s.xp += 100;
       s.stars += 5;
-      save();
+      save(true);
       return next;
     },
 

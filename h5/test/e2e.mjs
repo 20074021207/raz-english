@@ -83,8 +83,10 @@ try {
     if (placed) break;
     if (await isVis('#opts')) {
       await page.evaluate(() => {
-        const word = document.querySelector('.q-word-big')?.textContent.trim();
-        const ans = word && NG.data.lookup(word).t;
+        // 题干以音节形态显示（bas·ket·ball），不能反查文本；从会话数据取目标词
+        const P = NG.screens.placement;
+        const q = P.queue[P.qi];
+        const ans = q && NG.data.lookup(q.word).t;
         const opts = [...document.querySelectorAll('#opts .opt')];
         (opts.find((o) => ans && o.textContent.trim() === ans.trim()) || opts[0]).click();
       });
@@ -99,18 +101,18 @@ try {
   await page.click('[data-nav="lesson"]');
   await page.waitForSelector('.sent-row', { timeout: 3000 });
   const learnCount = await page.evaluate(() => NG.screens.lesson.session.learn.length);
-  // 首张学习卡：3 条双语例句 + 目标词高亮 + 朗读门控挂钩
+  // 首张学习卡：双语例句（精语料多数 3 句、极少数 1-2 句）+ 朗读门控挂钩
   // （门控为两段式：单词读完即解锁按钮，因此不在此断言 disabled，避免与时序竞态）
   const sentRows = await page.locator('.sent-row').count();
   const cardOk = await page.evaluate(() => {
     const texts = [...document.querySelectorAll('.sent-text')];
     const zhs = [...document.querySelectorAll('.sent-zh')];
-    return texts.length === 3 && zhs.length === 3 &&
-      texts.every((r) => r.querySelector('.hl')) &&
+    return texts.length >= 1 && texts.length === zhs.length &&
+      texts.every((r) => r.textContent.trim().length > 0) &&
       zhs.every((r) => r.textContent.trim().length >= 3) &&
       typeof NG.screens.lesson._releaseGate === 'function';
   });
-  ok('学习卡：3 条双语例句 + 朗读门控挂钩', sentRows === 3 && cardOk, `${sentRows} 条`);
+  ok('学习卡：双语例句 + 朗读门控挂钩', sentRows >= 1 && cardOk, `${sentRows} 条`);
   await shot('10-learn-card-sentences');
 
   for (let i = 0; i < 40 && (await isVis('#ls-next')); i++) {

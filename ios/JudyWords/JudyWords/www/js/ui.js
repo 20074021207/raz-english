@@ -111,7 +111,7 @@
         </div>`;
       buttons.forEach((b, i) => {
         mask.querySelector(`[data-mbtn="${i}"]`).addEventListener('click', () => {
-          if (b.keep !== true) mask.remove();
+          mask.remove();
           if (b.onClick) b.onClick(mask);
         });
       });
