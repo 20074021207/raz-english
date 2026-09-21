@@ -167,10 +167,54 @@
     insignificant: 'in·sig·nif·i·cant', harangue: 'ha·rangue', sagacious: 'sa·ga·cious',
     antagonistic: 'an·tag·o·nis·tic', proprietary: 'pro·pri·e·tar·y',
     proactive: 'pro·ac·tive', aghast: 'a·ghast', meander: 'me·an·der', koala: 'ko·a·la',
+
+    /* ---- 第二轮：ASCII 撇号重音标记盲区（数据混用 ' 与 ˈ 两套记法，首轮审计不可见）----
+     * 含 5 个单音节误拆词移入 NOSPLIT（aisle/braille/buy/guy/league） */
+    advocate: 'ad·vo·cate', amiga: 'a·mi·ga', artisanal: 'ar·ti·san·al',
+    australia: 'aus·tral·ia', bastille: 'bas·tille', berserker: 'ber·serk·er',
+    blithesome: 'blithe·some', brickmaker: 'brick·mak·er', chiseled: 'chis·eled',
+    clamor: 'clam·or', clarifier: 'clar·i·fi·er', conjurer: 'con·jur·er',
+    contaminated: 'con·tam·i·nat·ed', coronavirus: 'cor·o·na·vi·rus',
+    corroboree: 'cor·ro·boree', coveted: 'cov·et·ed', crawdad: 'craw·dad',
+    cryptographic: 'cryp·to·graph·ic', czarina: 'cza·ri·na',
+    dimensional: 'di·men·sion·al', disheveled: 'dis·hev·eled',
+    disoriented: 'dis·o·ri·ent·ed', elaborate: 'e·lab·o·rate', estancia: 'es·tan·cia',
+    favorite: 'fa·vor·ite', forager: 'for·ag·er', foremen: 'fore·men',
+    geologic: 'ge·o·log·ic', goalie: 'goal·ie', greatest: 'great·est',
+    guanaco: 'gua·na·co', handlebars: 'han·dle·bars', highlands: 'high·lands',
+    homemade: 'home·made', impotency: 'im·po·tency',
+    improvisational: 'im·pro·vi·sa·tion·al', infrasonic: 'in·fra·son·ic',
+    inherited: 'in·her·it·ed', initials: 'i·ni·tials', inquiry: 'in·quir·y',
+    inspiriting: 'in·spir·it·ing', ireland: 'ire·land', laborer: 'la·bor·er',
+    latticework: 'lat·tice·work', lyrics: 'lyr·ics', mastaba: 'mas·ta·ba',
+    mechanics: 'me·chan·ics', medusa: 'me·du·sa',
+    mummification: 'mum·mi·fi·ca·tion', obligate: 'ob·li·gate',
+    obliterated: 'o·blit·er·at·ed', outcropping: 'out·crop·ping',
+    overcredulous: 'o·ver·cred·u·lous', pajamas: 'pa·ja·mas',
+    paleontology: 'pa·le·on·tol·o·gy', palpitant: 'pal·pi·tant',
+    passageway: 'pas·sage·way', patagonia: 'pa·ta·go·nia',
+    patagonian: 'pa·ta·go·nian', patent: 'pat·ent', phonogram: 'pho·no·gram',
+    phonologic: 'pho·no·log·ic', phytoplankton: 'phy·to·plank·ton',
+    pictograph: 'pic·to·graph', picturesqueness: 'pic·tur·esque·ness',
+    pinniped: 'pin·ni·ped', pisa: 'pi·sa', polynesia: 'pol·y·ne·sia',
+    polynesian: 'pol·y·ne·sian', primate: 'pri·mate', prosimian: 'pro·si·mian',
+    purebred: 'pure·bred', reestablish: 're·es·tab·lish', research: 're·search',
+    retrogression: 'ret·ro·gres·sion', savanna: 'sa·van·na',
+    secondhand: 'sec·ond·hand', segregated: 'seg·re·gat·ed', shootout: 'shoot·out',
+    simulacra: 'sim·u·la·cra', stinger: 'sting·er', stonecutter: 'stone·cut·ter',
+    stronger: 'strong·er', synchronized: 'syn·chro·nized', tamale: 'ta·ma·le',
+    theater: 'the·a·ter', threatened: 'threat·ened', torturous: 'tor·tur·ous',
+    traveler: 'trav·el·er', valor: 'val·or', velarium: 've·lar·i·um',
+    vitamins: 'vi·ta·mins', whiteout: 'white·out',
+    cellophane: 'cel·lo·phane', chatelaine: 'chat·e·laine',
+
+    /* ---- 复审补漏（第一轮编辑遗漏，归一化重音审计复跑发现）---- */
+    reflect: 're·flect', degree: 'de·gree', bizarre: 'bi·zarre',
+    discover: 'dis·cov·er', discovery: 'dis·cov·er·y',
   };
 
   // 无论规则如何划分都只有一个音节 / 不应显示的词
-  const NOSPLIT = new Set(['tongue', 'guard']);
+  const NOSPLIT = new Set(['tongue', 'guard', 'aisle', 'braille', 'buy', 'guy', 'league']);
 
   /* ---------------- 词元切分 ---------------- */
   // 把单词切成不可再拆的单元：{ text, type: 'v'|'c', start }（start 指向小写词偏移）
