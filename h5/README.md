@@ -116,8 +116,11 @@ node build-data.mjs   # 从 ../assets/dicts/raz/ 重新生成 data/raz-data.js
 - **消费场景**：学习卡大词直接以音节形态显示（bas·ket·ball），点击单词切回原形
   basketball、再点还原；课程练习与 Boss 战的词义选择题干、英文选项、听音揭示词
   同样按音节显示；定级测试同样显示；
-- 全量词审计：与词库 IPA 音节数交叉校准 + AA–C 级逐词人工抽查
-  （AA–L 全量时代完成；扩展至 Z2 后沿用同一规则引擎确定性生成）。
+- 全量审计：与词库 IPA 音节数交叉校准 + AA–C 级逐词人工抽查（AA–L 时代完成）；
+  2026-09-21 起以**词内重音标记**为边界 ground truth 全库校准，约 150 个重音
+  错位词（parade→pa·rade、amazing→a·maz·ing 类）与存量词典错条
+  （gorilla→go·ril·la）进例外词典。切分口径跟**韦氏正字法**：非前缀类按
+  重音开右；前缀类保留闭音节形（dis·play、mis·take），与读音无关。
 
 ## 测试
 
