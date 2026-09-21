@@ -21,7 +21,7 @@ NG.CONFIG = {
   DAILY_GOAL_NEW: 8,         // 每日新词目标
   DAILY_GOAL_REVIEW: 10,     // 每日复习目标
 
-  PLACEMENT_START_IDX: 3,    // 定级起点 = levels[3] = D（四年级默认）
+  PLACEMENT_START_IDX: 4,    // 定级起点 = levels[4] = D（四年级默认；3 轮探针定级区间 AA–H）
   PLACEMENT_PROBE_SIZE: 5,   // 每级探针 5 词（文档 §5.1）
   PLACEMENT_MAX_PROBES: 3,   // 最多 3 轮探针（≤15 题，文档 §5.1）
 

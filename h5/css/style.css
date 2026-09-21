@@ -1213,3 +1213,28 @@ body {
   cursor: pointer; font-family: inherit;
 }
 .theme-opt.on { border-color: var(--primary-bright); background: var(--primary-soft); color: var(--primary); }
+
+/* ---------- 设置面板：进度导出/导入 ---------- */
+.io-area {
+  width: 100%;
+  min-height: 110px;
+  max-height: 180px;
+  margin-top: 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--ink);
+  padding: 9px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  word-break: break-all;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.io-area:focus { border-color: var(--primary-bright); }
+
+/* ---------- 定级测试：重新测评场景的退出行 ---------- */
+.pf-hud { align-self: stretch; margin-bottom: 4px; }

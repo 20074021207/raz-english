@@ -13,6 +13,12 @@
   NG.screens.home = {
     render(root) {
       const s = S.s;
+      // 启动期产生的一次性提示（如 Boss 弃战豁免）在首页落地时展示
+      if (s.pendingNotice) {
+        NG.fx.toast(s.pendingNotice.text, s.pendingNotice.icon);
+        delete s.pendingNotice;
+        S.save();
+      }
       const mastered = S.masteredInLevel(s.level);
       const bossLeft = S.bossRemaining();
       const due = S.dueCount();
@@ -136,6 +142,8 @@
           <div class="muted mt-8">当前级别：${s.level} · 连续学习 ${s.streak.days} 天</div>`,
           [
             { label: s.settings.sound ? '🔇 关闭音效' : '🔊 开启音效', cls: 'ghost', onClick: () => { s.settings.sound = !s.settings.sound; S.save(); NG.screens.home.render(root); } },
+            { label: '📤 导出进度', cls: 'ghost', onClick: () => this.showExport() },
+            { label: '📥 导入进度', cls: 'ghost', onClick: () => this.showImport() },
             { label: '🧭 重新定级', cls: 'ghost', onClick: () => NG.app.go('placement') },
             { label: '🗑 重置全部进度', cls: 'ghost', onClick: () => NG.ui.modal('确定重置吗？', '所有学习进度、星星和徽章都会消失，无法找回。', [
               { label: '取消', cls: 'ghost' },
@@ -162,6 +170,53 @@
       const bosses = ['🐙', '🐲', '👾', '🤖', '🦖', '👹', '🦀', '🕷️', '👺', '🦇', '🐋', '🦂'];
       return bosses[D.levelIdx(S.s.level) % bosses.length];
     },
+
+    /** 进度备份：localStorage 原文即备份代码，展示 + 一键复制（家长操作） */
+    showExport() {
+      const raw = localStorage.getItem(S.STORAGE_KEY) || '';
+      const mask = NG.ui.modal('📤 导出学习进度',
+        `<div class="muted">复制下面这段备份代码，粘贴到另一台设备的「导入进度」里，进度就搬过去啦。</div>
+         <textarea class="io-area" readonly>${util.esc(raw)}</textarea>`,
+        [
+          { label: '📋 复制备份代码', cls: 'success', onClick: (m) => {
+            const ta = m.querySelector('textarea');
+            const done = () => NG.fx.toast('已复制到剪贴板', '✅');
+            const fallback = () => {
+              try { ta.focus(); ta.select(); document.execCommand('copy'); done(); }
+              catch (e) { NG.fx.toast('复制失败，请长按文本手动全选复制', '⚠️'); }
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(ta.value).then(done, fallback);
+            } else fallback();
+          } },
+          { label: '关闭', cls: 'ghost' },
+        ]);
+      // 点击textarea自动全选，方便手动长按复制
+      mask.querySelector('textarea').addEventListener('focus', (e) => e.target.select());
+    },
+
+    /** 进度恢复：粘贴备份代码覆盖当前进度（校验结构后整页刷新重载） */
+    showImport() {
+      NG.ui.modal('📥 导入学习进度',
+        `<div class="muted">粘贴之前导出的备份代码。注意：导入会覆盖本机当前进度。</div>
+         <textarea class="io-area" placeholder='{"v":1,...}'></textarea>`,
+        [
+          { label: '导入并覆盖', cls: 'warn', onClick: (m) => {
+            const v = m.querySelector('textarea').value.trim();
+            let ok = false;
+            try {
+              const o = JSON.parse(v);
+              if (o && o.v === 1 && o.words && typeof o.words === 'object' && o.settings) {
+                localStorage.setItem(S.STORAGE_KEY, JSON.stringify(o));
+                ok = true;
+              }
+            } catch (e) { /* 结构校验失败按无效处理 */ }
+            if (ok) location.reload();
+            else NG.fx.toast('备份代码不对，检查一下再试', '⚠️');
+          } },
+          { label: '关闭', cls: 'ghost' },
+        ]);
+    },
   };
 
   /* ================= 定级测试（文档 §5 Diagnostic Quest 适配版） ================= */
@@ -174,9 +229,14 @@
     probeIdx: 0,
 
     render(root) {
+      // 已定过级（重新测评场景）提供退出；首次定级是必经引导，不显示
+      const exitHtml = S.s.placementDone
+        ? '<div class="hud pf-hud"><button class="icon-btn" id="pf-exit">✕</button><div style="flex:1"></div></div>'
+        : '';
       // 先出引导页：点「开始测验」即产生用户手势，解锁首题的自动朗读（浏览器自动播放策略）
       root.innerHTML = `
         <div class="screen" style="justify-content:center">
+          ${exitHtml}
           <div class="placement-head">
             <div class="pf">${NG.ui.judy()}</div>
             <h2>魔法定级测验</h2>
@@ -187,6 +247,7 @@
           </div>
           <button class="btn success mt-24" id="pf-start">🎧 开始测验</button>
         </div>`;
+      this.bindExit(root);
       root.querySelector('#pf-start').addEventListener('click', () => {
         NG.sfx.tap();
         this.usedWords = new Set();
@@ -194,6 +255,12 @@
         this.probeIdx = NG.CONFIG.PLACEMENT_START_IDX;
         this.startProbe(root);
       });
+    },
+
+    /** 重新测评场景的退出按钮：定级中途退出不写任何状态，直接回首页 */
+    bindExit(root) {
+      const ex = root.querySelector('#pf-exit');
+      if (ex) ex.addEventListener('click', () => { NG.sfx.tap(); NG.app.go('home'); });
     },
 
     startProbe(root) {
@@ -210,6 +277,9 @@
       const s = S.s;
       const q = this.queue[this.qi];
       if (!q) return this.finishProbe(root);
+      const exitHtml = S.s.placementDone
+        ? '<div class="hud pf-hud"><button class="icon-btn" id="pf-exit">✕</button><div style="flex:1"></div></div>'
+        : '';
 
       const trans = D.lookup(q.word).t;
       const dis = D.distractorTrans(q.lv, q.word, 3);
@@ -221,6 +291,7 @@
 
       root.innerHTML = `
         <div class="screen">
+          ${exitHtml}
           <div class="placement-head">
             <div class="pf">${NG.ui.judy()}</div>
             <h2>魔法定级测验</h2>
@@ -250,6 +321,7 @@
 
       // 出题即朗读单词；点击喇叭重听
       setTimeout(() => NG.audio.speak(q.word), 300);
+      this.bindExit(root);
       root.querySelector('#q-speak').addEventListener('click', () => { NG.sfx.tap(); NG.audio.speak(q.word); });
       // 定级题干单词同样支持 音节拼读 / 原形 点击切换
       NG.questions.bindSyllableToggle(root.querySelector('.q-word-big'), q.word, NG.syllables && NG.syllables.get(q.word));
