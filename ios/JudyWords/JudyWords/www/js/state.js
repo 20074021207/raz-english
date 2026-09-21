@@ -23,6 +23,8 @@
     words: {},                 // word -> { l, m, nc, ne, next, last }
     bossCooldownUntil: 0,
     bossAttemptAt: 0,          // 进行中的 Boss 战开始时间（防刷新逃逸，见 load()）
+    bossGraceUsed: false,      // 弃战豁免：首次中途退出不计冷却（防误触误伤孩子）
+    pendingNotice: null,       // 启动待展示的一次性提示 { icon, text }（首页渲染时消费）
     badges: {},                // id -> timestamp
     totals: { lessons: 0, bossWins: 0, answers: 0, correct: 0 },
     settings: { sound: true, theme: 'auto' },   // theme: auto|dark|light
@@ -42,10 +44,15 @@
     if (s.daily.day !== today) {
       s.daily = { day: today, newWords: 0, reviews: 0, rewarded: false };
     }
-    // 上场 Boss 战未收场（中途刷新/关闭页面）→ 按弃战处理，补记冷却，
-    // 防止"打不过就刷新"绕过 48 小时重试规则
+    // 上场 Boss 战未收场（中途刷新/关闭页面）→ 按弃战处理，防止"打不过就刷新"
+    // 绕过 48 小时重试规则；首次弃战豁免冷却（孩子误触/误关 App 不该被罚 48h）
     if (s.bossAttemptAt) {
-      s.bossCooldownUntil = Math.max(s.bossCooldownUntil, s.bossAttemptAt + NG.CONFIG.BOSS_COOLDOWN_H * 3600000);
+      if (!s.bossGraceUsed) {
+        s.bossGraceUsed = true;
+        s.pendingNotice = { icon: '🛡️', text: '上次 Boss 战没打完就离开啦，这次不罚冷却，随时再来！' };
+      } else {
+        s.bossCooldownUntil = Math.max(s.bossCooldownUntil, s.bossAttemptAt + NG.CONFIG.BOSS_COOLDOWN_H * 3600000);
+      }
       s.bossAttemptAt = 0;
       save();
     }
@@ -74,6 +81,7 @@
   NG.state = {
     MASTER_AT,
     BADGES,
+    STORAGE_KEY: KEY,          // 进度导出/导入共用（screens.js 设置面板）
     get s() { return s; },
 
     load, save,

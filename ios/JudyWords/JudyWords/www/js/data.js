@@ -1,6 +1,6 @@
 /**
  * data.js — RAZ 词库访问层
- * 数据源 window.RAZ_DATA 由 build-data.mjs 生成（AA–L，5,615 词）。
+ * 数据源 window.RAZ_DATA 由 build-data.mjs 生成（AA–Z2 全 29 级，12,526 行 / 5,837 唯一词）。
  */
 (function () {
   const RAW = window.RAZ_DATA;

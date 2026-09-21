@@ -51,12 +51,14 @@
 │   ├── index.html                 # 入口（脚本按序加载，双击即可运行）
 │   ├── css/style.css              # 儿童友好移动端设计系统
 │   ├── js/                        # core/audio/data/sentences/syllables/state/ui/questions/screens/lesson/boss/app
-│   ├── data/sentences-corpus.js   # 离线精语料（AA–H 2,129 词 6,367 句，构建期生成）
-│   ├── corpus-build/              # 精语料构建：RULES.md 规则 / 16 批词表 / 审计脚本
-│   ├── data/raz-data.js           # 构建产物：AA–L 共 5,615 词内嵌词库（含词性）
+│   ├── data/sentences-corpus.js   # 离线精语料（AA–Z2 5,781 词 17,304 句，构建期生成）
+│   ├── corpus-build/              # 精语料构建：RULES.md 规则 / 48 批语料 / 审计脚本
+│   ├── data/raz-data.js           # 构建产物：AA–Z2 全 29 级 12,526 行 / 5,837 唯一词内嵌词库（含词性）
 │   ├── build-data.mjs             # 词库压缩 + 儿童释义清洗 + 词性提取脚本
-│   ├── test/e2e.mjs               # Playwright 无头冒烟测试
+│   ├── test/e2e.mjs               # Playwright 无头冒烟测试（定级→课程→Boss→复习）
+│   ├── test/audio-overlap.test.mjs # 零依赖回归测试（例句朗读切词不叠音）
 │   └── README.md                  # 运行说明与设计文档对齐表
+├── ios/                           # iOS 原生壳（JudyWords：WKWebView 打包 h5 全资源，AVSpeechSynthesizer 桥）
 ├── schema/
 │   └── init.sql                   # MySQL 核心四域初始化脚本
 ├── scripts/
@@ -78,7 +80,8 @@
 - `docs/database_schema.md`: 定义 MySQL + Graph DB 混合存储策略、RAZ 级别跃迁状态追踪、遥测数据 30 天滚动归档标准。
 - `schema/init.sql`: 包含六个核心域（能力评估、AOT队列、RAZ晋级引擎、TTS资产去重缓存、交互遥测、实时对话引擎）的具体 DDL 定义。
 - `scripts/download-raz.mjs`: 零依赖 Node.js 脚本，从 GitHub 批量拉取 RAZ JSON 并生成 manifest。
-- `h5/`: H5 版「朱迪单词」（吉祥物为疯狂动物城的朱迪兔），面向四年级小学生的零依赖纯静态学习游戏。复用 RAZ 词库（AA–L 内嵌）、Boss 战参数（15 题/120s/85%/48h 冷却）、SM-2 间隔重复与有道发音 API；含定级测试、四题型课程引擎、错题重排队、每日目标、徽章系统；进度存 localStorage。
+- `h5/`: H5 版「朱迪单词」（吉祥物为疯狂动物城的朱迪兔），面向四年级小学生的零依赖纯静态学习游戏。复用 RAZ 词库（AA–Z2 全 29 级内嵌）、Boss 战参数（15 题/120s/85%/48h 冷却，首次弃战豁免）、SM-2 间隔重复与有道发音 API；含定级测试（起点 D，区间 AA–H）、五题型课程引擎（词义/反选/听音/拼写/例句填空，填空仅用「目标词恰一次独立出现」的精语料句）、错题重排队、每日目标、徽章系统、进度导出/导入；进度存 localStorage。
+- `ios/JudyWords/`: iOS 原生 WKWebView 壳，h5 全资源离线打包（sync-www.sh 同步），例句朗读经 AVSpeechSynthesizer 原生桥（离线可用）。
 - `task_plan.md`: 无交互环境下的强迫执行边界与状态检查单。
 - `progress.md`: 记载当前项目的执行生命周期，充当系统的外部工作记忆。
 - `AGENTS.md`: 定义全局系统边界与代码规范基石。
