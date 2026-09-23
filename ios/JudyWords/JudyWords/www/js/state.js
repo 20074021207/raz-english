@@ -27,6 +27,7 @@
     pendingNotice: null,       // 启动待展示的一次性提示 { icon, text }（首页渲染时消费）
     badges: {},                // id -> timestamp
     totals: { lessons: 0, bossWins: 0, answers: 0, correct: 0 },
+    checkins: { days: {}, total: 0, best: 0 },   // 每日打卡：日期(YYYY-MM-DD) -> 1
     settings: { sound: true, theme: 'auto' },   // theme: auto|dark|light
   });
 
@@ -154,6 +155,48 @@
     },
     bossReady() { return s.placementDone && NG.state.bossRemaining() === 0; },
     bossCooldownLeft() { return Math.max(0, s.bossCooldownUntil - Date.now()); },
+
+    /* ---------------- 每日打卡 ---------------- */
+    isCheckedToday() {
+      return !!s.checkins.days[NG.util.todayStr()];
+    },
+
+    /** 当前连续打卡天数（今天未打卡则按到昨天计） */
+    checkinStreak() {
+      let cur = 0;
+      const d = new Date();
+      if (!s.checkins.days[NG.util.todayStr(d)]) d.setDate(d.getDate() - 1);
+      for (;;) {
+        if (!s.checkins.days[NG.util.todayStr(d)]) break;
+        cur++;
+        d.setDate(d.getDate() - 1);
+      }
+      return cur;
+    },
+
+    /**
+     * 每日打卡：记录当天、同步连续活动天数、发放奖励（每日 +1 星，
+     * 连续 7/14/30/60/100 天额外 +5/10/20/30/50 星）。
+     * 当日已打卡返回 null；成功返回 { total, streak, rewards[] }（UI 提示由调用方负责）
+     */
+    checkIn() {
+      const today = NG.util.todayStr();
+      if (s.checkins.days[today]) return null;
+      s.checkins.days[today] = 1;
+      s.checkins.total++;
+      NG.state.touchDay();                        // 打卡也算当日活动，喂连续学习天数与每日计数
+      const streak = NG.state.checkinStreak();
+      if (streak > s.checkins.best) s.checkins.best = streak;
+      const rewards = ['打卡成功 +1 ⭐'];
+      s.stars += 1;
+      const MILESTONES = { 7: 5, 14: 10, 30: 20, 60: 30, 100: 50 };
+      if (MILESTONES[streak]) {
+        s.stars += MILESTONES[streak];
+        rewards.push(`连续打卡 ${streak} 天，额外 +${MILESTONES[streak]} ⭐`);
+      }
+      save(true);
+      return { total: s.checkins.total, streak, rewards };
+    },
 
     /* ---------------- 学习活动记录 ---------------- */
     touchDay() {

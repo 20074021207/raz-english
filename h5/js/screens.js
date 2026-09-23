@@ -34,6 +34,33 @@
         : 'locked';
       const bossEmoji = this.bossEmoji();
 
+      // 每日打卡：近 7 天记录条 + 连续/累计统计
+      const weekHtml = (() => {
+        const names = ['日', '一', '二', '三', '四', '五', '六'];
+        const out = [];
+        for (let i = 6; i >= 0; i--) {
+          const dd = new Date();
+          dd.setDate(dd.getDate() - i);
+          const key = util.todayStr(dd);
+          const checked = !!s.checkins.days[key];
+          const isToday = i === 0;
+          out.push(`<div class="ck-day${checked ? ' on' : ''}${isToday ? ' today' : ''}"><span class="ck-mark">${checked ? '✓' : ''}</span><span class="ck-name">${isToday ? '今' : names[dd.getDay()]}</span></div>`);
+        }
+        return out.join('');
+      })();
+      const checkedToday = S.isCheckedToday();
+      const checkinCard = `
+        <div class="card checkin-card">
+          <button class="checkin-btn${checkedToday ? ' done' : ''}" id="btn-checkin" ${checkedToday ? 'disabled' : ''}>
+            <span class="ck-btn-big">${checkedToday ? '✓' : '打卡'}</span>
+            <span class="ck-btn-sub">${checkedToday ? '今日已打卡' : '今日未打卡'}</span>
+          </button>
+          <div class="checkin-info">
+            <div class="ck-week">${weekHtml}</div>
+            <div class="ck-stats">🔥 连续打卡 ${S.checkinStreak()} 天 · 累计 ${s.checkins.total} 次 · 最佳 ${s.checkins.best} 天</div>
+          </div>
+        </div>`;
+
       let bossHtml;
       if (bossState === 'ready') {
         bossHtml = `
@@ -108,6 +135,8 @@
             </div>
           </div>
 
+          ${checkinCard}
+
           ${bossHtml}
 
           <div class="grid-2">
@@ -131,6 +160,18 @@
         </div>`;
 
       NG.ui.clouds(root.querySelector('.screen'));
+
+      // 每日打卡：领奖 + 徽章结算 + 重绘刷新打卡态
+      root.querySelector('#btn-checkin').addEventListener('click', function () {
+        this.disabled = true;                     // 先禁用，防止重绘窗口期重复点击
+        const r = S.checkIn();
+        if (!r) return;
+        NG.sfx.star();
+        NG.fx.confetti();
+        r.rewards.forEach((msg, i) => setTimeout(() => NG.fx.toast(msg, i === 0 ? '📅' : '🎉'), i * 900));
+        S.checkBadges().forEach((b, j) => setTimeout(() => NG.fx.toast(`获得徽章【${b.name}】！`, b.icon), (r.rewards.length + j) * 900));
+        setTimeout(() => NG.screens.home.render(root), 700);
+      });
 
       root.querySelector('#btn-settings').addEventListener('click', () => {
         NG.sfx.tap();
