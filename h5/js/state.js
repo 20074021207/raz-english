@@ -175,13 +175,17 @@
     },
 
     /**
-     * 每日打卡：记录当天、同步连续活动天数、发放奖励（每日 +1 星，
-     * 连续 7/14/30/60/100 天额外 +5/10/20/30/50 星）。
-     * 当日已打卡返回 null；成功返回 { total, streak, rewards[] }（UI 提示由调用方负责）
+     * 每日打卡：完成每日学习任务（新词+复习双目标）后才可打卡，打卡发放奖励
+     * （每日 +1 星，连续 7/14/30/60/100 天额外 +5/10/20/30/50 星）。
+     * 当日已打卡返回 null；任务未完成返回 { blocked, needNew, needRev }；
+     * 成功返回 { total, streak, rewards[] }（UI 提示由调用方负责）
      */
     checkIn() {
       const today = NG.util.todayStr();
       if (s.checkins.days[today]) return null;
+      const needNew = Math.max(0, NG.CONFIG.DAILY_GOAL_NEW - s.daily.newWords);
+      const needRev = Math.max(0, NG.CONFIG.DAILY_GOAL_REVIEW - s.daily.reviews);
+      if (needNew || needRev) return { blocked: true, needNew, needRev };
       s.checkins.days[today] = 1;
       s.checkins.total++;
       NG.state.touchDay();                        // 打卡也算当日活动，喂连续学习天数与每日计数

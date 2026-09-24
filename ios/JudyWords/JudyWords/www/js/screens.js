@@ -49,15 +49,19 @@
         return out.join('');
       })();
       const checkedToday = S.isCheckedToday();
+      // 打卡门槛：完成每日学习任务（新词+复习双目标）后才可打卡
+      const needNew = Math.max(0, C.DAILY_GOAL_NEW - s.daily.newWords);
+      const needRev = Math.max(0, C.DAILY_GOAL_REVIEW - s.daily.reviews);
+      const taskDone = checkedToday || (needNew === 0 && needRev === 0);
       const checkinCard = `
         <div class="card checkin-card">
-          <button class="checkin-btn${checkedToday ? ' done' : ''}" id="btn-checkin" ${checkedToday ? 'disabled' : ''}>
-            <span class="ck-btn-big">${checkedToday ? '✓' : '打卡'}</span>
-            <span class="ck-btn-sub">${checkedToday ? '今日已打卡' : '今日未打卡'}</span>
+          <button class="checkin-btn${checkedToday ? ' done' : taskDone ? '' : ' locked'}" id="btn-checkin">
+            <span class="ck-btn-big">${checkedToday ? '✓' : taskDone ? '打卡' : '🔒'}</span>
+            <span class="ck-btn-sub">${checkedToday ? '今日已打卡' : taskDone ? '可打卡' : '任务未完成'}</span>
           </button>
           <div class="checkin-info">
             <div class="ck-week">${weekHtml}</div>
-            <div class="ck-stats">🔥 连续打卡 ${S.checkinStreak()} 天 · 累计 ${s.checkins.total} 次 · 最佳 ${s.checkins.best} 天</div>
+            <div class="ck-stats">${taskDone ? `🔥 连续打卡 ${S.checkinStreak()} 天 · 累计 ${s.checkins.total} 次 · 最佳 ${s.checkins.best} 天` : `完成学习任务后可打卡：还差 新词 ${needNew} · 复习 ${needRev}`}</div>
           </div>
         </div>`;
 
@@ -161,8 +165,13 @@
 
       NG.ui.clouds(root.querySelector('.screen'));
 
-      // 每日打卡：领奖 + 徽章结算 + 重绘刷新打卡态
+      // 每日打卡：任务未完成时点击给指引；完成后领奖 + 徽章结算 + 重绘刷新打卡态
       root.querySelector('#btn-checkin').addEventListener('click', function () {
+        if (!taskDone) {
+          NG.sfx.tap();
+          NG.fx.toast(`先完成今日学习任务：还差 新词 ${needNew} · 复习 ${needRev} 📚`, '🔒');
+          return;
+        }
         this.disabled = true;                     // 先禁用，防止重绘窗口期重复点击
         const r = S.checkIn();
         if (!r) return;
