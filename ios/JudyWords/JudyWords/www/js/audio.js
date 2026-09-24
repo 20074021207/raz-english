@@ -8,6 +8,7 @@
  */
 (function () {
   let unlocked = false;
+  let ttsUnlocked = false;   // iOS Safari：speechSynthesis 首次调用必须在用户手势内，之后程序化朗读才出声
   let ctx = null;
 
   /** 声音总开关：设置里的 🔇 同时控制音效与朗读（静音 = 全部不出声；
@@ -36,6 +37,21 @@
       a.volume = 0;
       const p = a.play();
       if (p && p.catch) p.catch(() => {});
+    } catch (e) { /* ignore */ }
+    primeTTS();
+  }
+
+  /** iOS Safari：在用户手势内"点燃" speechSynthesis 管线并触发音色列表加载，
+   *  之后脱离手势的程序化朗读（例句在单词播完 1s 后才开始）才不会静默失败 */
+  function primeTTS() {
+    if (ttsUnlocked || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+    ttsUnlocked = true;
+    try {
+      const u = new SpeechSynthesisUtterance(' ');
+      u.volume = 0;
+      u.rate = 2;
+      window.speechSynthesis.speak(u);
+      window.speechSynthesis.getVoices();
     } catch (e) { /* ignore */ }
   }
   document.addEventListener('touchstart', unlock, { once: true, passive: true });
@@ -109,7 +125,8 @@
     if (nativeSpeak(text, done)) return;
     try {
       if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) { if (done) done(); return; }
-      window.speechSynthesis.cancel();
+      // iOS：cancel() 紧跟 speak() 会吞掉发音，仅在确有在播/待播时才清队列
+      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'en-US';
       u.rate = 0.82;                     // 放慢，适合儿童跟读
@@ -172,7 +189,8 @@
         playOne(text, fin);
       };
       try {
-        window.speechSynthesis.cancel();
+        // iOS：cancel() 紧跟 speak() 会吞掉发音，仅在确有在播/待播时才清队列
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) window.speechSynthesis.cancel();
         u = new SpeechSynthesisUtterance(text);
         u.lang = 'en-US';
         u.rate = 0.82;                     // 放慢，适合儿童跟读
