@@ -297,7 +297,7 @@
       root.querySelector('#q-exit').addEventListener('click', () => this.confirmExit(root));
 
       if (q.type === 'spell') {
-        NG.questions.bindSpell(root, q, (ok) => done(ok, null), { tools: true });
+        NG.questions.bindSpell(root, q, (ok) => done(ok, null), { tools: true, retryOnWrong: true });
         setTimeout(() => NG.audio.speak(q.word), 300);
       } else {
         NG.questions.bindChoice(root, q, info, (ok, btn) => done(ok, btn));

@@ -148,7 +148,7 @@
       const total = this.queue.length;
 
       const body = q.type === 'spell'
-        ? NG.questions.spellBody(q, info, {})
+        ? NG.questions.spellBody(q, info, { tools: true })
         : NG.questions.choiceBody(q, info, {});
 
       root.innerHTML = `
@@ -177,7 +177,7 @@
       };
 
       if (q.type === 'spell') {
-        NG.questions.bindSpell(root, q, advance);
+        NG.questions.bindSpell(root, q, advance, { tools: true });
         setTimeout(() => NG.audio.speak(q.word), 300);
       } else {
         NG.questions.bindChoice(root, q, info, advance);

@@ -180,7 +180,8 @@
   /**
    * 绑定拼写题交互：点字母入槽，凑满即判定
    * @param {function} onDone (ok)
-   * @param {object} opts tools: 绑定 #sp-undo / #sp-clear（与 spellBody 的 tools 配套）
+   * @param {object} opts tools: 绑定 #sp-undo / #sp-clear（与 spellBody 的 tools 配套）；
+   *        retryOnWrong: 拼错不立即判定，展示正确拼写后自动清空让孩子重拼（课程用，无惩罚原则）
    */
   function bindSpell(root, q, onDone, opts) {
     const o = opts || {};
@@ -206,13 +207,23 @@
       if (q._picked.length === q.word.length) {
         locked = true;
         const ok = q._picked.join('') === q.word;
-        if (!ok) {  // 答错揭示正确拼写，视觉留存
-          slotsEl.querySelectorAll('.slot').forEach((sl, i) => {
-            sl.textContent = q.word[i];
-            sl.classList.add('reveal');
-          });
-        }
-        onDone(ok);
+        if (ok) { onDone(true); return; }
+        // 拼错：揭示正确拼写，视觉留存
+        slotsEl.querySelectorAll('.slot').forEach((sl, i) => {
+          sl.textContent = q.word[i];
+          sl.classList.add('reveal');
+        });
+        if (!o.retryOnWrong) { onDone(false); return; }
+        // 课程内：约 1.1s 后自动清空，让孩子照着重拼（拼对才算通过，无惩罚）
+        NG.sfx.wrong();
+        setTimeout(() => {
+          if (!slotsEl.isConnected) return;   // 屏幕已切换（退出/下一题）则不再重置
+          q._picked = [];
+          q._pickedIdx = [];
+          slotsEl.querySelectorAll('.slot').forEach((sl) => sl.classList.remove('reveal'));
+          locked = false;
+          sync();
+        }, 1100);
       }
     });
     const replay = root.querySelector('#q-replay');
