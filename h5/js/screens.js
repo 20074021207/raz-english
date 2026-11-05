@@ -399,20 +399,21 @@
     finishProbe(root) {
       const size = this.queue.length || 1;
       const score = this.score;
+      const ratio = score / size;
       this.history.push({ idx: this.probeIdx, score });
 
-      const delta = score / size >= 0.8 ? 2 : score / size >= 0.6 ? 1 : score / size >= 0.4 ? -1 : -2;
-      const next = util.clamp(this.probeIdx + delta, 0, D.maxLevelIdx);
-
-      let finalIdx = null;
-      if (next === this.probeIdx) finalIdx = this.probeIdx;                       // 收敛（触底/顶）
-      else if (this.history.length >= NG.CONFIG.PLACEMENT_MAX_PROBES) {
-        finalIdx = score / size >= 0.6 ? this.probeIdx : Math.max(0, this.probeIdx - 1);
+      // 阶梯式定级：过关（≥80%）探测上一级；中等（≥40%）定在本级；过难（<40%）降一级。
+      // 过关轮次达到上限时，定级在最后通过级别的上一级（i+1 原则，如 H 全对 → I）
+      if (ratio >= 0.8) {
+        if (this.probeIdx >= D.maxLevelIdx) return this.renderResult(root, D.maxLevelIdx);
+        if (this.history.length >= NG.CONFIG.PLACEMENT_MAX_PROBES) {
+          return this.renderResult(root, Math.min(this.probeIdx + 1, D.maxLevelIdx));
+        }
+        this.probeIdx += 1;
+        return this.startProbe(root);
       }
-
-      if (finalIdx !== null) return this.renderResult(root, finalIdx);
-      this.probeIdx = next;
-      this.startProbe(root);
+      if (ratio >= 0.4) return this.renderResult(root, this.probeIdx);
+      return this.renderResult(root, Math.max(0, this.probeIdx - 1));
     },
 
     renderResult(root, finalIdx) {
