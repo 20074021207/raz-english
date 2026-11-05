@@ -77,8 +77,9 @@ try {
   await sleep(600);
 
   /* ---------- 1. 定级测试 ---------- */
+  // 阶梯式定级（过关 +1 级）最多 8 轮 × 5 题 = 40 题，上限需覆盖全对路径
   let placed = false;
-  for (let i = 0; i < 30 && !placed; i++) {
+  for (let i = 0; i < 50 && !placed; i++) {
     placed = await isVis('.result-hero');
     if (placed) break;
     if (await isVis('#opts')) {
