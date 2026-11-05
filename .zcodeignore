@@ -33,6 +33,7 @@ __pycache__/
 dist/
 build/
 web-build/
+ios/JudyWords/build-sim/
 expo-env.d.ts
 /app/ios/
 /app/android/
