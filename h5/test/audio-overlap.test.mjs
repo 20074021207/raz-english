@@ -25,7 +25,14 @@ class FakeAudio {
     this.onended = this.onerror = this.onplaying = this.ontimeupdate = null;
     this.duration = NaN;
     this.paused = false;
+    this._listeners = {};   // playWordAudio 走 addEventListener('ended'/'error') 通道
   }
+  addEventListener(type, fn) { (this._listeners[type] = this._listeners[type] || []).push(fn); }
+  removeEventListener(type, fn) {
+    const arr = this._listeners[type];
+    if (arr) { const i = arr.indexOf(fn); if (i >= 0) arr.splice(i, 1); }
+  }
+  _emit(type) { (this._listeners[type] || []).forEach((fn) => fn()); }
   play() {
     played.push(this.url);
     playingSet.add(this);
@@ -79,7 +86,7 @@ const ok = (name, pass, extra = '') => {
 const endAudio = (text) => {
   const url = youdao(text);
   const a = [...playingSet].find((x) => x.url === url);
-  if (a) { playingSet.delete(a); if (a.onended) a.onended(); }
+  if (a) { playingSet.delete(a); if (a.onended) a.onended(); a._emit('ended'); }
 };
 
 /* ---------------- 场景 A：例句朗读中点喇叭切到新单词（speak 路径） ---------------- */
@@ -123,6 +130,31 @@ const fishAudio = [...playingSet].find((x) => x.url === youdao('fish'));
 NG.audio.cancelSequence();
 await sleep(30);
 ok('C1 打断后新单词音频确实被暂停', !fishAudio || fishAudio.paused === true);
+
+/* ---------------- 场景 D：App 内逐词串读（webkit 桥存在） ----------------
+ * P1：打断后 step 链必须停（修复前 pause 不触发 ended/error，看门狗放行 → 幽灵词继续蹦）；
+ * P2：看门狗放行时须先 pause 旧词（修复前长词未播完即推进，与下一词叠音）。 */
+sandbox.window.webkit = { messageHandlers: { nativeTTS: { postMessage() {} } } };
+NG.audio.cancelSequence();             // 清掉场景 C 残留
+await sleep(50);
+
+const seqD = ['cat', 'one two three', 'four five six'];
+NG.audio.speakSequence(seqD, () => {}, () => {});
+await sleep(30);
+endAudio('cat');                       // 单词播完 → 1s 停顿 → 例句 1 逐词串读
+await sleep(1100);
+ok('D1 例句 1 已进入逐词串读', startedWith('one') === 1, `played=${JSON.stringify(played)}`);
+
+const oneAudio = [...playingSet].find((x) => x.url === youdao('one'));
+await sleep(3500);                     // 越过 'one' 的 3.5s 看门狗
+ok('D2 看门狗放行时旧词已暂停（不叠音）', !!oneAudio && oneAudio.paused === true);
+await sleep(600);                      // 260ms 后应推进到下一词
+ok('D3 序列继续推进到下一词', startedWith('two') === 1, `played=${JSON.stringify(played)}`);
+
+NG.audio.cancelSequence();             // ← 例句 1 朗读中打断（❌/下一个）
+await sleep(4300);                     // 越过 'two' 的看门狗：修复前此处蹦出 'three'
+ok('D4 打断后不再续读后续词', startedWith('three') === 0 && startedWith('four') === 0
+  && startedWith('five') === 0 && startedWith('six') === 0, `played=${JSON.stringify(played)}`);
 
 console.log(results.join('\n'));
 console.log(process.exitCode ? '\n❌ 存在叠音回归' : '\n✅ 全部通过：切换单词不再叠音');

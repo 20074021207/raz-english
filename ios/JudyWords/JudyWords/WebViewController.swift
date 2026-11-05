@@ -51,6 +51,10 @@ class WebViewController: UIViewController, WKScriptMessageHandler, AVSpeechSynth
     //   { stop: true }        停止一切朗读
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         guard message.name == "nativeTTS", let body = message.body as? [String: Any] else { return }
+        if let jsErr = body["jsError"] as? String {
+            NSLog("[JS-ERROR] %@", jsErr)
+            return
+        }
         if (body["stop"] as? Bool) == true {
             NSLog("[TTS] stop requested")
             cancelTimers()
@@ -127,7 +131,8 @@ class WebViewController: UIViewController, WKScriptMessageHandler, AVSpeechSynth
     }
 
     private func synthesizeToFile(_ text: String, completion: @escaping (URL?) -> Void) {
-        if #available(iOS 13.0, *) {
+        // write() 是 iOS 13 新 API 且在部分 iOS 13 设备上有崩溃案例：仅在 iOS 14+ 启用
+        if #available(iOS 14.0, *) {
             let url = ttsFileURL(text)
             if FileManager.default.fileExists(atPath: url.path) {
                 NSLog("[TTS] cache hit: %@", url.lastPathComponent)

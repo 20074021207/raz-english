@@ -215,6 +215,47 @@
   }
 
   /**
+   * App 内句子逐词串读：整句 TTS 端点不可用/原生合成在该设备静音，
+   * 拆成单词序列走有道单词 mp3（该接口只对单词稳定，且 <audio> 通道被证实出声）。
+   * 某个词失败直接跳过（260ms 间隔），绝不阻塞推进。
+   */
+  function speakWordsInApp(sentence, done) {
+    const mySeq = seqId;   // 取消守卫：被打断后 pause 不触发 ended/error，看门狗仍会放行，须在此拦截
+    const words = sentence.replace(/[.,!?;:'"()\[\]]/g, '').split(/\s+/).filter(Boolean);
+    if (!words.length) { done(); return; }
+    let i = 0;
+    let called = false;
+    const fin = () => { if (!called) { called = true; done(); } };
+    const step = () => {
+      if (mySeq !== seqId) { fin(); return; }
+      if (i >= words.length) { setTimeout(fin, 350); return; }
+      const w = words[i++];
+      playWordAudio(w, () => setTimeout(step, 260));
+    };
+    step();
+  }
+
+  function playWordAudio(word, done) {
+    try {
+      const a = new Audio(`https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=1`);
+      currentAudio = a;
+      let called = false;
+      const fin = () => {
+        if (called) return;
+        called = true;
+        try { a.pause(); } catch (e) { /* ignore */ }   // 看门狗触发时可能仍在播：停掉杜绝叠音
+        if (currentAudio === a) currentAudio = null;
+        done();
+      };
+      a.addEventListener('ended', fin);
+      a.addEventListener('error', fin);
+      const p = a.play();
+      if (p && p.catch) p.catch(fin);
+      setTimeout(fin, 3500);                 // 单词防挂起
+    } catch (e) { done(); }
+  }
+
+  /**
    * 单词通道：有道 dictvoice mp3。
    * 推进只认 Audio 的 ended 事件；看门狗按播放状态动态布防：
    * 起播前 7s（网络卡死），起播后=真实时长+4s；瞬时错误静默重试一次。
@@ -329,9 +370,26 @@
       stopCurrent();
       if (!soundOn()) { if (onDone) setTimeout(onDone, 0); return; }
       const id = ++seqId;
-      if (nativeSpeakSequence(texts,
-        (idx) => { if (id === seqId && onItem) onItem(idx); },
-        () => { if (id === seqId && onDone) onDone(); })) return;
+      // iOS App：全部走 <audio>（有道接口，设备上唯一被证实出声的通道）。
+      // 句子按逐词串读（word-by-word）——原生 TTS 在该设备上会静音甚至闪退，彻底退出此流程。
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeTTS) {
+        playOne(texts[0], () => {
+          if (id !== seqId) return;
+          if (onItem) onItem(1);                     // 单词读完 = 例句 1 开始（门控解锁）
+          let si = 1;
+          const nextSentence = () => {
+            if (id !== seqId) return;
+            if (si >= texts.length) { if (onDone) onDone(); return; }
+            if (onItem) onItem(si);
+            speakWordsInApp(texts[si], () => {
+              si++;
+              setTimeout(nextSentence, 1000);        // 句间停顿 1 秒
+            });
+          };
+          setTimeout(nextSentence, 1000);
+        });
+        return;
+      }
       let i = 0;
       const step = () => {
         if (id !== seqId) return;             // 已被后续朗读取代

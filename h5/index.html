@@ -21,6 +21,21 @@
   </div>
   <canvas id="confetti"></canvas>
 
+  <script>
+  // 全局 JS 错误上报（iOS App 内转发到原生 NSLog，便于真机诊断）
+  window.onerror = function (msg, src, line, col) {
+    try {
+      var b = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeTTS;
+      if (b) b.postMessage({ jsError: msg + ' @' + (src || '?') + ':' + line + ':' + col });
+    } catch (e) { /* ignore */ }
+  };
+  window.addEventListener('unhandledrejection', function (e) {
+    try {
+      var b = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeTTS;
+      if (b) b.postMessage({ jsError: 'unhandledrejection: ' + (e.reason && e.reason.message || e.reason) });
+    } catch (err) { /* ignore */ }
+  });
+  </script>
   <!-- 数据（构建生成: node build-data.mjs） -->
   <script src="data/raz-data.js?v=20260921j"></script>
   <!-- 核心模块（顺序加载，无构建依赖；?v= 用于击穿 webview/浏览器缓存） -->
