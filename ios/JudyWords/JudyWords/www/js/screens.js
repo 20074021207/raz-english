@@ -67,14 +67,18 @@
 
       let bossHtml;
       if (bossState === 'ready') {
+        const nextLv = D.nextLevel(s.level);
+        // Z2 满级无下一级：不显示"→ null"晋级文案，展示通关贺卡（点击进 Boss 屏的通关分支）
         bossHtml = `
           <div class="boss-card ready">
-            <div class="boss-emoji">${bossEmoji}</div>
+            <div class="boss-emoji">${nextLv ? bossEmoji : '👑'}</div>
             <div class="boss-info">
-              <div class="bt">Boss 战开战啦！</div>
-              <div class="bd">${s.level} → ${D.nextLevel(s.level)} 晋级挑战<br>${C.BOSS_QUESTIONS} 题 · ${C.BOSS_TIME_S} 秒 · 答对 ${Math.ceil(C.BOSS_QUESTIONS * C.BOSS_PASS_RATIO)} 题晋级</div>
+              <div class="bt">${nextLv ? 'Boss 战开战啦！' : 'RAZ 全 29 级通关！'}</div>
+              <div class="bd">${nextLv
+                ? `${s.level} → ${nextLv} 晋级挑战<br>${C.BOSS_QUESTIONS} 题 · ${C.BOSS_TIME_S} 秒 · 答对 ${Math.ceil(C.BOSS_QUESTIONS * C.BOSS_PASS_RATIO)} 题晋级`
+                : `你已征服 ${s.level} 级最高峰，继续复习保持实力吧！`}</div>
             </div>
-            <button class="boss-go" data-nav="boss">挑战</button>
+            <button class="boss-go" data-nav="boss">${nextLv ? '挑战' : '查看'}</button>
           </div>`;
       } else if (bossState === 'charging') {
         bossHtml = `
