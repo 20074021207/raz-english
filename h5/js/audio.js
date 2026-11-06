@@ -187,9 +187,10 @@
     // iOS App：原生 TTS 是唯一主通道（无哨兵竞态、不依赖网络）
     if (nativeSpeak(text, done)) return;
     // iOS Safari 的 speechSynthesis 受手势解锁/静音开关/空闲 cancel 多重制约，极不可靠；
-    // 在 TTS 被证实真实开口（ttsConfirmed）前，句子与单词共用有道整句通道
-    // （单词有声即证明该通道可用；整句 500 时 playOne 自带 TTS 兜底与节奏地板，绝不挂起）
-    if (!ttsConfirmed) { playOne(text, done); return; }
+    // 且实测有道整句接口已近乎全量 500（单词级正常）。
+    // TTS 未证实真实开口（ttsConfirmed）前，句子直接逐词串读有道单词 mp3——
+    // 与 App 壳同方案，是唯一被证实出声的通道，也不浪费注定失败的整句往返。
+    if (!ttsConfirmed) { speakWordsInApp(text, done); return; }
     // 浏览器环境：本地 speechSynthesis 优先
     if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
       const mySeq = seqId;

@@ -6,6 +6,10 @@
  *   例句经 speechSynthesis 朗读中切换单词 → cancel() 使旧 utterance 异步触发
  *   onerror(interrupted) → speakSentence.bail 未检查序列令牌 → 为旧例句再开一条
  *   有道 playOne 音频 → 与新单词朗读同时出声，且劫持 currentAudio。
+ *
+ * 通道契约（2026-09-26 iOS Safari 无声修复后）：
+ *   TTS 未被证实真实开口（ttsConfirmed=false，stub 环境即如此）时，例句走有道整句，
+ *   整句失败退逐词串读——与单词同通道。因此本测试的例句断言全部针对有道 URL。
  */
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -95,13 +99,19 @@ NG.audio.speakSequence(seqA, () => {}, () => {});
 await sleep(30);                       // 单词 cat 经有道起播
 endAudio('cat');                       // cat 播完 → 1s 句间停顿 → 例句开始
 await sleep(1100);
-ok('A1 例句已进入本地合成朗读', synthSpoken.includes(seqA[1]), JSON.stringify(synthSpoken));
+// 通道契约：TTS 未证实前例句逐词串读有道单词 mp3（不走 TTS，也不打注定 500 的整句接口）。
+// 链的首词起播即证明路由正确；整链完成由场景 D 覆盖。
+ok('A1 例句逐词串读有道（TTS 已门控）',
+  startedWith('the') >= 1 && startedWith(seqA[1]) === 0 && synthSpoken.length === 0,
+  `played=${JSON.stringify(played)} tts=${JSON.stringify(synthSpoken)}`);
 
+const oldCountA = startedWith(seqA[1]);   // 打断前旧例句已合法起播 1 次
 NG.audio.speak('dog');                 // ← 用户切换单词（打断序列）
 await sleep(300);                      // 放行 interrupted onerror 等微任务/短定时器
 
 ok('A2 新单词正常朗读', startedWith('dog') === 1);
-ok('A3 旧例句未叠音（无有道降级音频）', startedWith(seqA[1]) === 0, `played=${JSON.stringify(played)}`);
+// 打断后旧例句不得复活：播放次数停在打断前的值
+ok('A3 打断后旧例句未复活', startedWith(seqA[1]) === oldCountA, `played=${JSON.stringify(played)}`);
 // unlock 的 hello 预热音频音量为 0 且真实浏览器会自然播完，不计入叠音统计
 const overlapA = [...playingSet].filter((x) => !x.url.includes('audio=hello')).length;
 ok('A4 同一时刻至多一条在播音频', overlapA <= 1, `overlap=${overlapA}`);
@@ -113,17 +123,21 @@ const seqB = ['dog', 'dogs bark loudly', 'a dog runs'];
 NG.audio.speakSequence(seqB, () => {}, () => {});
 await sleep(30);
 endAudio('dog');
-await sleep(1100);                     // 例句 1 本地合成朗读中……
-ok('B1 新序列例句朗读中', synthSpoken.includes(seqB[1]));
+await sleep(1100);                     // 例句 1 有道整句朗读中……
+ok('B1 新序列例句逐词串读有道', startedWith('dogs') === 1 && startedWith(seqB[1]) === 0,
+  `played=${JSON.stringify(played)}`);
 
+const oldCountB1 = startedWith(seqB[1]);
+const oldCountB2 = startedWith(seqB[2]);
 NG.audio.cancelSequence();             // ← 用户点「下一个」
 NG.audio.speakSequence(['fish', 'fish swim'], () => {}, () => {});
 await sleep(300);
 
 ok('B2 新单词正常朗读', startedWith('fish') >= 1);
-ok('B3 被打断的旧例句未叠音', startedWith(seqB[1]) === 0 && startedWith(seqB[2]) === 0,
+// 打断后旧序列例句不得复活：播放次数停在打断前的值
+ok('B3 被打断的旧例句未复活', startedWith(seqB[1]) === oldCountB1 && startedWith(seqB[2]) === oldCountB2,
   `played=${JSON.stringify(played)}`);
-ok('B4 打断后旧本地朗读已停止', !synthSpoken.includes(seqB[1] + '#after'), '');
+ok('B4 打断后无新增本地合成朗读', synthSpoken.length === 0, `tts=${JSON.stringify(synthSpoken)}`);
 
 /* ---------------- 场景 C：currentAudio 未被旧回退劫持（后续打断能停掉正确音频） ---------------- */
 const fishAudio = [...playingSet].find((x) => x.url === youdao('fish'));
