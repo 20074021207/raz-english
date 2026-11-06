@@ -3,12 +3,18 @@
  *
  * 通道设计（实测结论：有道 dictvoice 单词合成稳定，整句合成经常返回 500）：
  * - 单词：有道 mp3（ended 事件为主推进源；动态看门狗；瞬时错误静默重试一次）
- * - 句子：本地 speechSynthesis（起播哨兵 1.6s，没真正开口降级有道）→ 有道 → 节奏地板
+ * - 句子（浏览器）：TTS 被证实真实开口前走有道整句（与单词同通道，最可靠）；
+ *   证实后本地 speechSynthesis 优先（起播哨兵）→ 有道 → 节奏地板
+ * - iOS Safari 三大坑（本文件多处防御）：① speechSynthesis 首次调用须在用户手势内，
+ *   且 volume 0/空文本不算真实播放；② 对空闲引擎 cancel() 会让合成永久哑火；
+ *   ③ 手势激活以 touchend/click 为准（touchstart 不授予激活）
+ * - App 壳：句子逐词串读有道 mp3（speakWordsInApp），原生 TTS 已从主流程退出
  * - 任何一级失败都明确降级，绝不静默跳句、绝不与在播音频叠音
  */
 (function () {
   let unlocked = false;
-  let ttsUnlocked = false;   // iOS Safari：speechSynthesis 首次调用必须在用户手势内，之后程序化朗读才出声
+  let ttsConfirmed = false;  // TTS 已真实开口（onstart 触发过）——此后程序化朗读才可信
+  let ttsPrimeArmed = true;  // 上次点火未证实（被 cancel/失败）时，允许下次手势重试
   let ctx = null;
 
   /** 声音总开关：设置里的 🔇 同时控制音效与朗读（静音 = 全部不出声；
@@ -38,24 +44,36 @@
       const p = a.play();
       if (p && p.catch) p.catch(() => {});
     } catch (e) { /* ignore */ }
-    primeTTS();
   }
 
-  /** iOS Safari：在用户手势内"点燃" speechSynthesis 管线并触发音色列表加载，
-   *  之后脱离手势的程序化朗读（例句在单词播完 1s 后才开始）才不会静默失败 */
+  /**
+   * iOS Safari：在用户手势内"点燃" speechSynthesis 管线。
+   * 要点：① 手势激活以 touchend/click 为准（touchstart 不授予）；
+   * ② volume 0 / 空文本在 iOS 上不算真实播放，用真实音节 + 0.01 音量；
+   * ③ 以 onstart 证实开口，被后续 cancel 杀掉或失败时允许下次手势重试；
+   * ④ 证实之前句子通道走有道（见 speakSentence），保证 iOS 一定有声音。
+   */
   function primeTTS() {
-    if (ttsUnlocked || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
-    ttsUnlocked = true;
+    if (ttsConfirmed || !ttsPrimeArmed) return;
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+    ttsPrimeArmed = false;
     try {
-      const u = new SpeechSynthesisUtterance(' ');
-      u.volume = 0;
+      const u = new SpeechSynthesisUtterance('a');
+      u.volume = 0.01;
       u.rate = 2;
+      u.onstart = () => { ttsConfirmed = true; ttsPrimeArmed = true; };
+      u.onend = () => { ttsPrimeArmed = true; };
+      u.onerror = () => { ttsPrimeArmed = true; };
       window.speechSynthesis.speak(u);
       window.speechSynthesis.getVoices();
-    } catch (e) { /* ignore */ }
+    } catch (e) { ttsPrimeArmed = true; }
   }
-  document.addEventListener('touchstart', unlock, { once: true, passive: true });
-  document.addEventListener('click', unlock, { once: true });
+
+  // 每次手势都尝试预热（unlock 内部有 once 语义；primeTTS 证实前可重试）。
+  // iOS 的用户激活授予在 touchend，而非 touchstart，故两者都挂。
+  function warmup() { unlock(); primeTTS(); }
+  document.addEventListener('touchend', warmup, { passive: true });
+  document.addEventListener('click', warmup);
 
   // 当前在播的音频，供打断时统一停掉，杜绝叠音
   let currentAudio = null;
@@ -73,7 +91,12 @@
   function stopCurrent() {
     if (currentAudio) { try { currentAudio.pause(); } catch (e) { /* ignore */ } currentAudio = null; }
     stopNative();
-    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { /* ignore */ }
+    try {
+      // iOS：对空闲引擎 cancel() 会让后续合成永久哑火，仅在确有在播/待播队列时才清
+      if (window.speechSynthesis && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
+        window.speechSynthesis.cancel();
+      }
+    } catch (e) { /* ignore */ }
   }
 
   /* ---------------- 原生 TTS 桥（iOS App 的 WKWebView 注入） ----------------
@@ -163,6 +186,10 @@
   function speakSentence(text, done) {
     // iOS App：原生 TTS 是唯一主通道（无哨兵竞态、不依赖网络）
     if (nativeSpeak(text, done)) return;
+    // iOS Safari 的 speechSynthesis 受手势解锁/静音开关/空闲 cancel 多重制约，极不可靠；
+    // 在 TTS 被证实真实开口（ttsConfirmed）前，句子与单词共用有道整句通道
+    // （单词有声即证明该通道可用；整句 500 时 playOne 自带 TTS 兜底与节奏地板，绝不挂起）
+    if (!ttsConfirmed) { playOne(text, done); return; }
     // 浏览器环境：本地 speechSynthesis 优先
     if (window.speechSynthesis && window.SpeechSynthesisUtterance) {
       const mySeq = seqId;
@@ -311,6 +338,8 @@
       }
       fellBack = true;
       try { if (a) { a.pause(); } } catch (e) { /* ignore */ }
+      // TTS 未被证实（iOS Safari）时，句子退到逐词串读有道——单词级 mp3 是被证实出声的通道
+      if (!ttsConfirmed && text.includes(' ')) { speakWordsInApp(text, fin); return; }
       pureLocal(text, fin);
     };
     const start = () => {
